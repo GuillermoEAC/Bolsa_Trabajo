@@ -1,0 +1,56 @@
+/* Estilo para el contenedor principal (Header) */
+.main-header {
+  display: flex; /* Habilita Flexbox */
+  justify-content: space-between; /* Mueve el logo a la izquierda y los botones a la derecha */
+  align-items: center; /* Centra verticalmente los elementos */
+  padding: 15px 30px; /* Espacio alrededor del header */
+  border-bottom: 1px solid #eee; /* Línea separadora sutil */
+  background-color: white;
+}
+
+/* Estilo para el contenedor del logo */
+.logo-container img {
+  height: 35px; /* Ajusta el tamaño de la imagen */
+  /* Asegúrate de que el contenedor no tenga márgenes que empujen los elementos */
+}
+
+/* Estilo para los botones */
+.header-actions {
+  display: flex; /* Alinea los dos botones uno al lado del otro */
+  gap: 10px; /* Espacio entre los botones */
+  align-items: center;
+}
+
+/* Estilos comunes para ambos botones */
+.button {
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 5px; /* Bordes redondeados */
+  font-weight: 500;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+/* Estilo específico para el botón "Crear CV" (Verde) */
+.crear-cv {
+  background-color: #a3e4a3; /* Un tono de verde claro */
+  color: #1a5e1a; /* Texto oscuro */
+  border-color: #8fd88f;
+}
+
+.crear-cv:hover {
+  background-color: #92d292;
+}
+
+/* Estilo específico para el botón "Login" (Azul claro/lila) */
+.login {
+  background-color: #b2d7f9; /* Un tono de azul claro/lavanda */
+  color: #0a56b6; /* Texto azul oscuro */
+  border-color: #9ecbf2;
+}
+
+.login:hover {
+  background-color: #a1c6e8;
+}
