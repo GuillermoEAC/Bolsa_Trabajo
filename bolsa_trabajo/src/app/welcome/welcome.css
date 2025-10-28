@@ -1,0 +1,150 @@
+/* --- ESTILOS DE LA SECCIÓN HERO --- */
+.hero-section {
+  padding: 60px 20px; /* Espacio superior e inferior grande */
+  background-color: #f7f9fc; /* Fondo muy claro */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 3rem; /* 48px */
+  font-weight: 800; /* Extra bold */
+  color: #1a202c; /* Gris muy oscuro */
+  margin-bottom: 10px;
+  max-width: 800px;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem; /* 24px */
+  color: #4a5568; /* Gris medio oscuro */
+  margin-bottom: 30px;
+  max-width: 700px;
+}
+
+/* Diseño de la barra de búsqueda */
+.search-bar-container {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  background-color: white;
+  border: 1px solid #e2e8f0;
+}
+
+.search-input {
+  flex-grow: 1;
+  padding: 15px 20px;
+  border: none;
+  font-size: 16px;
+  color: #2d3748;
+  /* Eliminar el focus ring predeterminado */
+  outline: none;
+}
+
+.search-button {
+  background-color: #3b82f6; /* Azul brillante */
+  color: white;
+  font-weight: 600;
+  padding: 15px 25px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-button:hover {
+  background-color: #2563eb;
+}
+
+.icon-search {
+  font-size: 16px;
+}
+
+.search-feedback {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #3b82f6;
+  font-weight: 500;
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.7;
+  }
+}
+
+/* --- ESTILOS DE LAS CATEGORÍAS --- */
+.categories-section {
+  padding: 50px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.categories-title {
+  font-size: 2rem; /* 32px */
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.categories-grid {
+  display: grid;
+  /* Grid responsivo: 2 columnas por defecto, 3 en pantallas medianas, 4 en grandes */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.category-card {
+  background-color: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-align: center;
+  border: 1px solid #edf2f7;
+  cursor: pointer;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+}
+
+.category-icon {
+  font-size: 2.5rem; /* 40px */
+  margin-bottom: 10px;
+}
+
+.category-name {
+  font-size: 1rem; /* 16px */
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 5px;
+}
+
+.category-jobs {
+  font-size: 0.875rem; /* 14px */
+  color: #718096;
+}
+
+/* --- Media Queries para responsividad --- */
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 4.5rem; /* 72px */
+  }
+
+  .hero-subtitle {
+    font-size: 1.75rem; /* 28px */
+  }
+}

@@ -1,11 +1,14 @@
-import { Component } from '@angular/core';
+// src/app/header/header.ts (asumiendo que renombras el archivo o el contenido)
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-header',
-  imports: [],
+  standalone: true, // Asegura que es un componente Standalone
   templateUrl: './header.html',
-  styleUrl: './header.css'
+  styleUrl: './header.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Header {
-
+export class HeaderComponent {
+  // Renombra a HeaderComponent para seguir convenciones
+  // ... no necesita lógica por ahora ...
 }
