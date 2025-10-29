@@ -1,0 +1,51 @@
+/* src/app/header.css */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  border-bottom: 1px solid #eee;
+  background-color: white;
+}
+
+.logo-container img {
+  height: 35px;
+}
+
+/* Estilo para los botones */
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.button {
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.crear-cv {
+  background-color: #a3e4a3;
+  color: #1a5e1a;
+  border-color: #8fd88f;
+}
+
+.crear-cv:hover {
+  background-color: #92d292;
+}
+
+.login {
+  background-color: #b2d7f9;
+  color: #0a56b6;
+  border-color: #9ecbf2;
+}
+
+.login:hover {
+  background-color: #a1c6e8;
+}
