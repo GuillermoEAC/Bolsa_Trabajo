@@ -1,0 +1,114 @@
+<div class="company-container">
+  <div class="company-card">
+    <header class="card-header">
+      <h2>Registro de Empresa</h2>
+      <p>Crea tu perfil corporativo para encontrar talento joven.</p>
+    </header>
+
+    <div class="form-content">
+      <section>
+        <h3 class="section-label">Datos de Acceso</h3>
+        <div class="form-grid">
+          <label class="form-group full-width">
+            <span>Correo Corporativo (Usuario)</span>
+            <input
+              [(ngModel)]="cuenta.email"
+              type="email"
+              class="form-input"
+              placeholder="recursos.humanos@empresa.com"
+            />
+          </label>
+          <label class="form-group">
+            <span>Contraseña</span>
+            <input
+              [(ngModel)]="cuenta.password"
+              type="password"
+              class="form-input"
+              placeholder="********"
+            />
+          </label>
+          <label class="form-group">
+            <span>Confirmar Contraseña</span>
+            <input
+              [(ngModel)]="confirmPassword"
+              type="password"
+              class="form-input"
+              placeholder="********"
+            />
+          </label>
+        </div>
+      </section>
+
+      <hr class="separator" />
+
+      <section>
+        <h3 class="section-label">Información de la Empresa</h3>
+        <div class="form-grid">
+          <label class="form-group full-width">
+            <span>Nombre Comercial</span>
+            <input
+              [(ngModel)]="empresa.nombre_empresa"
+              type="text"
+              class="form-input"
+              placeholder="Ej: Tech Solutions S.A."
+            />
+          </label>
+
+          <label class="form-group">
+            <span>Razón Social (Opcional)</span>
+            <input [(ngModel)]="empresa.razon_social" type="text" class="form-input" />
+          </label>
+
+          <label class="form-group">
+            <span>NIT / RFC (Identificación Fiscal)</span>
+            <input [(ngModel)]="empresa.nit" type="text" class="form-input" />
+          </label>
+
+          <label class="form-group">
+            <span>Sitio Web</span>
+            <input
+              [(ngModel)]="empresa.sitio_web"
+              type="url"
+              class="form-input"
+              placeholder="https://miempresa.com"
+            />
+          </label>
+
+          <label class="form-group">
+            <span>URL del Logo (Imagen)</span>
+            <input
+              [(ngModel)]="empresa.logo_url"
+              type="url"
+              class="form-input"
+              placeholder="https://..."
+            />
+            <small style="color: #64748b; font-size: 0.8rem"
+              >Pega el enlace directo a tu logo.</small
+            >
+          </label>
+
+          <label class="form-group full-width">
+            <span>Descripción de la Empresa</span>
+            <textarea
+              [(ngModel)]="empresa.descripcion"
+              rows="4"
+              class="form-textarea"
+              placeholder="Describe tu empresa, cultura y qué hacen..."
+            ></textarea>
+          </label>
+        </div>
+      </section>
+
+      <div class="actions">
+        <p class="terms">
+          Al registrarte, aceptas que tu cuenta pasará por un proceso de
+          <strong>validación</strong> antes de publicar ofertas.
+        </p>
+        <button (click)="onSubmit()" [disabled]="loading" class="btn-submit">
+          {{ loading ? 'Creando Perfil...' : 'Crear Cuenta de Empresa' }}
+        </button>
+        <p *ngIf="error" class="error-msg">{{ error }}</p>
+      </div>
+    </div>
+  </div>
+</div>

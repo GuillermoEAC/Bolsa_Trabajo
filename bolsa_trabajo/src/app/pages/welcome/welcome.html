@@ -1,81 +1,165 @@
-<!-- <section class="hero-section">
-  <h1 class="hero-title">Tu Primer Paso hacia un Nuevo Empleo</h1>
-  <p class="hero-subtitle">
-    Conéctate con las mejores empresas. Encuentra oportunidades que realmente te hagan crecer.
-  </p>
-
-  <div class="search-bar-container">
-    <input
-      type="text"
-      placeholder="Busca por título o palabra clave (ej: Desarrollador, Marketing...)"
-      class="search-input"
-      [value]="searchTerm()"
-      (input)="updateSearchTerm($event)"
-    />
-    <button class="search-button" (click)="searchJobs()">
-      <span class="icon-search">🔍</span>
-      Buscar
-    </button>
-  </div>
-
-  @if (searchFeedback()) {
-  <p class="search-feedback">{{ searchFeedback() }}</p>
-  }
-</section>
-
-<section class="categories-section">
-  <h2 class="categories-title">Explora por Área</h2>
-  <div class="categories-grid">
-    @for (category of categories; track category.name) {
-    <div class="category-card">
-      <div class="category-icon">{{ category.icon }}</div>
-      <p class="category-name">{{ category.name }}</p>
-      <p class="category-jobs">{{ category.jobs }} ofertas</p>
+<div class="welcome-container">
+  <section class="hero-section">
+    <div class="video-container">
+      <video autoplay muted loop playsinline class="bg-video">
+        <source
+          src="https://videos.pexels.com/video-files/3255275/3255275-hd_1920_1080_25fps.mp4"
+          type="video/mp4"
+        />
+      </video>
+      <div class="video-overlay"></div>
     </div>
-    }
-  </div>
-</section> -->
 
-<section class="hero-section">
-  <!-- Título Principal -->
-  <h1 class="hero-title">Tu Primer Paso hacia un Nuevo Empleo</h1>
-  <!-- Subtítulo / Mensaje Clave -->
-  <p class="hero-subtitle">
-    Conéctate con las mejores empresas. Encuentra oportunidades que realmente te hagan crecer.
-  </p>
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Tu Primer Paso hacia un <br />
+        <span class="highlight">Futuro Brillante</span>
+      </h1>
 
-  <!-- Campo de Búsqueda -->
-  <div class="search-bar-container">
-    <input
-      type="text"
-      placeholder="Busca por título o palabra clave (ej: Desarrollador, Marketing...)"
-      class="search-input"
-      [value]="searchTerm()"
-      (input)="updateSearchTerm($event)"
-    />
-    <button class="search-button" (click)="searchJobs()">
-      <span class="icon-search">🔍</span>
-      Buscar
-    </button>
-  </div>
+      <p class="hero-subtitle">
+        Conectamos talento joven con empresas que buscan innovar. Encuentra oportunidades reales
+        para comenzar tu carrera.
+      </p>
 
-  <!-- Mensaje de Feedback -->
-  @if (searchFeedback()) {
-  <p class="search-feedback">{{ searchFeedback() }}</p>
-  }
-</section>
-
-<!-- Sección de Categorías Destacadas -->
-<section class="categories-section">
-  <h2 class="categories-title">Explora por Área</h2>
-  <div class="categories-grid">
-    @for (category of categories; track category.name) {
-    <div class="category-card">
-      <!-- AQUÍ CAMBIAMOS: Usamos [innerHTML] y llamamos al servicio a través del método getIconHtml -->
-      <div class="category-icon text-blue-600" [innerHTML]="getIconHtml(category.iconName)"></div>
-      <p class="category-name">{{ category.name }}</p>
-      <p class="category-jobs">{{ category.jobs }} ofertas</p>
+      <div class="search-bar-container">
+        <div class="input-wrapper">
+          <span class="search-icon">
+            <app-icon name="Search"></app-icon>
+          </span>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="¿Qué puesto buscas? (Ej: Desarrollador, Abogado...)"
+          />
+        </div>
+        <button class="search-button">Buscar Empleo</button>
+      </div>
     </div>
-    }
-  </div>
-</section>
+  </section>
+
+  <section class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-icon-wrapper">
+        <app-icon name="Building"></app-icon>
+      </div>
+      <div class="stat-text">
+        <span class="stat-number">???+</span>
+        <span class="stat-label">Empresas</span>
+      </div>
+    </div>
+
+    <div class="stat-separator"></div>
+
+    <div class="stat-item">
+      <div class="stat-icon-wrapper">
+        <app-icon name="Briefcase"></app-icon>
+      </div>
+      <div class="stat-text">
+        <span class="stat-number">???+</span>
+        <span class="stat-label">Vacantes Activas</span>
+      </div>
+    </div>
+
+    <div class="stat-separator"></div>
+
+    <div class="stat-item">
+      <div class="stat-icon-wrapper">
+        <app-icon name="AcademicCap"></app-icon>
+      </div>
+      <div class="stat-text">
+        <span class="stat-number">100%</span>
+        <span class="stat-label">Para Estudiantes</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="categories-section">
+    <div class="section-header">
+      <h2 class="categories-title">Explora por Área</h2>
+      <p class="categories-subtitle">Las carreras más demandadas este mes</p>
+    </div>
+
+    <div class="categories-grid">
+      <div class="category-card">
+        <div class="icon-bg">
+          <app-icon name="Code"></app-icon>
+        </div>
+        <h3>Desarrollo Web</h3>
+        <p>120 vacantes</p>
+      </div>
+
+      <div class="category-card">
+        <div class="icon-bg">
+          <app-icon name="PaintBrush"></app-icon>
+        </div>
+        <h3>Diseño Gráfico</h3>
+        <p>85 vacantes</p>
+      </div>
+
+      <div class="category-card">
+        <div class="icon-bg">
+          <app-icon name="TrendUp"></app-icon>
+        </div>
+        <h3>Marketing</h3>
+        <p>64 vacantes</p>
+      </div>
+
+      <div class="category-card">
+        <div class="icon-bg">
+          <app-icon name="Scale"></app-icon>
+        </div>
+        <h3>Leyes / Legal</h3>
+        <p>40 vacantes</p>
+      </div>
+
+      <div class="category-card">
+        <div class="icon-bg">
+          <app-icon name="HardHat"></app-icon>
+        </div>
+        <h3>Ingeniería</h3>
+        <p>90 vacantes</p>
+      </div>
+
+      <div class="category-card">
+        <div class="icon-bg">
+          <app-icon name="Heart"></app-icon>
+        </div>
+        <h3>Salud</h3>
+        <p>30 vacantes</p>
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="hero-company"
+    style="
+      background-color: #1e293b;
+      padding: 4rem 2rem;
+      text-align: center;
+      color: white;
+      margin-top: 4rem;
+    "
+  >
+    <div style="max-width: 600px; margin: 0 auto">
+      <h2 style="font-size: 2rem; margin-bottom: 1rem">¿Eres una Empresa?</h2>
+      <p style="color: #cbd5e1; margin-bottom: 2rem">
+        Encuentra al talento joven ideal para tu organización de forma rápida y sencilla.
+      </p>
+      <button
+        routerLink="/registro-empresa"
+        style="
+          background: #3b82f6;
+          color: white;
+          padding: 12px 30px;
+          border: none;
+          border-radius: 50px;
+          font-weight: bold;
+          cursor: pointer;
+          font-size: 1rem;
+        "
+      >
+        Registrar Empresa
+      </button>
+    </div>
+  </section>
+</div>

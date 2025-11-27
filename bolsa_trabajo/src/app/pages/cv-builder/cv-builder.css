@@ -1,0 +1,269 @@
+/* =========================================
+   ESTRUCTURA Y FONDO
+   ========================================= */
+:host {
+  font-family: 'Poppins', sans-serif;
+}
+
+.cv-container {
+  min-height: 100vh;
+  /* Fondo vibrante con degradado sutil para dar energía */
+  background: linear-gradient(135deg, #e0f2fe 0%, #d1fae5 100%);
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.cv-card {
+  width: 100%;
+  /* AUMENTADO: Ahora abarca mucho más espacio */
+  max-width: 1200px;
+  background: white;
+  border-radius: 20px;
+  /* Sombra con color (azul) para dar efecto "glow" */
+  box-shadow: 0 20px 50px rgba(37, 99, 235, 0.15);
+  overflow: hidden;
+  border: 2px solid #fff;
+}
+
+/* =========================================
+   BARRA DE PASOS (SIN SLIDER)
+   ========================================= */
+.step-nav {
+  display: flex;
+  /* IMPORTANTE: flex-wrap permite que bajen si no caben, 
+     pero en desktop se estirarán */
+  flex-wrap: wrap;
+  /* Fondo Degradado de la Marca (Azul a Verde) */
+  background: linear-gradient(90deg, #1e3a8a 0%, #059669 100%);
+  padding: 0;
+  border-bottom: 4px solid #fcd34d; /* Un toque amarillo de contraste */
+}
+
+.step-item {
+  flex: 1; /* Esto hace que cada paso ocupe el mismo espacio disponible */
+  min-width: 120px; /* Ancho mínimo para que no se aplasten */
+  text-align: center;
+  padding: 20px 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7); /* Blanco translúcido */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.step-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Estado Activo */
+.step-item.active {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Triángulo indicador abajo del paso activo */
+.step-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent #fcd34d transparent; /* Triángulo amarillo */
+}
+
+/* =========================================
+   CONTENIDO INTERNO
+   ========================================= */
+.step-content {
+  padding: 50px; /* Más espacio interno */
+}
+
+.section-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #1e3a8a; /* Azul oscuro fuerte */
+  margin-bottom: 30px;
+  /* Subrayado grueso de color */
+  border-left: 8px solid #10b981;
+  padding-left: 20px;
+}
+
+/* Grilla del formulario */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px; /* Más separación entre inputs */
+}
+
+@media (min-width: 900px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* =========================================
+   INPUTS LLAMATIVOS
+   ========================================= */
+.form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 15px 20px; /* Inputs más grandes */
+  font-size: 1.05rem;
+  font-family: 'Poppins', sans-serif;
+  color: #1f2937;
+  background-color: #f3f4f6; /* Fondo gris claro */
+  border: 2px solid #e5e7eb; /* Borde sólido */
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+/* Focus con color fuerte */
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  background-color: #fff;
+  border-color: #2563eb; /* Azul brillante */
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.1);
+}
+
+/* =========================================
+   TARJETA VERDE DE "CREAR CUENTA" (PASO 6)
+   ========================================= */
+.account-card {
+  /* Fondo verde muy suave pero con borde fuerte */
+  background: #ecfdf5;
+  border: 3px solid #10b981; /* Borde verde grueso */
+  padding: 4rem 2rem;
+  border-radius: 20px;
+  text-align: center;
+  margin-top: 1rem;
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
+}
+
+.account-card h2 {
+  color: #065f46;
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+/* =========================================
+   BOTONES POTENTES
+   ========================================= */
+.nav-controls {
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 2px dashed #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-btn {
+  padding: 15px 35px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  text-transform: uppercase; /* Texto en mayúsculas */
+  letter-spacing: 1px;
+}
+
+.prev-btn {
+  background-color: #fff;
+  color: #64748b;
+  border: 2px solid #cbd5e1;
+}
+.prev-btn:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+  color: #1e293b;
+}
+
+.next-btn {
+  background-color: #2563eb;
+  color: white;
+  box-shadow: 0 5px 0 #1e40af; /* Efecto 3D botón presionado */
+}
+.next-btn:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #1e40af;
+}
+.next-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #1e40af;
+}
+
+.final-btn {
+  background-color: #10b981; /* Verde */
+  color: white;
+  box-shadow: 0 5px 0 #047857; /* Efecto 3D */
+}
+.final-btn:hover {
+  background-color: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #047857;
+}
+
+/* Botón Añadir (Dashed) */
+.add-btn {
+  width: 100%;
+  margin-top: 25px;
+  padding: 18px;
+  background-color: #eff6ff;
+  border: 3px dashed #60a5fa;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.add-btn:hover {
+  background-color: #dbeafe;
+  border-color: #2563eb;
+  transform: scale(1.01);
+}
+
+/* =========================================
+   CHECKBOXES
+   ========================================= */
+.checkbox-item {
+  background-color: #fff;
+  border: 2px solid #e5e7eb;
+  padding: 15px 20px;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+.checkbox-item:hover {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+.checkbox-input {
+  width: 20px;
+  height: 20px;
+  accent-color: #2563eb;
+}

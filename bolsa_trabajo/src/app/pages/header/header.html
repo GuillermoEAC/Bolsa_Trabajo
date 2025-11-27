@@ -1,10 +1,47 @@
-<!--src/app/header.html-->
 <header class="main-header">
   <div class="logo-container">
-    <img [src]="logoPaht" alt="Primer Paso Logo" class="app-logo" />
+    <img src="assets/img/Logo_Completo.png" alt="Primer Paso Logo" routerLink="/welcome" />
   </div>
+
   <div class="header-actions">
-    <a class="button crear-cv" href="#">Crear CV</a>
-    <a class="button login" href="#">Login</a>
+    @if (!currentUser) {
+    <a class="link-empresa" routerLink="/registro-empresa">Soy Empresa / Reclutador</a>
+    <a class="button crear-cv" routerLink="/cv-builder">Crear CV</a>
+    <button class="button login" (click)="openLogin()">Login</button>
+    } @else {
+    <div class="user-controls">
+      <button class="icon-btn notification-btn">🔔</button>
+
+      <div class="profile-dropdown-container">
+        <div class="user-profile" (click)="toggleMenu()">
+          <span class="user-name">{{ currentUser.email.split('@')[0] }}</span>
+          <div class="user-avatar">
+            {{ currentUser.email[0] | uppercase }}
+          </div>
+          <span class="dropdown-arrow">▼</span>
+        </div>
+
+        @if (isMenuOpen) {
+        <div class="dropdown-menu">
+          <div class="dropdown-header">
+            Hola, <strong>{{ currentUser.email.split('@')[0] }}</strong>
+          </div>
+
+          <a routerLink="/welcome" class="dropdown-item" (click)="isMenuOpen = false">
+            👤 Mi Perfil
+          </a>
+
+          <a href="#" class="dropdown-item" (click)="isMenuOpen = false"> ⚙️ Configuración </a>
+
+          <div class="dropdown-divider"></div>
+
+          <button class="dropdown-item text-danger" (click)="logout()">🚪 Cerrar Sesión</button>
+        </div>
+        }
+      </div>
+    </div>
+    }
   </div>
 </header>
+
+<app-login [isVisible]="isModalVisible" (close)="closeLogin()"></app-login>

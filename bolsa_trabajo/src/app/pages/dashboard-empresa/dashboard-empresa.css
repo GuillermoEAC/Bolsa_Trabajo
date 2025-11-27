@@ -1,0 +1,94 @@
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc;
+  font-family: 'Poppins', sans-serif;
+}
+
+.sidebar {
+  width: 260px;
+  background-color: #0f172a; /* Azul muy oscuro */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
+
+.logo-area {
+  padding: 0 25px 20px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-bottom: 1px solid #1e293b;
+  color: #3b82f6; /* Azul brillante */
+}
+
+.nav-item {
+  padding: 15px 25px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: 0.3s;
+  text-decoration: none;
+  display: block;
+  font-size: 0.95rem;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background-color: #1e293b;
+  color: white;
+  border-left: 4px solid #3b82f6;
+}
+
+.logout {
+  margin-top: auto;
+  color: #ef4444;
+}
+.logout:hover {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-left: none;
+}
+
+.content {
+  flex: 1;
+  padding: 40px;
+}
+
+header {
+  margin-bottom: 40px;
+}
+h1 {
+  color: #1e293b;
+  margin: 0 0 10px 0;
+  font-size: 2rem;
+}
+header p {
+  color: #64748b;
+}
+
+.empty-state {
+  background: white;
+  padding: 60px;
+  border-radius: 16px;
+  text-align: center;
+  border: 2px dashed #cbd5e1;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}

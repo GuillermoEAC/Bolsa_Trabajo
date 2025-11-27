@@ -2,12 +2,12 @@ import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 // Importamos el nuevo servicio de iconos
 import { IconService } from '../../core/icon.spec';
 import { CommonModule } from '@angular/common'; // Necesario para directivas como @for, @if
-
+import { IconComponent } from '../../cositas/icon.component';
 @Component({
   selector: 'app-welcome',
   standalone: true,
   // Asegúrate de que CommonModule esté importado si usas directivas de control de flujo en un standalone
-  imports: [CommonModule],
+  imports: [CommonModule, IconComponent],
   templateUrl: './welcome.html',
   styleUrl: './welcome.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

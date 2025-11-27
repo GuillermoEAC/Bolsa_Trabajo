@@ -1,0 +1,258 @@
+<div class="cv-container">
+  <div class="cv-card">
+    <nav class="step-nav">
+      <div
+        *ngFor="let step of steps; let i = index"
+        class="step-item"
+        [class.active]="currentStep() === i + 1"
+        (click)="changeStep(i + 1)"
+      >
+        Paso {{ i + 1 }}: {{ step.name }}
+      </div>
+    </nav>
+
+    <div class="step-content">
+      <h2 class="section-title">{{ steps[currentStep() - 1].name }}</h2>
+
+      <div *ngIf="currentStep() === 1" class="form-grid">
+        <label class="form-label"
+          ><span>Nombre</span><input [(ngModel)]="perfil.nombre" type="text" class="form-input"
+        /></label>
+        <label class="form-label"
+          ><span>Apellido</span><input [(ngModel)]="perfil.apellido" type="text" class="form-input"
+        /></label>
+        <label class="form-label"
+          ><span>Título CV (Tu carrera/profesión)</span
+          ><input
+            [(ngModel)]="perfil.titulo_cv"
+            type="text"
+            class="form-input"
+            placeholder="Ej: Contador, Arquitecto..."
+        /></label>
+        <label class="form-label"
+          ><span>Teléfono</span><input [(ngModel)]="perfil.telefono" type="tel" class="form-input"
+        /></label>
+        <label class="form-label full-width"
+          ><span>Descripción Breve</span
+          ><textarea [(ngModel)]="perfil.descripcion" rows="3" class="form-textarea"></textarea>
+        </label>
+        <div class="checkbox-group full-width">
+          <label class="checkbox-item"
+            ><input
+              [(ngModel)]="perfil.disponibilidad_viajar"
+              type="checkbox"
+              class="checkbox-input"
+            /><span>Disponible para viajar</span></label
+          >
+          <label class="checkbox-item"
+            ><input
+              [(ngModel)]="perfil.disponibilidad_residencia"
+              type="checkbox"
+              class="checkbox-input"
+            /><span>Cambio de residencia</span></label
+          >
+        </div>
+      </div>
+
+      <div *ngIf="currentStep() === 2">
+        <div *ngFor="let estudio of perfil.estudios; let i = index" class="entry-card">
+          <h3 class="entry-title">Estudio #{{ i + 1 }}</h3>
+          <div class="form-grid">
+            <label class="form-label"
+              ><span>Nivel</span
+              ><input [(ngModel)]="estudio.nivel_estudio" type="text" class="form-input"
+            /></label>
+            <label class="form-label"
+              ><span>Carrera</span
+              ><input [(ngModel)]="estudio.carrera" type="text" class="form-input"
+            /></label>
+            <label class="form-label"
+              ><span>Institución</span
+              ><input [(ngModel)]="estudio.centro_estudio" type="text" class="form-input"
+            /></label>
+            <label class="form-label"
+              ><span>Inicio</span
+              ><input [(ngModel)]="estudio.fecha_inicio" type="date" class="form-input"
+            /></label>
+            <label class="form-label"
+              ><span>Fin</span
+              ><input
+                [(ngModel)]="estudio.fecha_fin"
+                [disabled]="estudio.en_curso"
+                type="date"
+                class="form-input"
+            /></label>
+            <label class="checkbox-item"
+              ><input [(ngModel)]="estudio.en_curso" type="checkbox" class="checkbox-input" /><span
+                >En curso</span
+              ></label
+            >
+          </div>
+          <button (click)="removeEntry('estudios', i)" class="remove-btn"></button>
+        </div>
+        <button (click)="addEntry('estudios')" class="add-btn">+ Agregar Estudio</button>
+      </div>
+
+      <div *ngIf="currentStep() === 3">
+        <div *ngFor="let exp of perfil.experiencias; let i = index" class="entry-card">
+          <h3 class="entry-title">Experiencia #{{ i + 1 }}</h3>
+          <div class="form-grid">
+            <label class="form-label"
+              ><span>Puesto</span
+              ><input [(ngModel)]="exp.titulo_puesto" type="text" class="form-input"
+            /></label>
+            <label class="form-label"
+              ><span>Empresa</span
+              ><input [(ngModel)]="exp.nombre_empresa" type="text" class="form-input"
+            /></label>
+            <label class="form-label"
+              ><span>Inicio</span
+              ><input [(ngModel)]="exp.fecha_inicio" type="date" class="form-input"
+            /></label>
+            <label class="form-label"
+              ><span>Fin</span
+              ><input
+                [(ngModel)]="exp.fecha_fin"
+                [disabled]="exp.actualmente_trabajando"
+                type="date"
+                class="form-input"
+            /></label>
+            <label class="checkbox-item full-width"
+              ><input
+                [(ngModel)]="exp.actualmente_trabajando"
+                type="checkbox"
+                class="checkbox-input"
+              /><span>Trabajo actual</span></label
+            >
+            <label class="form-label full-width"
+              ><span>Tareas</span
+              ><textarea
+                [(ngModel)]="exp.descripcion_tareas"
+                rows="3"
+                class="form-textarea"
+              ></textarea>
+            </label>
+          </div>
+          <button (click)="removeEntry('experiencias', i)" class="remove-btn"></button>
+        </div>
+        <button (click)="addEntry('experiencias')" class="add-btn">+ Agregar Experiencia</button>
+      </div>
+
+      <div *ngIf="currentStep() === 4">
+        <p style="margin-bottom: 1rem; color: #666">
+          Describe tus logros clave, portafolios, auditorías o proyectos académicos importantes.
+        </p>
+        <div *ngFor="let project of perfil.proyectos; let i = index" class="entry-card">
+          <h3 class="entry-title">Proyecto / Logro #{{ i + 1 }}</h3>
+          <div class="form-grid">
+            <label class="form-label full-width"
+              ><span>Nombre del Proyecto/Logro</span
+              ><input
+                [(ngModel)]="project.nombre_proyecto"
+                type="text"
+                class="form-input"
+                placeholder="Ej: Auditoría 2024, Diseño Casa Lomas..."
+            /></label>
+            <label class="form-label full-width"
+              ><span>Descripción</span
+              ><textarea
+                [(ngModel)]="project.descripcion"
+                rows="3"
+                class="form-textarea"
+              ></textarea>
+            </label>
+            <label class="form-label"
+              ><span>Enlace Evidencia/Drive (Opcional)</span
+              ><input [(ngModel)]="project.url_repositorio" type="url" class="form-input"
+            /></label>
+            <label class="form-label"
+              ><span>Enlace Web/Demo (Opcional)</span
+              ><input [(ngModel)]="project.url_demo" type="url" class="form-input"
+            /></label>
+          </div>
+          <button (click)="removeEntry('proyectos', i)" class="remove-btn"></button>
+        </div>
+        <button (click)="addEntry('proyectos')" class="add-btn">+ Agregar Proyecto</button>
+      </div>
+
+      <div *ngIf="currentStep() === 5">
+        <h3 class="entry-title">Tus Habilidades</h3>
+        <div *ngFor="let skill of perfil.habilidades; let i = index" class="skill-item">
+          <input [(ngModel)]="skill.nombre" placeholder="Habilidad" class="form-input" />
+          <select [(ngModel)]="skill.nivel" class="form-input">
+            <option>Básico</option>
+            <option>Intermedio</option>
+            <option>Avanzado</option>
+          </select>
+          <button
+            (click)="removeEntry('habilidades', i)"
+            class="remove-btn"
+            style="position: static"
+          ></button>
+        </div>
+        <button (click)="addEntry('habilidades')" class="add-btn" style="margin-bottom: 2rem">
+          + Habilidad
+        </button>
+
+        <h3 class="entry-title">Idiomas</h3>
+        <div *ngFor="let lang of perfil.idiomas; let i = index" class="skill-item">
+          <input [(ngModel)]="lang.nombre" placeholder="Idioma" class="form-input" />
+          <select [(ngModel)]="lang.nivel" class="form-input">
+            <option>Básico</option>
+            <option>Intermedio</option>
+            <option>Avanzado</option>
+            <option>Nativo</option>
+          </select>
+          <button
+            (click)="removeEntry('idiomas', i)"
+            class="remove-btn"
+            style="position: static"
+          ></button>
+        </div>
+        <button (click)="addEntry('idiomas')" class="add-btn">+ Idioma</button>
+      </div>
+
+      <div *ngIf="currentStep() === 6">
+        <div
+          class="account-card"
+          style="
+            background: #f0fdf4;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid #bbf7d0;
+            text-align: center;
+          "
+        >
+          <h2>¡Casi listo!</h2>
+          <p>Crea una cuenta para guardar tu CV y postularte a vacantes.</p>
+          <div class="form-grid" style="max-width: 400px; margin: 2rem auto">
+            <label class="form-label full-width"
+              ><span>Correo Electrónico</span
+              ><input [(ngModel)]="cuenta.email" type="email" class="form-input"
+            /></label>
+            <label class="form-label full-width"
+              ><span>Contraseña</span
+              ><input [(ngModel)]="cuenta.password" type="password" class="form-input"
+            /></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <button (click)="prevStep()" [disabled]="currentStep() === 1" class="nav-btn prev-btn">
+          ← Anterior
+        </button>
+        <button *ngIf="currentStep() < steps.length" (click)="nextStep()" class="nav-btn next-btn">
+          Siguiente →
+        </button>
+        <button
+          *ngIf="currentStep() === steps.length"
+          (click)="saveProfile()"
+          class="nav-btn final-btn"
+        >
+          Guardar Todo y Finalizar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

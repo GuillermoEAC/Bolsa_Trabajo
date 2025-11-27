@@ -1,12 +1,17 @@
+<!-- app.html -->
 <div class="app-container">
-  <app-header></app-header>
+  <app-header (openLogin)="openModal()"></app-header>
 
   <main class="main-content">
-    <app-welcome />
+    <router-outlet></router-outlet>
   </main>
 
   <footer class="app-footer">
     <p>&copy; 2025 Primer Paso. Todos los derechos reservados.</p>
     <p>Trabajando en tu futuro.</p>
   </footer>
+
+  @if (loginModalVisible()) {
+  <app-login [isVisible]="loginModalVisible()" (close)="closeModal()"> </app-login>
+  }
 </div>
