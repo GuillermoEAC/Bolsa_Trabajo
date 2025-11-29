@@ -1,0 +1,532 @@
+:host {
+  font-family: 'Poppins', sans-serif;
+  display: block;
+  background-color: #f3f4f6;
+  min-height: 100vh;
+}
+
+.buscador-container {
+  display: flex;
+  padding: 30px;
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* SIDEBAR DE FILTROS */
+.sidebar-filtros {
+  width: 300px;
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  height: fit-content;
+  position: sticky;
+  top: 100px; /* Si tienes header sticky */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.filtro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  color: #1e293b;
+}
+
+.grupo-filtro {
+  margin-bottom: 20px;
+}
+.grupo-filtro label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.input-filtro {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.2s;
+}
+.input-filtro:focus {
+  outline: none;
+  border-color: #2563eb;
+  background: #fff;
+}
+
+.btn-buscar {
+  width: 100%;
+  background: #2563eb;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #1e40af; /* Efecto 3D */
+  transition: all 0.1s;
+}
+.btn-buscar:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+/* ÁREA DE RESULTADOS */
+.area-resultados {
+  flex: 1;
+}
+
+.titulo-resultados {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #0f172a;
+}
+.highlight {
+  color: #2563eb;
+}
+
+/* LOADING & EMPTY STATES */
+.estado-carga,
+.sin-resultados {
+  text-align: center;
+  padding: 60px;
+  background: white;
+  border-radius: 20px;
+}
+.icono-vacio {
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+
+/* TARJETA DE VACANTE */
+.tarjeta-vacante {
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 25px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s;
+}
+
+.tarjeta-vacante:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border-color: #bfdbfe;
+}
+
+.logo-empresa {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #f3f4f6;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+.logo-empresa img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.info-vacante {
+  flex: 1;
+}
+
+.titulo-cargo {
+  margin: 0 0 5px 0;
+  font-size: 1.4rem;
+  color: #1e293b;
+}
+.nombre-empresa {
+  margin: 0 0 12px 0;
+  font-weight: 600;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.meta-datos {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.pill {
+  padding: 5px 12px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.pill-ubicacion {
+  background: #f1f5f9;
+  color: #475569;
+}
+.pill-modalidad {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+.pill-salario {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.descripcion-corta {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.acciones-vacante {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.btn-ver {
+  background: white;
+  border: 2px solid #2563eb;
+  color: #2563eb;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-ver:hover {
+  background: #2563eb;
+  color: white;
+}
+
+.fecha-pub {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .buscador-container {
+    flex-direction: column;
+    padding: 15px;
+  }
+  .sidebar-filtros {
+    width: 100%;
+    position: static;
+  }
+  .tarjeta-vacante {
+    flex-direction: column;
+  }
+  .acciones-vacante {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 15px;
+    width: 100%;
+  }
+
+  .rango-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .input-small {
+    padding: 10px;
+    width: 100%; /* Se ajustan al espacio disponible */
+    text-align: center;
+  }
+
+  .separador {
+    color: #9ca3af;
+    font-weight: bold;
+  }
+
+  /* Opcional: Quitar las flechas de los inputs numéricos para que se vea más limpio */
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+/* =========================================
+   LAYOUT GENERAL
+   ========================================= */
+:host {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f5f5f5; /* Fondo gris claro app */
+  display: block;
+  min-height: 100vh;
+}
+
+.mobile-layout {
+  max-width: 600px; /* Limitamos el ancho para que parezca app móvil en PC */
+  margin: 0 auto;
+  background-color: #fff;
+  min-height: 100vh;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  padding-bottom: 80px; /* Espacio para footer */
+}
+
+/* =========================================
+   1. BARRA DE BÚSQUEDA (CÁPSULA)
+   ========================================= */
+.search-header {
+  padding: 15px;
+  background-color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.search-capsule {
+  display: flex;
+  align-items: center;
+  border: 1px solid #333; /* Borde oscuro como la imagen */
+  border-radius: 50px;
+  padding: 5px 15px;
+  background: white;
+}
+
+.search-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.search-field input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.search-divider {
+  width: 1px;
+  height: 20px;
+  background-color: #ccc;
+  margin: 0 10px;
+}
+
+.search-icon {
+  font-size: 1.1rem;
+}
+
+/* =========================================
+   2. FILTROS HORIZONTALES
+   ========================================= */
+.filters-scroll-container {
+  display: flex;
+  gap: 10px;
+  padding: 0 15px 15px;
+  overflow-x: auto; /* Scroll horizontal */
+  white-space: nowrap;
+  scrollbar-width: none; /* Ocultar scrollbar Firefox */
+}
+.filters-scroll-container::-webkit-scrollbar {
+  display: none; /* Ocultar Chrome */
+}
+
+.filter-btn-icon {
+  background: none;
+  border: 2px solid #333;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.filter-chip {
+  border: 1px solid #2563eb; /* Borde azul */
+  color: #333;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  background: white;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.filter-chip select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-weight: 600;
+}
+
+/* =========================================
+   3. RESULTADOS Y HEADER
+   ========================================= */
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px 10px;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.sort-btn {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* =========================================
+   TARJETAS DE EMPLEO (CARD STYLE)
+   ========================================= */
+.cards-list {
+  padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.app-job-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 15px;
+  background: white;
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+/* Badge Urgente */
+.urgent-badge {
+  color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.job-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #222;
+  line-height: 1.3;
+}
+
+.more-options {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #666;
+  cursor: pointer;
+}
+
+.company-row {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rating {
+  color: #f59e0b;
+  font-weight: 600;
+}
+.company-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.location-text {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 5px 0 15px 0;
+}
+
+/* Footer de la tarjeta */
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.time-ago {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+/* Botón Postular (Verde como la imagen) */
+.btn-postular {
+  background-color: #22c55e; /* Verde brillante */
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 50px; /* Pill shape */
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 5px rgba(34, 197, 94, 0.3);
+  transition: transform 0.1s;
+}
+
+.btn-postular:active {
+  transform: scale(0.95);
+}
+
+/* =========================================
+   PAGINACIÓN
+   ========================================= */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+  padding: 0 15px;
+}
+
+.page-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  background-color: #e5e5e5;
+  color: #333;
+  cursor: pointer;
+}
+
+.page-btn.primary {
+  background-color: #1e293b; /* Oscuro */
+  color: white;
+}

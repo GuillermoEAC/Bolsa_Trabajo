@@ -1,0 +1,77 @@
+<div class="page-container">
+  <div class="form-card">
+    <h2 class="form-title">
+      {{ esEdicion ? 'Editar Vacante' : 'Publicar Nueva Vacante' }}
+    </h2>
+    <p class="form-subtitle">Describe el puesto para encontrar al talento ideal.</p>
+
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label>Título del Puesto</label>
+        <input
+          [(ngModel)]="vacante.titulo"
+          type="text"
+          class="input-modern"
+          placeholder="Ej: Desarrollador Junior Java"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Ubicación</label>
+        <input
+          [(ngModel)]="vacante.ubicacion"
+          type="text"
+          class="input-modern"
+          placeholder="Ciudad, Estado"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Modalidad</label>
+        <select [(ngModel)]="vacante.modalidad" class="input-modern">
+          <option value="Presencial">Presencial</option>
+          <option value="Remoto">Remoto</option>
+          <option value="Hibrido">Híbrido</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Salario Mínimo (MXN)</label>
+        <input
+          [(ngModel)]="vacante.salario_min"
+          type="number"
+          class="input-modern"
+          placeholder="Ej: 8000"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Salario Máximo (MXN)</label>
+        <input
+          [(ngModel)]="vacante.salario_max"
+          type="number"
+          class="input-modern"
+          placeholder="Ej: 12000"
+        />
+      </div>
+
+      <div class="form-group full-width">
+        <label>Descripción del Puesto</label>
+        <textarea
+          [(ngModel)]="vacante.descripcion"
+          rows="6"
+          class="input-modern textarea"
+          placeholder="Responsabilidades, requisitos, beneficios..."
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button (click)="cancelar()" class="btn-cancel">Cancelar</button>
+
+      <button (click)="onSubmit()" [disabled]="loading" class="btn-submit">
+        {{ loading ? 'Guardando...' : esEdicion ? 'Actualizar Oferta' : 'Publicar Oferta' }}
+      </button>
+    </div>
+  </div>
+</div>

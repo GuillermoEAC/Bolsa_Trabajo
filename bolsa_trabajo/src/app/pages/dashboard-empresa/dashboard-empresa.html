@@ -3,7 +3,9 @@
     <div class="logo-area">🏢 Panel Empresa</div>
     <nav>
       <a class="nav-item active">Resumen</a>
-      <a class="nav-item">Mis Vacantes</a>
+
+      <a class="nav-item" routerLink="/mis-vacantes">Mis Vacantes</a>
+
       <a class="nav-item">Candidatos</a>
       <a class="nav-item logout" (click)="logout()">Cerrar Sesión</a>
     </nav>
@@ -18,7 +20,8 @@
     <div class="empty-state">
       <h2>🚀 Tu Dashboard está listo</h2>
       <p>Aquí es donde gestionarás tus ofertas de empleo y candidatos.</p>
-      <button class="btn-primary">Publicar Nueva Vacante</button>
+
+      <button class="btn-primary" routerLink="/publicar-vacante">Publicar Nueva Vacante</button>
     </div>
   </main>
 </div>

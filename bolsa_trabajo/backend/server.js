@@ -1,25 +1,37 @@
-// backend/Server.js
 import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql2/promise';
-import DbConfig from './config/database.js'; // Asegura que la ruta sea correcta
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import vacantesRoutes from './routes/vacantes.routes.js';
 
-// Importación de Rutas
+// Importar configuración de DB
+import DbConfig from './config/database.js';
+
+// Importar Rutas
 import authRoutes from './routes/auth.routes.js';
 import studentRoutes from './routes/student.routes.js';
-// import companyRoutes from './routes/company.routes.js'; // (A futuro)
+import companyRoutes from './routes/company.routes.js';
 
 dotenv.config();
 
+// Configuración para __dirname en ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
-const companyRoutes = require('./routes/company.routes'); // Importa las rutas
-// --- MIDDLEWARES (Orden Crítico) ---
+
+// --- MIDDLEWARES ---
 app.use(cors());
-app.use(express.json()); // ⚠️ INDISPENSABLE para leer JSON
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads'));
-// --- BASE DE DATOS ---
+
+// --- STATIC FILES ---
+// Esto permite que el navegador acceda a las imágenes en http://localhost:3000/uploads/...
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// --- DATABASE ---
 const dbConfig = DbConfig;
 let pool;
 
@@ -32,23 +44,26 @@ async function start() {
     });
 
     await pool.query('SELECT 1');
-    console.log('✅ Base de datos conectada correctamente.');
-    app.locals.pool = pool; // Disponible para los controladores
+    console.log('✅ Base de datos conectada.');
+
+    // Hacer el pool accesible globalmente en req.app.locals
+    app.locals.pool = pool;
 
     // --- RUTAS ---
-    app.use('/auth', authRoutes);
-    app.use('/api/student', studentRoutes);
-    // app.use('/api/company', companyRoutes);
-    app.use('/api/company', companyRoutes); // <-- ESTA LÍNEA ES CLAVE
     app.get('/', (req, res) => {
-      res.json({ mensaje: 'API Primer Paso funcionando 🚀' });
+      res.json({ mensaje: 'API Funcionando 🚀' });
     });
 
+    app.use('/auth', authRoutes);
+    app.use('/api/student', studentRoutes);
+    app.use('/api/company', companyRoutes); // Ruta de empresas
+    app.use('/api/vacantes', vacantesRoutes);
+    // Iniciar servidor
     app.listen(3000, () => {
       console.log('✅ Servidor corriendo en http://localhost:3000');
     });
   } catch (err) {
-    console.error('❌ Error al conectar BD:', err);
+    console.error('❌ Error al conectar BD o iniciar servidor:', err);
     process.exit(1);
   }
 }

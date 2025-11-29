@@ -15,6 +15,7 @@ export class CompanyRegisterComponent {
   private companyService = inject(CompanyService);
   private router = inject(Router);
 
+  // Datos del formulario
   cuenta = { email: '', password: '' };
   confirmPassword = '';
 
@@ -23,20 +24,38 @@ export class CompanyRegisterComponent {
     razon_social: '',
     nit: '',
     sitio_web: '',
-    logo_url: '',
     descripcion: '',
     email_contacto: '',
   };
 
+  // Variables para la imagen
+  selectedFile: File | null = null;
+  previewUrl: string | ArrayBuffer | null = null;
+
   loading = false;
   error = '';
+
+  // Evento al seleccionar un archivo
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+
+      // Generar vista previa
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
 
   onSubmit() {
     this.error = '';
 
-    // Validaciones básicas
+    // Validaciones simples
     if (!this.cuenta.email || !this.cuenta.password || !this.empresa.nombre_empresa) {
-      this.error = 'Completa los campos obligatorios (Email, Password, Nombre Empresa).';
+      this.error = 'Completa los campos obligatorios.';
       return;
     }
     if (this.cuenta.password !== this.confirmPassword) {
@@ -45,23 +64,42 @@ export class CompanyRegisterComponent {
     }
 
     this.loading = true;
-    this.empresa.email_contacto = this.cuenta.email;
 
-    const payload = {
-      cuenta: this.cuenta,
-      empresa: this.empresa,
-    };
+    // ---------------------------------------------------------
+    // CREAR FORM DATA (Empaquetado de datos + archivo)
+    // ---------------------------------------------------------
+    const formData = new FormData();
 
-    this.companyService.registrarEmpresa(payload).subscribe({
+    // Datos de la cuenta
+    formData.append('email', this.cuenta.email);
+    formData.append('password', this.cuenta.password);
+
+    // Datos de la empresa
+    formData.append('nombre_empresa', this.empresa.nombre_empresa);
+    formData.append('razon_social', this.empresa.razon_social || '');
+    formData.append('nit', this.empresa.nit || '');
+    formData.append('sitio_web', this.empresa.sitio_web || '');
+    formData.append('descripcion', this.empresa.descripcion || '');
+    // Usamos el email de la cuenta como contacto por defecto
+    formData.append('email_contacto', this.cuenta.email);
+
+    // Archivo del Logo (Si existe)
+    if (this.selectedFile) {
+      // 'logo' debe coincidir con upload.single('logo') en el backend
+      formData.append('logo', this.selectedFile);
+    }
+
+    // Enviar al backend
+    this.companyService.registrarEmpresa(formData).subscribe({
       next: () => {
         this.loading = false;
-        alert('¡Registro Exitoso! Tu cuenta está pendiente de aprobación por el administrador.');
+        alert('¡Registro Exitoso! Tu cuenta está pendiente de validación.');
         this.router.navigate(['/welcome']);
       },
       error: (err) => {
         this.loading = false;
         console.error(err);
-        this.error = err.error?.error || 'Error al registrar la empresa.';
+        this.error = err.error?.message || 'Error al registrar la empresa.';
       },
     });
   }

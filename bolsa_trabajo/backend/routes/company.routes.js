@@ -1,11 +1,11 @@
-// backend/routes/company.routes.js
-const express = require('express');
+import express from 'express';
+import upload from '../config/multer.config.js'; // Importar config de Multer
+import { registerCompany } from '../controllers/company.controller.js'; // Importar controlador
+
 const router = express.Router();
-const companyController = require('../controllers/company.controller');
-const upload = require('../config/multer.config'); // Importar multer
 
-// Agregamos 'upload.single('logo')' para procesar el archivo
-// 'logo' debe coincidir con el nombre del campo en el formulario del frontend
-router.post('/register', upload.single('logo'), companyController.register);
+// POST /api/company/register
+// 'logo' es el nombre del campo que debes usar en el FormData del frontend
+router.post('/register', upload.single('logo'), registerCompany);
 
-module.exports = router;
+export default router;

@@ -1,0 +1,49 @@
+<div class="page-container">
+  <header class="page-header">
+    <div>
+      <h1 class="title">Mis Vacantes Publicadas</h1>
+      <p class="subtitle">Gestiona tus ofertas activas y cerradas.</p>
+    </div>
+    <button routerLink="/publicar-vacante" class="btn-create">+ Nueva Vacante</button>
+  </header>
+
+  <div *ngIf="loading" class="loading-state">
+    <p>Cargando ofertas...</p>
+  </div>
+
+  <div *ngIf="!loading && vacantes.length === 0" class="empty-state">
+    <div class="empty-icon">📂</div>
+    <h3>No tienes vacantes publicadas</h3>
+    <p>Comienza a buscar talento creando tu primera oferta.</p>
+    <button routerLink="/publicar-vacante" class="btn-primary">Crear Oferta</button>
+  </div>
+
+  <div *ngIf="!loading && vacantes.length > 0" class="jobs-grid">
+    <div *ngFor="let job of vacantes" class="job-card">
+      <div class="card-header">
+        <span class="job-role">{{ job.titulo_cargo }}</span>
+        <span class="status-badge" [class.active]="job.estado_activa">
+          {{ job.estado_activa ? 'Activa' : 'Pausada' }}
+        </span>
+      </div>
+
+      <div class="card-body">
+        <p class="location">📍 {{ job.ubicacion }} • {{ job.tipo_trabajo }}</p>
+        <p class="salary">💰 ${{ job.salario_min }} - ${{ job.salario_max }} MXN</p>
+        <p class="desc">{{ job.descripcion_vacante | slice : 0 : 100 }}...</p>
+      </div>
+
+      <div class="card-footer">
+        <span class="date">Publicado: {{ job.fecha_publicacion | date : 'mediumDate' }}</span>
+        <div class="actions">
+          <button class="btn-icon edit" (click)="editar(job.id_vacante)">✏️</button>
+          <button class="btn-icon delete" (click)="eliminar(job.id_vacante)">🗑️</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 40px">
+    <a routerLink="/dashboard-empresa" class="back-link">← Volver al Dashboard</a>
+  </div>
+</div>

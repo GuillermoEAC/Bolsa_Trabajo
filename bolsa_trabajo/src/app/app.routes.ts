@@ -20,7 +20,25 @@ export const routes: Routes = [
   {
     path: 'dashboard-empresa',
     loadComponent: () =>
-      import('./pages/dashboard-empresa/dashboard-empresa').then((m) => m.DashboardEmpresa),
+      import('./pages/dashboard-empresa/dashboard-empresa').then(
+        (m) => m.DashboardEmpresaComponent
+      ), // 👈 ASEGÚRATE QUE DIGA "Component" AL FINAL
+  },
+  {
+    path: 'mis-vacantes',
+    loadComponent: () =>
+      import('./pages/mis-vacantes/mis-vacantes').then((m) => m.MisVacantesComponent),
+  },
+  {
+    path: 'publicar-vacante',
+    loadComponent: () =>
+      import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
+  },
+  {
+    // Ruta con parámetro :id para editar
+    path: 'publicar-vacante/:id',
+    loadComponent: () =>
+      import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
   },
   {
     path: 'cv-builder',
@@ -28,13 +46,19 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/cv-builder/cv-builder').then((m) => m.CvBuilderComponent),
   },
   {
+    path: 'empleos',
+    loadComponent: () =>
+      import('./pages/buscador-empleos/buscador-empleos').then((m) => m.BuscadorEmpleosComponent),
+  },
+  {
+    path: 'publicar-vacante',
+    loadComponent: () =>
+      import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
+  },
+  {
     path: 'login',
     loadComponent: () => import('./cositas/login/login').then((m) => m.Login),
   },
-  //   {
-  //     path: 'registro',
-  //     loadComponent: () => import('./cositas/registro/registro').then((m) => m.RegistroComponent),
-  //   },
   // La ruta comodín siempre va AL FINAL
   {
     path: '**',

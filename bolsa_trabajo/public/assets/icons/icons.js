@@ -1,21 +1,15 @@
-// src/app/icons.ts
 export const ICON_MAP: any = {
-  // --- GENERALES ---
+  // Íconos Generales
   Search: `
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
       <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
     </svg>
   `,
 
-  // --- STATS ---
+  // Estadísticas
   Building: `
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
       <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
-    </svg>
-  `,
-  AcademicCap: `
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-5.266-2.475c-2.73-1.087-5.808-2.88-8.795-2.88 1.413 5.615 2.395 7.639 2.475 1.018-.18 2.458.37 3.378.946m-13.729 0c-2.458-.576-6.354.37-6.354.946 0 1.25.104 2.42.304a48.647 48.647 0 0 1-3.413 3.87m7.5 0V5.25" />
     </svg>
   `,
   Briefcase: `
@@ -23,8 +17,13 @@ export const ICON_MAP: any = {
       <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.25v4.5a2.25 2.25 0 0 1-2.25 2.25H6.75a2.25 2.25 0 0 1-2.25-2.25v-4.5m15 0a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25m15 0h-3.515m-1.059 0h-.984m-4.214 0l-3.515 0m5.275 0h-2.126a1.5 1.5 0 0 1-1.464-1.185L9.366 4.478A1.5 1.5 0 0 0 7.902 3H3.75a.75.75 0 0 0-.75.75v.75m4.5 4.5h.75m1.5 0h.75m-3 0V4.5m4.5 4.5V4.5m-6.75 6.75h9" />
     </svg>
   `,
+  AcademicCap: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-5.266-2.475c-2.73-1.087-5.808-2.88-8.795-2.88 1.413 5.615 2.395 7.639 2.475 1.018-.18 2.458.37 3.378.946m-13.729 0c-2.458-.576-6.354.37-6.354.946 0 1.25.104 2.42.304a48.647 48.647 0 0 1-3.413 3.87m7.5 0V5.25" />
+    </svg>
+  `,
 
-  // --- CATEGORÍAS ---
+  // Categorías
   Code: `
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
       <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />

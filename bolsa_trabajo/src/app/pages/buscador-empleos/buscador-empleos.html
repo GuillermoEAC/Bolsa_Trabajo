@@ -1,0 +1,82 @@
+<div class="mobile-layout">
+  <div class="search-header">
+    <div class="search-capsule">
+      <div class="search-field">
+        <span class="search-icon">🔍</span>
+        <input
+          [(ngModel)]="filtros.q"
+          (keyup.enter)="aplicarFiltros()"
+          type="text"
+          placeholder="Cargo/Categoria"
+        />
+      </div>
+
+      <div class="search-divider"></div>
+
+      <div class="search-field">
+        <span class="search-icon">📍</span>
+        <input
+          [(ngModel)]="filtros.ubicacion"
+          (keyup.enter)="aplicarFiltros()"
+          type="text"
+          placeholder="Ubicación"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="filters-scroll-container">
+    <button class="filter-btn-icon" (click)="aplicarFiltros()">⚡</button>
+
+    <div class="filter-chip">
+      <select [(ngModel)]="filtros.modalidad" (change)="aplicarFiltros()">
+        <option value="">Modo de Trabajo</option>
+        <option value="Presencial">Presencial</option>
+        <option value="Remoto">Remoto</option>
+        <option value="Hibrido">Híbrido</option>
+      </select>
+    </div>
+
+    <div class="filter-chip">Fecha</div>
+    <div class="filter-chip">Categorías</div>
+    <div class="filter-chip">Salario</div>
+  </div>
+
+  <div class="results-header">
+    <span class="results-count">{{ vacantes.length }} empleos encontrados en México</span>
+    <button class="sort-btn">Relevancia ⇅</button>
+  </div>
+
+  <div *ngIf="cargando" class="loading-spinner">Cargando...</div>
+
+  <div class="cards-list">
+    <div *ngFor="let job of vacantes" class="app-job-card">
+      <div class="urgent-badge" *ngIf="true">Se precisa Urgentemente</div>
+
+      <div class="card-top">
+        <h3 class="job-title">{{ job.titulo_cargo }}</h3>
+        <button class="more-options">⋮</button>
+      </div>
+
+      <div class="company-row">
+        <span class="rating">4.0 ⭐</span>
+        <span class="company-name">✔️ {{ job.nombre_empresa }}</span>
+      </div>
+
+      <p class="location-text">{{ job.ubicacion }}</p>
+
+      <div class="card-bottom">
+        <span class="time-ago">Hace 2 horas</span> <button class="btn-postular">💚 Postular</button>
+      </div>
+    </div>
+
+    <div *ngIf="!cargando && vacantes.length === 0" class="no-results">
+      <p>No se encontraron resultados.</p>
+    </div>
+  </div>
+
+  <div class="pagination-container">
+    <button class="page-btn">Anterior</button>
+    <button class="page-btn primary">Siguiente</button>
+  </div>
+</div>

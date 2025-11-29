@@ -74,18 +74,19 @@
             />
           </label>
 
-          <label class="form-group">
-            <span>URL del Logo (Imagen)</span>
+          <div class="form-group">
+            <span>Logo de la Empresa</span>
             <input
-              [(ngModel)]="empresa.logo_url"
-              type="url"
-              class="form-input"
-              placeholder="https://..."
+              type="file"
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              class="form-input file-input"
             />
-            <small style="color: #64748b; font-size: 0.8rem"
-              >Pega el enlace directo a tu logo.</small
-            >
-          </label>
+
+            <div *ngIf="previewUrl" class="logo-preview-container">
+              <img [src]="previewUrl" alt="Vista previa" class="logo-preview-img" />
+            </div>
+          </div>
 
           <label class="form-group full-width">
             <span>Descripción de la Empresa</span>
