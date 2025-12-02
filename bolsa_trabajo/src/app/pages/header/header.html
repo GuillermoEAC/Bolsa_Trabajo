@@ -11,7 +11,9 @@
     } @else {
     <div class="user-controls">
       <button class="icon-btn notification-btn">🔔</button>
-
+      <a routerLink="/mis-postulaciones" class="dropdown-item" (click)="isMenuOpen = false">
+        📄 Mis Postulaciones
+      </a>
       <div class="profile-dropdown-container">
         <div class="user-profile" (click)="toggleMenu()">
           <span class="user-name">{{ currentUser.email.split('@')[0] }}</span>

@@ -1,82 +1,182 @@
-<div class="mobile-layout">
-  <div class="search-header">
+<div class="layout-container">
+  <header class="search-header">
     <div class="search-capsule">
       <div class="search-field">
-        <span class="search-icon">🔍</span>
+        <span class="field-icon"><app-icon name="Search"></app-icon></span>
         <input
           [(ngModel)]="filtros.q"
           (keyup.enter)="aplicarFiltros()"
           type="text"
-          placeholder="Cargo/Categoria"
+          placeholder="Cargo, empresa o palabra clave"
         />
       </div>
-
-      <div class="search-divider"></div>
-
+      <div class="divider"></div>
       <div class="search-field">
-        <span class="search-icon">📍</span>
+        <span class="field-icon"><app-icon name="MapPin"></app-icon></span>
         <input
           [(ngModel)]="filtros.ubicacion"
           (keyup.enter)="aplicarFiltros()"
           type="text"
-          placeholder="Ubicación"
+          placeholder="Ciudad o Estado"
         />
       </div>
+      <button class="btn-search-desktop" (click)="aplicarFiltros()">Buscar</button>
     </div>
-  </div>
+  </header>
 
-  <div class="filters-scroll-container">
-    <button class="filter-btn-icon" (click)="aplicarFiltros()">⚡</button>
-
-    <div class="filter-chip">
-      <select [(ngModel)]="filtros.modalidad" (change)="aplicarFiltros()">
-        <option value="">Modo de Trabajo</option>
-        <option value="Presencial">Presencial</option>
-        <option value="Remoto">Remoto</option>
-        <option value="Hibrido">Híbrido</option>
-      </select>
-    </div>
-
-    <div class="filter-chip">Fecha</div>
-    <div class="filter-chip">Categorías</div>
-    <div class="filter-chip">Salario</div>
-  </div>
-
-  <div class="results-header">
-    <span class="results-count">{{ vacantes.length }} empleos encontrados en México</span>
-    <button class="sort-btn">Relevancia ⇅</button>
-  </div>
-
-  <div *ngIf="cargando" class="loading-spinner">Cargando...</div>
-
-  <div class="cards-list">
-    <div *ngFor="let job of vacantes" class="app-job-card">
-      <div class="urgent-badge" *ngIf="true">Se precisa Urgentemente</div>
-
-      <div class="card-top">
-        <h3 class="job-title">{{ job.titulo_cargo }}</h3>
-        <button class="more-options">⋮</button>
+  <div class="main-content">
+    <aside class="desktop-sidebar">
+      <div class="sidebar-header">
+        <h3>Filtros</h3>
+        <span class="icon-header"><app-icon name="Filter"></app-icon></span>
       </div>
 
-      <div class="company-row">
-        <span class="rating">4.0 ⭐</span>
-        <span class="company-name">✔️ {{ job.nombre_empresa }}</span>
+      <div class="filter-group">
+        <label>Modalidad</label>
+        <select [(ngModel)]="filtros.modalidad" (change)="aplicarFiltros()" class="sidebar-input">
+          <option value="">Todas</option>
+          <option value="Presencial">Presencial</option>
+          <option value="Remoto">Remoto</option>
+          <option value="Hibrido">Híbrido</option>
+        </select>
       </div>
 
-      <p class="location-text">{{ job.ubicacion }}</p>
+      <div class="filter-group">
+        <label>Tipo de Contrato</label>
+        <select
+          [(ngModel)]="filtros.tipoContrato"
+          (change)="aplicarFiltros()"
+          class="sidebar-input"
+        >
+          <option value="">Cualquiera</option>
+          <option value="Tiempo Completo">Tiempo Completo</option>
+          <option value="Medio Tiempo">Medio Tiempo</option>
+          <option value="Pasantia">Pasantía / Prácticas</option>
+          <option value="Por Proyecto">Por Proyecto</option>
+        </select>
+      </div>
 
-      <div class="card-bottom">
-        <span class="time-ago">Hace 2 horas</span> <button class="btn-postular">💚 Postular</button>
+      <div class="filter-group">
+        <label>Fecha de Publicación</label>
+        <select [(ngModel)]="filtros.fecha" (change)="aplicarFiltros()" class="sidebar-input">
+          <option value="">Cualquier fecha</option>
+          <option value="hoy">Últimas 24 horas</option>
+          <option value="semana">Última semana</option>
+          <option value="mes">Último mes</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Rango Salarial (MXN)</label>
+        <div class="salary-row">
+          <input
+            [(ngModel)]="filtros.minSalario"
+            type="number"
+            placeholder="Min"
+            class="sidebar-input small"
+            (change)="aplicarFiltros()"
+          />
+          <span>-</span>
+          <input
+            [(ngModel)]="filtros.maxSalario"
+            type="number"
+            placeholder="Max"
+            class="sidebar-input small"
+            (change)="aplicarFiltros()"
+          />
+        </div>
+      </div>
+
+      <button
+        class="btn-search-desktop"
+        (click)="aplicarFiltros()"
+        style="width: 100%; margin-top: 10px"
+      >
+        Actualizar Resultados
+      </button>
+    </aside>
+
+    <div class="mobile-filters-scroll">
+      <div class="filter-chip"><app-icon name="Filter"></app-icon> Filtros</div>
+      <div class="filter-chip">
+        <select [(ngModel)]="filtros.modalidad" (change)="aplicarFiltros()">
+          <option value="">Modalidad</option>
+          <option value="Remoto">Remoto</option>
+        </select>
       </div>
     </div>
 
-    <div *ngIf="!cargando && vacantes.length === 0" class="no-results">
-      <p>No se encontraron resultados.</p>
-    </div>
-  </div>
+    <section class="results-area">
+      <div class="results-info">
+        <span
+          ><strong>{{ vacantes.length }}</strong> vacantes encontradas</span
+        >
+      </div>
 
-  <div class="pagination-container">
-    <button class="page-btn">Anterior</button>
-    <button class="page-btn primary">Siguiente</button>
+      <div *ngIf="cargando" class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+      </div>
+
+      <div *ngIf="!cargando && vacantes.length === 0" class="empty-state">
+        <div class="empty-icon"><app-icon name="SearchX"></app-icon></div>
+        <h3>No encontramos vacantes</h3>
+        <p>Intenta ajustar tus filtros.</p>
+      </div>
+
+      <div class="jobs-grid">
+        <div *ngFor="let job of vacantes" class="job-card">
+          <div class="card-header-row">
+            <div class="company-logo">
+              <img [src]="obtenerUrlLogo(job.logo_path)" alt="Logo" />
+            </div>
+
+            <div class="header-info">
+              <h3 class="job-title">{{ job.titulo_cargo }}</h3>
+              <div class="company-row">
+                <span class="icon-verified" title="Verificado"
+                  ><app-icon name="CheckBadge"></app-icon
+                ></span>
+                <p class="company-name">{{ job.nombre_empresa }}</p>
+              </div>
+            </div>
+
+            <div class="card-actions-top">
+              <button
+                class="btn-icon btn-favorite"
+                title="Guardar en favoritos"
+                (click)="toggleFavorito(job.id_vacante)"
+              >
+                <app-icon name="Heart"></app-icon>
+              </button>
+              <button class="btn-icon btn-more">
+                <app-icon name="MoreVertical"></app-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-badges">
+            <span class="badge badge-gray"
+              ><app-icon name="MapPin"></app-icon> {{ job.ubicacion }}</span
+            >
+            <span class="badge badge-blue"
+              ><app-icon name="Briefcase"></app-icon> {{ job.tipo_trabajo }}</span
+            >
+            <span class="badge badge-green" *ngIf="job.salario_min"
+              ><app-icon name="CurrencyDollar"></app-icon> ${{ job.salario_min | number }}</span
+            >
+          </div>
+
+          <p class="job-description">{{ job.descripcion_vacante | slice : 0 : 130 }}...</p>
+
+          <div class="card-footer">
+            <span class="time-ago"
+              >Publicado: {{ job.fecha_publicacion | date : 'shortDate' }}</span
+            >
+            <button class="btn-postular" (click)="postularse(job.id_vacante)">Postular</button>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </div>

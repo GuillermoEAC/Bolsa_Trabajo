@@ -13,17 +13,9 @@ import {
 
 // 1. CREAR
 router.post('/crear', crearVacante);
-
-// 2. LEER (Lista por empresa)
 router.get('/usuario/:id_usuario', obtenerMisVacantes);
-
-// 3. LEER UNA (Para editar)
 router.get('/detalle/:id', obtenerVacantePorId);
-
-// 4. ACTUALIZAR
 router.put('/actualizar/:id', actualizarVacante);
-
-// 5. ELIMINAR
 router.delete('/eliminar/:id', eliminarVacante);
 router.get('/buscar', buscarVacantes);
 export default router;

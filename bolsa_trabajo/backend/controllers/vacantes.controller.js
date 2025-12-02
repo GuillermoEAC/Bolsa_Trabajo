@@ -85,8 +85,8 @@ export const crearVacante = async (req, res) => {
     // Insertar la vacante
     const [result] = await pool.query(
       `INSERT INTO Vacante 
-      (id_empresa, id_categoria, titulo_cargo, descripcion_vacante, ubicacion, tipo_trabajo, salario_min, salario_max, estado_activa, fecha_publicacion) 
-      VALUES (?, NULL, ?, ?, ?, ?, ?, ?, 1, NOW())`,
+      (id_empresa, id_categoria, titulo_cargo, descripcion_vacante, ubicacion, tipo_trabajo, salario_min, salario_max, estado_activa, estado_aprobacion, fecha_publicacion) 
+      VALUES (?, NULL, ?, ?, ?, ?, ?, ?, 1, 'PENDIENTE', NOW())`,
       [id_empresa, titulo, descripcion, ubicacion, modalidad, salario_min || 0, salario_max || 0]
     );
 
@@ -141,7 +141,7 @@ export const buscarVacantes = async (req, res) => {
       SELECT v.*, e.nombre_empresa, e.logo_path 
       FROM Vacante v
       INNER JOIN Empresa e ON v.id_empresa = e.id_empresa
-      WHERE v.estado_activa = 1
+      WHERE v.estado_activa = 1 AND v.estado_aprobacion = 'APROBADA' 
     `;
 
     const params = [];

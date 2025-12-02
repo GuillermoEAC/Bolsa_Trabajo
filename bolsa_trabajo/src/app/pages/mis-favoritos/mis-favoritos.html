@@ -1,0 +1,37 @@
+<div class="page-container">
+  <header class="header-section">
+    <h1>Mis Guardados</h1>
+    <p>Vacantes que te interesaron para revisar después.</p>
+  </header>
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    Cargando...
+  </div>
+
+  <div *ngIf="!loading && favoritos.length === 0" class="empty-state">
+    <div class="icon-empty"><app-icon name="FolderOpen"></app-icon></div>
+    <h3>No tienes favoritos aún</h3>
+    <button routerLink="/empleos" class="btn-explore">Explorar Empleos</button>
+  </div>
+
+  <div class="fav-grid">
+    <div *ngFor="let job of favoritos" class="fav-card">
+      <div class="card-top">
+        <img [src]="obtenerUrlLogo(job.logo_path)" class="logo-small" />
+        <div class="meta">
+          <h4>{{ job.titulo_cargo }}</h4>
+          <small>{{ job.nombre_empresa }}</small>
+        </div>
+        <button (click)="quitar(job.id_vacante)" class="btn-remove" title="Quitar de favoritos">
+          <app-icon name="Trash"></app-icon>
+        </button>
+      </div>
+
+      <div class="card-bottom">
+        <span class="location"> <app-icon name="MapPin"></app-icon> {{ job.ubicacion }} </span>
+        <button class="btn-postular">Postular</button>
+      </div>
+    </div>
+  </div>
+</div>

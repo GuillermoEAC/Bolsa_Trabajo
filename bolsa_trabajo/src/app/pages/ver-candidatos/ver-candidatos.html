@@ -1,0 +1,55 @@
+<div class="page-container">
+  <div class="header-section">
+    <a routerLink="/mis-vacantes" class="back-link">← Volver a Mis Vacantes</a>
+    <h1>Gestión de Candidatos</h1>
+    <p>Revisa quién se ha postulado a tu vacante.</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">Cargando postulantes...</div>
+
+  <div *ngIf="!loading && candidatos.length === 0" class="empty-state">
+    <h3>Aún no hay candidatos</h3>
+    <p>Tu vacante está visible, espera a que los estudiantes se postulen.</p>
+  </div>
+
+  <div class="candidates-list">
+    <div *ngFor="let c of candidatos" class="candidate-card">
+      <div class="candidate-info">
+        <div class="avatar-circle">{{ c.nombre[0] }}</div>
+        <div>
+          <h3>{{ c.nombre }} {{ c.apellido }}</h3>
+          <p class="role">{{ c.titulo_cv }}</p>
+          <div class="contact-info">
+            <span>📧 {{ c.email }}</span> • <span>📞 {{ c.telefono }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-panel">
+        <span class="status-label"
+          >Estado: <strong>{{ c.estado_postulacion }}</strong></span
+        >
+
+        <div class="buttons">
+          <button class="btn-action btn-view" (click)="actualizarEstado(c.id_postulacion, 'Visto')">
+            👁️ Marcar Visto
+          </button>
+          <button
+            class="btn-action btn-interview"
+            (click)="actualizarEstado(c.id_postulacion, 'Entrevista')"
+          >
+            📅 Citar Entrevista
+          </button>
+          <button
+            class="btn-action btn-reject"
+            (click)="actualizarEstado(c.id_postulacion, 'Rechazado')"
+          >
+            ❌ Rechazar
+          </button>
+        </div>
+
+        <button class="btn-cv">Ver CV Completo</button>
+      </div>
+    </div>
+  </div>
+</div>

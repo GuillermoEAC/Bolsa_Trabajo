@@ -1,0 +1,143 @@
+<div class="admin-container">
+  <header class="admin-header">
+    <div class="logo-area">
+      <span class="icon-logo"><app-icon name="ShieldCheck"></app-icon></span>
+      <h1>Panel de Administración</h1>
+    </div>
+    <button (click)="logout()" class="btn-logout">
+      <app-icon name="Logout"></app-icon> Cerrar Sesión
+    </button>
+  </header>
+
+  <div class="tabs-container">
+    <button
+      class="tab-btn"
+      [class.active]="vistaActual === 'empresas'"
+      (click)="cambiarVista('empresas')"
+    >
+      <app-icon name="Building"></app-icon> Empresas
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="vistaActual === 'vacantes'"
+      (click)="cambiarVista('vacantes')"
+    >
+      <app-icon name="Briefcase"></app-icon> Vacantes
+    </button>
+  </div>
+
+  <div class="table-card">
+    <div *ngIf="loading" class="loading">Cargando datos...</div>
+
+    <table class="modern-table" *ngIf="!loading && vistaActual === 'empresas'">
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>Contacto</th>
+          <th>Estado</th>
+          <th style="text-align: right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of empresas">
+          <td>
+            <div class="info-cell">
+              <strong>{{ emp.nombre_empresa }}</strong>
+              <small>{{ emp.razon_social }}</small>
+            </div>
+          </td>
+          <td>
+            <div class="info-cell">
+              <span>{{ emp.email_contacto }}</span>
+              <small>{{ emp.sitio_web }}</small>
+            </div>
+          </td>
+          <td>
+            <span class="badge" [class.valid]="emp.validada" [class.pending]="!emp.validada">
+              {{ emp.validada ? 'Verificada' : 'Pendiente' }}
+            </span>
+          </td>
+          <td style="text-align: right">
+            <button
+              *ngIf="!emp.validada"
+              class="btn-icon btn-approve"
+              title="Aprobar"
+              (click)="toggleValidacion(emp)"
+            >
+              <app-icon name="Check"></app-icon>
+            </button>
+            <button
+              *ngIf="emp.validada"
+              class="btn-icon btn-reject"
+              title="Desactivar"
+              (click)="toggleValidacion(emp)"
+            >
+              <app-icon name="XMark"></app-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="modern-table" *ngIf="!loading && vistaActual === 'vacantes'">
+      <thead>
+        <tr>
+          <th>Puesto</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th style="text-align: right">Moderación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let v of vacantes">
+          <td>
+            <div class="info-cell">
+              <strong>{{ v.titulo_cargo }}</strong>
+              <small>{{ v.nombre_empresa }}</small>
+            </div>
+          </td>
+          <td>{{ v.fecha_publicacion | date : 'shortDate' }}</td>
+          <td>
+            <span
+              class="badge"
+              [class.pending]="v.estado_aprobacion === 'PENDIENTE'"
+              [class.valid]="v.estado_aprobacion === 'APROBADA'"
+              [class.rejected]="v.estado_aprobacion === 'RECHAZADA'"
+            >
+              {{ v.estado_aprobacion }}
+            </span>
+          </td>
+          <td style="text-align: right">
+            <div class="actions-row">
+              <button
+                *ngIf="v.estado_aprobacion !== 'APROBADA'"
+                class="btn-icon btn-approve"
+                title="Aprobar"
+                (click)="moderarVacante(v.id_vacante, 'APROBADA')"
+              >
+                <app-icon name="Check"></app-icon>
+              </button>
+
+              <button
+                *ngIf="v.estado_aprobacion === 'PENDIENTE'"
+                class="btn-icon btn-reject"
+                title="Rechazar"
+                (click)="moderarVacante(v.id_vacante, 'RECHAZADA')"
+              >
+                <app-icon name="XMark"></app-icon>
+              </button>
+
+              <button
+                class="btn-icon btn-delete"
+                title="Eliminar"
+                (click)="eliminarVacante(v.id_vacante)"
+              >
+                <app-icon name="Trash"></app-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

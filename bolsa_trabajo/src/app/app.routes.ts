@@ -30,6 +30,11 @@ export const routes: Routes = [
       import('./pages/mis-vacantes/mis-vacantes').then((m) => m.MisVacantesComponent),
   },
   {
+    path: 'admin',
+    loadComponent: () =>
+      import('./pages/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboardComponent),
+  },
+  {
     path: 'publicar-vacante',
     loadComponent: () =>
       import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
@@ -58,6 +63,26 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./cositas/login/login').then((m) => m.Login),
+  },
+
+  {
+    path: 'mis-postulaciones',
+    loadComponent: () =>
+      import('./pages/mis-postulaciones/mis-postulaciones').then(
+        (m) => m.MisPostulacionesComponent
+      ),
+  },
+
+  {
+    path: 'ver-candidatos/:id',
+    loadComponent: () =>
+      import('./pages/ver-candidatos/ver-candidatos').then((m) => m.VerCandidatosComponent),
+  },
+
+  {
+    path: 'mis-favoritos',
+    loadComponent: () =>
+      import('./pages/mis-favoritos/mis-favoritos').then((m) => m.MisFavoritosComponent),
   },
   // La ruta comodín siempre va AL FINAL
   {

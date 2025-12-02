@@ -5,14 +5,15 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import vacantesRoutes from './routes/vacantes.routes.js';
-
+import postulacionesRoutes from './routes/postulaciones.routes.js';
 // Importar configuración de DB
 import DbConfig from './config/database.js';
-
+import adminRoutes from './routes/admin.routes.js';
 // Importar Rutas
 import authRoutes from './routes/auth.routes.js';
 import studentRoutes from './routes/student.routes.js';
 import companyRoutes from './routes/company.routes.js';
+import favoritosRoutes from './routes/favoritos.routes.js';
 
 dotenv.config();
 
@@ -26,11 +27,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use('/api/vacantes', vacantesRoutes);
+app.use('/api/favoritos', favoritosRoutes);
 // --- STATIC FILES ---
 // Esto permite que el navegador acceda a las imágenes en http://localhost:3000/uploads/...
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+app.use('/api/admin', adminRoutes);
 // --- DATABASE ---
 const dbConfig = DbConfig;
 let pool;
@@ -58,6 +60,8 @@ async function start() {
     app.use('/api/student', studentRoutes);
     app.use('/api/company', companyRoutes); // Ruta de empresas
     app.use('/api/vacantes', vacantesRoutes);
+    app.use('/api/postulaciones', postulacionesRoutes);
+    app.use('/api/favoritos', favoritosRoutes);
     // Iniciar servidor
     app.listen(3000, () => {
       console.log('✅ Servidor corriendo en http://localhost:3000');

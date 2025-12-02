@@ -1,4 +1,3 @@
-// src/app/cositas/login/login.ts
 import { Component, EventEmitter, Output, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -57,7 +56,7 @@ export class Login {
       next: (respuesta) => {
         console.log('✅ Login exitoso:', respuesta);
 
-        // 1. Guardar sesión en LocalStorage
+        // 1. Guardar sesión
         this.authService.guardarSesion(respuesta.token, respuesta.usuario);
 
         this.cargando = false;
@@ -65,14 +64,20 @@ export class Login {
         this.exito = `¡Bienvenido ${respuesta.usuario.email}!`;
 
         setTimeout(() => {
+          // 2. Cerrar modal
           this.onClose();
+
+          // 3. 🔥 REDIRECCIÓN POR ROLES 🔥
           const rol = respuesta.usuario.id_rol;
 
-          if (rol === 3) {
-            // Es Empresa -> Al Dashboard de Empresa
+          if (rol === 1) {
+            // 🛡️ ES ADMINISTRADOR -> Va al panel de admin
+            this.router.navigate(['/admin']);
+          } else if (rol === 3) {
+            // 🏢 ES EMPRESA -> Va al dashboard de empresa
             this.router.navigate(['/dashboard-empresa']);
           } else {
-            // Es Estudiante (o Admin) -> Al Welcome
+            // 🎓 ES ESTUDIANTE (Rol 2) -> Va al inicio
             this.router.navigate(['/welcome']);
           }
         }, 1500);

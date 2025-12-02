@@ -1,0 +1,55 @@
+<div class="page-container">
+  <div class="content-wrapper">
+    <header class="header-section">
+      <h1>Mis Postulaciones</h1>
+      <p>Da seguimiento al estado de tus solicitudes.</p>
+    </header>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando historial...</p>
+    </div>
+
+    <div *ngIf="!loading && postulaciones.length === 0" class="empty-state">
+      <div class="icon-empty">
+        <app-icon name="Briefcase"></app-icon>
+      </div>
+      <h3>Aún no te has postulado</h3>
+      <p>Explora las vacantes y da el primer paso.</p>
+      <button routerLink="/empleos" class="btn-explore">Explorar Empleos</button>
+    </div>
+
+    <div class="applications-list">
+      <div *ngFor="let post of postulaciones" class="app-card">
+        <div class="company-logo">
+          <img [src]="obtenerUrlLogo(post.logo_path)" alt="Logo" />
+        </div>
+
+        <div class="app-info">
+          <h3>{{ post.titulo_cargo }}</h3>
+          <p class="company-name">{{ post.nombre_empresa }}</p>
+
+          <span class="location-text">
+            <app-icon name="MapPin"></app-icon> {{ post.ubicacion }}
+          </span>
+        </div>
+
+        <div class="app-status">
+          <span class="date">Enviado el {{ post.fecha_postulacion | date : 'mediumDate' }}</span>
+
+          <span
+            class="status-badge"
+            [ngClass]="{
+              enviado: post.estado_postulacion === 'Postulado',
+              visto: post.estado_postulacion === 'Visto',
+              proceso: post.estado_postulacion === 'En Proceso',
+              rechazado: post.estado_postulacion === 'Rechazado'
+            }"
+          >
+            {{ post.estado_postulacion }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

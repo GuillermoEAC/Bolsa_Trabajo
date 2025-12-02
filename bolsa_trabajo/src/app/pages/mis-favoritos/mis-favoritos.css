@@ -1,0 +1,141 @@
+.page-container {
+  padding: 40px;
+  background: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+.header-section {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.header-section h1 {
+  color: #1e293b;
+  font-weight: 800;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px;
+  background: white;
+  border-radius: 12px;
+  border: 2px dashed #cbd5e1;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.icon-empty app-icon {
+  width: 50px;
+  height: 50px;
+  color: #cbd5e1;
+}
+.btn-explore {
+  background: #2563eb;
+  color: white;
+  padding: 10px 25px;
+  border-radius: 50px;
+  border: none;
+  margin-top: 15px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.fav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.fav-card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+.fav-card:hover {
+  transform: translateY(-5px);
+  border-color: #bfdbfe;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.card-top {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+.logo-small {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  object-fit: contain;
+  border: 1px solid #f1f5f9;
+  padding: 2px;
+}
+.meta {
+  flex: 1;
+}
+.meta h4 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  color: #1e293b;
+  font-weight: 700;
+}
+.meta small {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.btn-remove {
+  background: #fee2e2;
+  border: none;
+  color: #ef4444;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-remove app-icon {
+  width: 18px;
+  height: 18px;
+}
+.btn-remove:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #f1f5f9;
+}
+.location {
+  font-size: 0.85rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.location app-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-postular {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.btn-postular:hover {
+  background: #059669;
+}

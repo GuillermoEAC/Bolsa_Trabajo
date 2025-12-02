@@ -4,46 +4,68 @@
       <h1 class="title">Mis Vacantes Publicadas</h1>
       <p class="subtitle">Gestiona tus ofertas activas y cerradas.</p>
     </div>
-    <button routerLink="/publicar-vacante" class="btn-create">+ Nueva Vacante</button>
+    <button routerLink="/publicar-vacante" class="btn-create">
+      <app-icon name="Plus"></app-icon> Nueva Vacante
+    </button>
   </header>
 
   <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
     <p>Cargando ofertas...</p>
   </div>
 
   <div *ngIf="!loading && vacantes.length === 0" class="empty-state">
-    <div class="empty-icon">📂</div>
+    <div class="empty-icon">
+      <app-icon name="FolderOpen"></app-icon>
+    </div>
     <h3>No tienes vacantes publicadas</h3>
     <p>Comienza a buscar talento creando tu primera oferta.</p>
-    <button routerLink="/publicar-vacante" class="btn-primary">Crear Oferta</button>
+    <button routerLink="/publicar-vacante" class="btn-primary">Crear Primera Oferta</button>
   </div>
 
   <div *ngIf="!loading && vacantes.length > 0" class="jobs-grid">
     <div *ngFor="let job of vacantes" class="job-card">
       <div class="card-header">
         <span class="job-role">{{ job.titulo_cargo }}</span>
-        <span class="status-badge" [class.active]="job.estado_activa">
-          {{ job.estado_activa ? 'Activa' : 'Pausada' }}
-        </span>
+        <span class="status-badge active">Activa</span>
       </div>
 
       <div class="card-body">
-        <p class="location">📍 {{ job.ubicacion }} • {{ job.tipo_trabajo }}</p>
-        <p class="salary">💰 ${{ job.salario_min }} - ${{ job.salario_max }} MXN</p>
+        <p class="location">
+          <span class="icon-text"><app-icon name="MapPin"></app-icon></span>
+          {{ job.ubicacion }} • {{ job.tipo_trabajo }}
+        </p>
+        <p class="salary">
+          <span class="icon-text"><app-icon name="CurrencyDollar"></app-icon></span>
+          ${{ job.salario_min }} - ${{ job.salario_max }}
+        </p>
         <p class="desc">{{ job.descripcion_vacante | slice : 0 : 100 }}...</p>
       </div>
 
       <div class="card-footer">
         <span class="date">Publicado: {{ job.fecha_publicacion | date : 'mediumDate' }}</span>
         <div class="actions">
-          <button class="btn-icon edit" (click)="editar(job.id_vacante)">✏️</button>
-          <button class="btn-icon delete" (click)="eliminar(job.id_vacante)">🗑️</button>
+          <button class="btn-icon edit" (click)="editar(job.id_vacante)" title="Editar">
+            <app-icon name="Pencil"></app-icon>
+          </button>
+          <button class="btn-icon delete" (click)="eliminar(job.id_vacante)" title="Eliminar">
+            <app-icon name="Trash"></app-icon>
+          </button>
+          <button
+            [routerLink]="['/ver-candidatos', job.id_vacante]"
+            class="btn-candidates"
+            title="Ver Candidatos"
+          >
+            <app-icon name="Users"></app-icon> Candidatos
+          </button>
         </div>
       </div>
     </div>
   </div>
 
   <div style="margin-top: 40px">
-    <a routerLink="/dashboard-empresa" class="back-link">← Volver al Dashboard</a>
+    <a routerLink="/dashboard-empresa" class="back-link">
+      <span class="icon-text"><app-icon name="ArrowLeft"></app-icon></span> Volver al Dashboard
+    </a>
   </div>
 </div>

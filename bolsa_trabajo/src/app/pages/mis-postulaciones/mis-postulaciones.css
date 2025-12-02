@@ -1,0 +1,173 @@
+.page-container {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  padding: 40px 20px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header-section {
+  margin-bottom: 30px;
+}
+.header-section h1 {
+  font-size: 2rem;
+  color: #1e293b;
+  margin: 0;
+}
+.header-section p {
+  color: #64748b;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px;
+  background: white;
+  border-radius: 20px;
+  border: 2px dashed #cbd5e1;
+}
+.icon-empty {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+.btn-explore {
+  background: #2563eb;
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+/* Lista */
+.applications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.app-card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s;
+}
+
+.app-card:hover {
+  transform: translateX(5px);
+  border-color: #bfdbfe;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.company-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+.company-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.app-info {
+  flex: 1;
+}
+.app-info h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+.company-name {
+  font-weight: 600;
+  color: #64748b;
+  margin: 0;
+  font-size: 0.9rem;
+}
+.location-text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.app-status {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.date {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+/* Colores de Estado */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.enviado {
+  background: #e0f2fe;
+  color: #0284c7;
+} /* Azul */
+.visto {
+  background: #ffedd5;
+  color: #c2410c;
+} /* Naranja */
+.proceso {
+  background: #dcfce7;
+  color: #15803d;
+} /* Verde */
+.rechazado {
+  background: #fee2e2;
+  color: #b91c1c;
+} /* Rojo */
+
+/* Responsive */
+@media (max-width: 600px) {
+  .app-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .app-status {
+    align-items: flex-start;
+    width: 100%;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 10px;
+    margin-top: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  /* Ajustar tamaño de iconos */
+  .icon-empty app-icon {
+    width: 60px;
+    height: 60px;
+    color: #cbd5e1;
+  }
+
+  .location-text app-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: text-bottom;
+  }
+}
