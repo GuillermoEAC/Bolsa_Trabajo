@@ -1,269 +1,474 @@
 /* =========================================
-   ESTRUCTURA Y FONDO
+   DISEÑO OPTIMIZADO PARA PC / ESCRITORIO
    ========================================= */
-:host {
-  font-family: 'Poppins', sans-serif;
-}
 
+/* Contenedor Principal */
 .cv-container {
+  /* Más espacio alrededor en pantallas grandes */
+  padding: 60px 40px;
+  background-color: #f1f5f9; /* Gris un poco más sólido para fondo de escritorio */
   min-height: 100vh;
-  /* Fondo vibrante con degradado sutil para dar energía */
-  background: linear-gradient(135deg, #e0f2fe 0%, #d1fae5 100%);
-  padding: 40px 20px;
   display: flex;
   justify-content: center;
+  align-items: flex-start; /* Alineado arriba, no al centro vertical */
 }
 
 .cv-card {
-  width: 100%;
-  /* AUMENTADO: Ahora abarca mucho más espacio */
-  max-width: 1200px;
   background: white;
-  border-radius: 20px;
-  /* Sombra con color (azul) para dar efecto "glow" */
-  box-shadow: 0 20px 50px rgba(37, 99, 235, 0.15);
+  border-radius: 20px; /* Bordes más redondeados */
+  /* Sombra más difusa y elegante para escritorio */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  /* 🔥 CAMBIO CLAVE: Mucho más ancho para PC */
+  max-width: 1280px;
+  display: flex;
   overflow: hidden;
-  border: 2px solid #fff;
+  border: 1px solid #e2e8f0;
 }
 
-/* =========================================
-   BARRA DE PASOS (SIN SLIDER)
-   ========================================= */
+/* --- Barra Lateral de Progreso (Izquierda) --- */
 .step-nav {
+  /* 🔥 Más ancha para monitores */
+  width: 340px;
+  background-color: #f8fafc;
+  padding: 40px 30px; /* Más padding interno */
+  border-right: 1px solid #e2e8f0;
   display: flex;
-  /* IMPORTANTE: flex-wrap permite que bajen si no caben, 
-     pero en desktop se estirarán */
-  flex-wrap: wrap;
-  /* Fondo Degradado de la Marca (Azul a Verde) */
-  background: linear-gradient(90deg, #1e3a8a 0%, #059669 100%);
-  padding: 0;
-  border-bottom: 4px solid #fcd34d; /* Un toque amarillo de contraste */
+  flex-direction: column;
+}
+
+.nav-header h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.5rem; /* Título más grande */
+  font-weight: 800;
+}
+.nav-header p {
+  color: #64748b;
+  margin-bottom: 30px;
+  font-size: 1rem;
 }
 
 .step-item {
-  flex: 1; /* Esto hace que cada paso ocupe el mismo espacio disponible */
-  min-width: 120px; /* Ancho mínimo para que no se aplasten */
-  text-align: center;
-  padding: 20px 10px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.7); /* Blanco translúcido */
+  display: flex;
+  align-items: center;
+  padding: 16px 20px; /* Ítems más grandes */
+  margin-bottom: 12px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
+  transition: all 0.2s ease-in-out;
+  color: #475569;
+  font-weight: 500;
+  font-size: 1.05rem;
 }
 
 .step-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white;
+  background-color: #e2e8f0;
+  transform: translateX(5px); /* Pequeño movimiento al pasar el mouse */
 }
 
-/* Estado Activo */
 .step-item.active {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.2);
-  font-weight: 800;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  color: #2563eb;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1); /* Sombra azul suave */
 }
 
-/* Triángulo indicador abajo del paso activo */
-.step-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 10px;
-  border-style: solid;
-  border-color: transparent transparent #fcd34d transparent; /* Triángulo amarillo */
+.step-circle {
+  width: 36px; /* Círculo más grande */
+  height: 36px;
+  border-radius: 50%;
+  background-color: #cbd5e1;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s;
 }
 
-/* =========================================
-   CONTENIDO INTERNO
-   ========================================= */
+.step-item.active .step-circle {
+  background-color: #2563eb;
+}
+
+.step-item.completed .step-circle {
+  background-color: #10b981;
+}
+
+/* --- Contenido Principal (Derecha) --- */
 .step-content {
-  padding: 50px; /* Más espacio interno */
+  flex: 1;
+  /* 🔥 Mucho más "aire" en el contenido */
+  padding: 60px 70px;
+  position: relative;
 }
 
 .section-title {
-  font-size: 2.2rem;
+  font-size: 2.4rem; /* Título principal mucho más grande */
   font-weight: 800;
-  color: #1e3a8a; /* Azul oscuro fuerte */
-  margin-bottom: 30px;
-  /* Subrayado grueso de color */
-  border-left: 8px solid #10b981;
-  padding-left: 20px;
+  color: #0f172a;
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
 }
 
-/* Grilla del formulario */
+.section-subtitle {
+  color: #64748b;
+  margin-bottom: 40px;
+  font-size: 1.1rem;
+  max-width: 800px; /* Evita que el texto se estire demasiado */
+}
+
+/* Tarjetas de Entrada (Entry Card) */
+.entry-card {
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 30px; /* Más padding interno en las tarjetas */
+  margin-bottom: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Efecto sutil al pasar el mouse por una tarjeta de experiencia/proyecto */
+.entry-card:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 15px;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+/* Botones Icono (Eliminar) */
+.btn-icon-remove {
+  background: #fee2e2; /* Fondo rojo claro */
+  border: none;
+  color: #ef4444;
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.btn-icon-remove:hover {
+  background-color: #fecaca;
+  color: #dc2626;
+  transform: scale(1.1);
+}
+
+/* Grid de Formularios OPTIMIZADO PC */
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 30px; /* Más separación entre inputs */
+  grid-template-columns: repeat(2, 1fr); /* 2 columnas balanceadas */
+  /* 🔥 Mayor espacio entre campos */
+  gap: 30px;
+  align-items: start;
 }
 
-@media (min-width: 900px) {
-  .form-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+/* Para el paso 6 (Crear cuenta), lo centramos y lo hacemos más angosto */
+.centered-step .form-grid.compact-form {
+  max-width: 500px; /* No más ancho que esto */
+  margin: 0 auto; /* Centrado */
+  grid-template-columns: 1fr; /* Una sola columna */
 }
 
 .full-width {
-  grid-column: 1 / -1;
+  grid-column: span 2;
 }
 
-/* =========================================
-   INPUTS LLAMATIVOS
-   ========================================= */
 .form-label {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #374151;
+  gap: 10px; /* Más espacio entre label e input */
+  font-size: 1rem; /* Label más legible */
+  font-weight: 600;
+  color: #475569;
 }
 
+/* Inputs más grandes y cómodos para ratón y teclado */
 .form-input,
 .form-textarea,
 .form-select {
-  width: 100%;
-  padding: 15px 20px; /* Inputs más grandes */
-  font-size: 1.05rem;
-  font-family: 'Poppins', sans-serif;
-  color: #1f2937;
-  background-color: #f3f4f6; /* Fondo gris claro */
-  border: 2px solid #e5e7eb; /* Borde sólido */
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  padding: 14px 16px; /* Inputs más altos */
+  border: 2px solid #e2e8f0; /* Borde más grueso */
+  border-radius: 10px;
+  font-size: 1rem; /* Texto más grande al escribir */
+  transition: all 0.2s;
+  background-color: #f8fafc;
+  width: 100%; /* Asegura que ocupen el ancho del grid */
+  box-sizing: border-box; /* Importante para el padding */
 }
 
-/* Focus con color fuerte */
 .form-input:focus,
-.form-textarea:focus {
-  outline: none;
+.form-textarea:focus,
+.form-select:focus {
+  border-color: #3b82f6; /* Azul vibrante al enfocar */
   background-color: #fff;
-  border-color: #2563eb; /* Azul brillante */
-  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.1);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
 }
 
-/* =========================================
-   TARJETA VERDE DE "CREAR CUENTA" (PASO 6)
-   ========================================= */
-.account-card {
-  /* Fondo verde muy suave pero con borde fuerte */
-  background: #ecfdf5;
-  border: 3px solid #10b981; /* Borde verde grueso */
-  padding: 4rem 2rem;
-  border-radius: 20px;
-  text-align: center;
-  margin-top: 1rem;
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
+.hint {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  font-weight: normal;
+  margin-bottom: 5px;
 }
 
-.account-card h2 {
-  color: #065f46;
-  font-size: 2.5rem;
-  font-weight: 800;
+/* Tip Box */
+.info-box {
+  background-color: #eff6ff;
+  border-left: 5px solid #3b82f6;
+  padding: 20px 25px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  color: #1e3a8a;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-/* =========================================
-   BOTONES POTENTES
-   ========================================= */
+/* Botones de Acción (Agregar) */
+.add-btn-dashed {
+  width: 100%;
+  padding: 18px; /* Botón más grande */
+  border: 2px dashed #cbd5e1;
+  background: none;
+  color: #64748b;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.05rem;
+  transition: all 0.2s;
+  margin-top: 10px;
+}
+
+.add-btn-dashed:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+  background-color: #f0f9ff;
+}
+
+/* --- Estilos Específicos Paso 5 (Habilidades/Idiomas) --- */
+/* En PC, aseguramos que las dos columnas tengan buen espacio */
+.two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px; /* Mucho espacio entre las dos listas */
+}
+
+.subsection-title {
+  font-size: 1.4rem;
+  color: #334155;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 10px;
+}
+
+.skill-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+/* Los inputs dentro de skill-row necesitan flexibilidad */
+.skill-row .form-input {
+  flex: 1; /* Que ocupen el espacio disponible */
+}
+/* El select puede ser un poco más pequeño */
+.skill-row .skill-select {
+  flex: 0 0 30%; /* 30% del ancho */
+}
+
+/* Navegación Inferior */
 .nav-controls {
-  margin-top: 50px;
-  padding-top: 30px;
-  border-top: 2px dashed #e5e7eb;
+  margin-top: 60px; /* Más separación arriba */
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  padding-top: 30px;
+  border-top: 2px solid #f1f5f9;
 }
 
 .nav-btn {
-  padding: 15px 35px;
+  padding: 14px 32px; /* Botones más grandes y anchos */
   border-radius: 12px;
   font-weight: 700;
   font-size: 1.1rem;
   cursor: pointer;
   border: none;
   transition: all 0.2s;
-  text-transform: uppercase; /* Texto en mayúsculas */
-  letter-spacing: 1px;
-}
-
-.prev-btn {
-  background-color: #fff;
-  color: #64748b;
-  border: 2px solid #cbd5e1;
-}
-.prev-btn:hover {
-  background-color: #f1f5f9;
-  border-color: #94a3b8;
-  color: #1e293b;
 }
 
 .next-btn {
   background-color: #2563eb;
   color: white;
-  box-shadow: 0 5px 0 #1e40af; /* Efecto 3D botón presionado */
+  box-shadow: 0 4px 0 #1d4ed8; /* Sombra sólida 3D */
 }
 .next-btn:hover {
   background-color: #1d4ed8;
   transform: translateY(-2px);
-  box-shadow: 0 7px 0 #1e40af;
+  box-shadow: 0 6px 0 #1d4ed8;
 }
 .next-btn:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 #1e40af;
+  box-shadow: 0 2px 0 #1d4ed8;
+}
+
+.prev-btn {
+  background-color: white;
+  border: 2px solid #cbd5e1;
+  color: #64748b;
+}
+.prev-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #334155;
 }
 
 .final-btn {
-  background-color: #10b981; /* Verde */
+  background-color: #10b981;
   color: white;
-  box-shadow: 0 5px 0 #047857; /* Efecto 3D */
+  box-shadow: 0 4px 0 #059669;
 }
 .final-btn:hover {
   background-color: #059669;
   transform: translateY(-2px);
-  box-shadow: 0 7px 0 #047857;
+  box-shadow: 0 6px 0 #047857;
 }
 
-/* Botón Añadir (Dashed) */
-.add-btn {
-  width: 100%;
-  margin-top: 25px;
-  padding: 18px;
-  background-color: #eff6ff;
-  border: 3px dashed #60a5fa;
-  color: #2563eb;
-  font-weight: 700;
-  font-size: 1.1rem;
-  border-radius: 15px;
-  cursor: pointer;
-  transition: all 0.2s;
+/* Indicador de puntos central */
+.dots-indicator {
+  display: flex;
+  gap: 10px;
 }
-.add-btn:hover {
-  background-color: #dbeafe;
-  border-color: #2563eb;
-  transform: scale(1.01);
+.dots-indicator span {
+  width: 10px;
+  height: 10px;
+  background-color: #e2e8f0;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+.dots-indicator .active-dot {
+  background-color: #2563eb;
+  transform: scale(1.2);
 }
 
-/* =========================================
-   CHECKBOXES
-   ========================================= */
-.checkbox-item {
-  background-color: #fff;
-  border: 2px solid #e5e7eb;
-  padding: 15px 20px;
-  border-radius: 12px;
-  transition: all 0.2s;
+/* Animación */
+.animate-fade {
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Animación más suave */
 }
-.checkbox-item:hover {
-  border-color: #2563eb;
-  background-color: #eff6ff;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.checkbox-input {
-  width: 20px;
-  height: 20px;
-  accent-color: #2563eb;
+
+/* ESTILOS RESPONSIVOS (Para cuando la ventana de PC se hace pequeña) */
+/* Solo se activa si el ancho baja de 1024px (Tablets o ventanas pequeñas) */
+@media (max-width: 1024px) {
+  .cv-card {
+    max-width: 95%;
+  }
+  .step-nav {
+    width: 260px;
+    padding: 30px 20px;
+  }
+  .step-content {
+    padding: 40px;
+  }
+  .form-grid {
+    gap: 20px;
+  }
+  .two-columns {
+    gap: 30px;
+  }
+}
+
+/* Móvil (Heredado y ajustado) */
+@media (max-width: 768px) {
+  .cv-container {
+    padding: 20px 10px;
+  }
+  .cv-card {
+    flex-direction: column;
+  }
+  .step-nav {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 20px;
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .nav-header {
+    display: none;
+  } /* Ocultar título de nav en móvil */
+  .step-item {
+    margin-bottom: 0;
+    margin-right: 10px;
+    padding: 10px;
+    white-space: nowrap;
+  }
+  .step-name {
+    display: none;
+  } /* Solo mostrar números en móvil */
+  .step-circle {
+    margin-right: 0;
+    width: 32px;
+    height: 32px;
+  }
+
+  .step-content {
+    padding: 30px 20px;
+  }
+  .section-title {
+    font-size: 1.8rem;
+  }
+  .form-grid,
+  .two-columns {
+    grid-template-columns: 1fr;
+  } /* Todo a una columna */
+  .full-width {
+    grid-column: span 1;
+  }
+
+  .nav-controls {
+    flex-direction: column-reverse;
+    gap: 15px;
+  }
+  .nav-btn {
+    width: 100%;
+  }
+  .dots-indicator {
+    margin-bottom: 15px;
+  }
+
+  .skill-row {
+    flex-wrap: wrap;
+  }
+  .skill-row .skill-select {
+    flex: 1 0 40%;
+  }
 }

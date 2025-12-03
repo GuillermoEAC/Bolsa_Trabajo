@@ -1,4 +1,3 @@
-/* src/app/header.css */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
 :host {
@@ -11,16 +10,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 40px;
-
-  /* 🔥 FONDO POTENTE: Degradado de Azul Oscuro a Azul Vibrante */
   background: linear-gradient(90deg, #0f172a 0%, #1e40af 100%);
-
-  /* Borde inferior grueso en Verde Neón para contraste */
   border-bottom: 4px solid #10b981;
-
-  /* Sombra sólida (no difuminada) para efecto "Bold" */
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
-
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -29,35 +21,34 @@
 
 /* --- LOGO --- */
 .logo-container {
-  /* 1. Forzamos que NO tenga color de fondo */
   background-color: transparent !important;
   background: none !important;
-
-  /* 2. Quitamos cualquier sombra o borde del contenedor */
   box-shadow: none !important;
   border: none !important;
   padding: 0 !important;
-
   display: flex;
   align-items: center;
 }
 
-.logo-container img {
+.img-logo {
   height: 55px;
-
   transition: transform 0.2s;
+  cursor: pointer;
 }
 
-/* --- ACCIONES (Botones y Links) --- */
+.img-logo:hover {
+  transform: scale(1.05);
+}
+
+/* --- ACCIONES --- */
 .header-actions {
   display: flex;
   gap: 20px;
   align-items: center;
 }
 
-/* Enlace de Empresa */
 .link-empresa {
-  color: #cbd5e1; /* Gris claro */
+  color: #cbd5e1;
   font-weight: 700;
   font-size: 0.9rem;
   text-decoration: none;
@@ -73,12 +64,12 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* --- BOTONES 3D --- */
+/* --- BOTONES --- */
 .button {
   text-decoration: none;
   padding: 12px 25px;
   border-radius: 12px;
-  font-weight: 800; /* Fuente muy gruesa */
+  font-weight: 800;
   font-size: 14px;
   border: none;
   cursor: pointer;
@@ -90,63 +81,66 @@
   justify-content: center;
 }
 
-/* Botón "Crear CV" - Verde Vibrante */
-.crear-cv {
-  background-color: #10b981;
-  color: #064e3b; /* Texto oscuro para contraste */
-  /* Sombra sólida abajo para efecto botón arcade */
-  box-shadow: 0 5px 0 #047857;
-}
-
-.crear-cv:hover {
-  background-color: #34d399;
-  transform: translateY(-2px);
-  box-shadow: 0 7px 0 #047857;
-}
-
-.crear-cv:active {
-  transform: translateY(3px); /* Se hunde al click */
-  box-shadow: 0 2px 0 #047857;
-}
-
-/* Botón "Login" - Blanco */
-.login {
+.login-btn {
   background-color: #ffffff;
   color: #1e40af;
-  box-shadow: 0 5px 0 #94a3b8; /* Sombra gris */
+  box-shadow: 0 5px 0 #94a3b8;
 }
 
-.login:hover {
+.login-btn:hover {
   background-color: #f8fafc;
   transform: translateY(-2px);
   box-shadow: 0 7px 0 #94a3b8;
 }
 
-.login:active {
+.login-btn:active {
   transform: translateY(3px);
   box-shadow: 0 2px 0 #94a3b8;
 }
-/* --- ESTILOS PARA USUARIO LOGUEADO --- */
 
+.crear-cv {
+  background-color: #10b981;
+  color: #064e3b;
+  box-shadow: 0 4px 0 #047857;
+  margin-right: 10px;
+}
+
+.crear-cv:hover {
+  background-color: #34d399;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #047857;
+}
+
+.crear-cv:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #047857;
+}
+
+/* --- USER CONTROLS --- */
 .user-controls {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
 }
 
-/* Botones de iconos (Campana, Logout) */
+/* --- NOTIFICACIONES --- */
+.notification-container {
+  position: relative;
+}
+
 .icon-btn {
   background: none;
   border: none;
   cursor: pointer;
   font-size: 1.4rem;
-  color: #cbd5e1; /* Gris claro */
+  color: #cbd5e1;
   transition: all 0.2s;
   padding: 8px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .icon-btn:hover {
@@ -155,132 +149,35 @@
   transform: scale(1.1);
 }
 
-.logout-btn:hover {
-  color: #ef4444; /* Rojo al pasar el mouse sobre salir */
-}
-
-/* Sección del Perfil (Nombre + Avatar) */
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  padding: 5px 10px 5px 15px;
-  border-radius: 50px; /* Forma de píldora */
-  transition: all 0.2s;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 2px solid transparent;
-}
-
-.user-profile:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.user-name {
-  color: white;
-  font-weight: 700;
-  font-size: 0.95rem;
-  display: none; /* Ocultar en móviles */
-}
-
-@media (min-width: 768px) {
-  .user-name {
-    display: block;
-  }
-}
-
-/* Círculo del Avatar */
-.user-avatar {
-  width: 42px;
-  height: 42px;
-  /* Gradiente Verde de la marca */
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1.3rem;
-  border: 2px solid #ffffff;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); /* Efecto 3D */
-}
-
-/* ... (Tus estilos de .main-header, .logo-container, botones, etc. SE MANTIENEN IGUAL) ... */
-
-/* --- ESTILOS DE USUARIO Y MENÚ --- */
-
-.user-controls {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.icon-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.5rem;
-  margin-right: 10px;
-}
-
-/* Contenedor Relativo para posicionar el menú */
-.profile-dropdown-container {
-  position: relative;
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 50px;
-  transition: background 0.2s;
-  border: 2px solid transparent;
-}
-
-.user-profile:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.user-name {
-  color: white;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  border: 2px solid white;
-}
-
-.dropdown-arrow {
-  color: #cbd5e1;
-  font-size: 0.7rem;
-}
-
-/* 🔥 MENÚ FLOTANTE 🔥 */
-.dropdown-menu {
+.badge-count {
   position: absolute;
-  top: 120%; /* Justo debajo del perfil */
+  top: 0;
   right: 0;
-  width: 220px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.7rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border: 2px solid #0f172a;
+}
+
+/* --- DROPDOWNS --- */
+.dropdown-menu,
+.noti-dropdown {
+  position: absolute;
+  top: 130%;
+  right: 0;
   background-color: white;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   z-index: 2000;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
   animation: fadeInMenu 0.2s ease-out;
 }
 
@@ -295,7 +192,130 @@
   }
 }
 
-.dropdown-header {
+/* Notificaciones Dropdown */
+.noti-dropdown {
+  width: 320px;
+  right: -50px;
+}
+
+.noti-header {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f3f4f6;
+  font-weight: 700;
+  color: #1e293b;
+  background: #f8fafc;
+  font-size: 0.9rem;
+}
+
+.noti-list {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.noti-item {
+  padding: 15px;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  gap: 12px;
+  transition: background 0.2s;
+}
+
+.noti-item:hover {
+  background: #f9fafb;
+}
+
+.noti-item.unread {
+  background: #eff6ff;
+  border-left: 3px solid #2563eb;
+}
+
+.noti-icon {
+  color: #2563eb;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.noti-content p {
+  margin: 0 0 5px 0;
+  font-size: 0.9rem;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.noti-content small {
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+.noti-empty {
+  padding: 20px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+/* --- PERFIL --- */
+.profile-dropdown-container {
+  position: relative;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 12px 6px 15px;
+  border-radius: 50px;
+  transition: all 0.2s;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 2px solid transparent;
+}
+
+.user-profile:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.user-name {
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .user-name {
+    display: block;
+  }
+}
+
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.2rem;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-arrow {
+  color: #cbd5e1;
+  font-size: 0.7rem;
+  margin-left: 5px;
+}
+
+/* Menú Perfil */
+.dropdown-menu {
+  width: 240px;
+}
+
+.dropdown-header-text {
   padding: 15px 20px;
   font-size: 0.9rem;
   color: #64748b;
@@ -303,8 +323,21 @@
   background-color: #f8fafc;
 }
 
+.role-badge {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  color: #475569;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 .dropdown-item {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 12px 20px;
   color: #334155;
   text-decoration: none;
@@ -323,6 +356,21 @@
   color: #2563eb;
 }
 
+.menu-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  color: #94a3b8;
+  transition: color 0.2s;
+}
+
+.dropdown-item:hover .menu-icon {
+  color: #2563eb;
+}
+
 .dropdown-divider {
   height: 1px;
   background-color: #e2e8f0;
@@ -334,5 +382,11 @@
 }
 .text-danger:hover {
   background-color: #fef2f2;
+  color: #dc2626;
+}
+.text-danger .menu-icon {
+  color: #ef4444;
+}
+.text-danger:hover .menu-icon {
   color: #dc2626;
 }

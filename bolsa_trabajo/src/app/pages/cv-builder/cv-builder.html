@@ -1,256 +1,381 @@
 <div class="cv-container">
   <div class="cv-card">
     <nav class="step-nav">
+      <div class="nav-header">
+        <h3>Tu Futuro CV</h3>
+        <p>Paso {{ currentStep() }} de {{ steps.length }}</p>
+      </div>
       <div
         *ngFor="let step of steps; let i = index"
         class="step-item"
         [class.active]="currentStep() === i + 1"
+        [class.completed]="currentStep() > i + 1"
         (click)="changeStep(i + 1)"
       >
-        Paso {{ i + 1 }}: {{ step.name }}
+        <div class="step-circle">{{ i + 1 }}</div>
+        <span class="step-name">{{ step.name }}</span>
       </div>
     </nav>
 
     <div class="step-content">
       <h2 class="section-title">{{ steps[currentStep() - 1].name }}</h2>
+      <p class="section-subtitle">{{ steps[currentStep() - 1].desc }}</p>
 
-      <div *ngIf="currentStep() === 1" class="form-grid">
-        <label class="form-label"
-          ><span>Nombre</span><input [(ngModel)]="perfil.nombre" type="text" class="form-input"
-        /></label>
-        <label class="form-label"
-          ><span>Apellido</span><input [(ngModel)]="perfil.apellido" type="text" class="form-input"
-        /></label>
-        <label class="form-label"
-          ><span>Título CV (Tu carrera/profesión)</span
-          ><input
+      <div *ngIf="currentStep() === 1" class="form-grid animate-fade">
+        <label class="form-label">
+          <span>Nombre *</span>
+          <input
+            [(ngModel)]="perfil.nombre"
+            type="text"
+            class="form-input"
+            placeholder="Tu nombre real"
+          />
+        </label>
+        <label class="form-label">
+          <span>Apellido *</span>
+          <input
+            [(ngModel)]="perfil.apellido"
+            type="text"
+            class="form-input"
+            placeholder="Tu apellido paterno y materno"
+          />
+        </label>
+
+        <label class="form-label full-width">
+          <span>Título Profesional / Objetivo *</span>
+          <small class="hint">¿Cómo te presentas profesionalmente?</small>
+          <input
             [(ngModel)]="perfil.titulo_cv"
             type="text"
             class="form-input"
-            placeholder="Ej: Contador, Arquitecto..."
-        /></label>
-        <label class="form-label"
-          ><span>Teléfono</span><input [(ngModel)]="perfil.telefono" type="tel" class="form-input"
-        /></label>
-        <label class="form-label full-width"
-          ><span>Descripción Breve</span
-          ><textarea [(ngModel)]="perfil.descripcion" rows="3" class="form-textarea"></textarea>
+            placeholder="Ej: Estudiante de Derecho, Arquitecto Jr., Enfermera Especialista..."
+          />
         </label>
+
+        <label class="form-label">
+          <span>Teléfono de Contacto</span>
+          <input
+            [(ngModel)]="perfil.telefono"
+            type="tel"
+            class="form-input"
+            placeholder="Para que te llamen"
+          />
+        </label>
+
+        <label class="form-label full-width">
+          <span>Sobre Mí (Perfil Profesional)</span>
+          <small class="hint">Resume quién eres, qué estudias y qué buscas lograr.</small>
+          <textarea
+            [(ngModel)]="perfil.descripcion"
+            rows="4"
+            class="form-textarea"
+            placeholder="Soy un estudiante apasionado por... Busco mi primera oportunidad en..."
+          ></textarea>
+        </label>
+
         <div class="checkbox-group full-width">
-          <label class="checkbox-item"
-            ><input
-              [(ngModel)]="perfil.disponibilidad_viajar"
-              type="checkbox"
-              class="checkbox-input"
-            /><span>Disponible para viajar</span></label
-          >
-          <label class="checkbox-item"
-            ><input
-              [(ngModel)]="perfil.disponibilidad_residencia"
-              type="checkbox"
-              class="checkbox-input"
-            /><span>Cambio de residencia</span></label
-          >
+          <h3>Disponibilidad</h3>
+          <div class="checkbox-row">
+            <label class="checkbox-item">
+              <input
+                [(ngModel)]="perfil.disponibilidad_viajar"
+                type="checkbox"
+                class="checkbox-input"
+              />
+              <span>Disponible para viajar</span>
+            </label>
+            <label class="checkbox-item">
+              <input
+                [(ngModel)]="perfil.disponibilidad_residencia"
+                type="checkbox"
+                class="checkbox-input"
+              />
+              <span>Dispuesto a cambiar de ciudad</span>
+            </label>
+          </div>
         </div>
       </div>
 
-      <div *ngIf="currentStep() === 2">
+      <div *ngIf="currentStep() === 2" class="animate-fade">
         <div *ngFor="let estudio of perfil.estudios; let i = index" class="entry-card">
-          <h3 class="entry-title">Estudio #{{ i + 1 }}</h3>
+          <div class="card-header">
+            <h3>Formación #{{ i + 1 }}</h3>
+            <button (click)="removeEntry('estudios', i)" class="btn-icon-remove" title="Eliminar">
+              ×
+            </button>
+          </div>
+
           <div class="form-grid">
+            <label class="form-label">
+              <span>Nivel de Estudios</span>
+              <select [(ngModel)]="estudio.nivel_estudio" class="form-input">
+                <option value="">Selecciona...</option>
+                <option>Bachillerato / Preparatoria</option>
+                <option>Técnico Superior</option>
+                <option>Licenciatura / Ingeniería</option>
+                <option>Maestría / Posgrado</option>
+                <option>Diplomado / Curso</option>
+              </select>
+            </label>
+            <label class="form-label">
+              <span>Carrera / Especialidad</span>
+              <input
+                [(ngModel)]="estudio.carrera"
+                type="text"
+                class="form-input"
+                placeholder="Ej: Mercadotecnia"
+              />
+            </label>
+            <label class="form-label full-width">
+              <span>Institución Educativa</span>
+              <input
+                [(ngModel)]="estudio.centro_estudio"
+                type="text"
+                class="form-input"
+                placeholder="Ej: Universidad Autónoma de..."
+              />
+            </label>
+
             <label class="form-label"
-              ><span>Nivel</span
-              ><input [(ngModel)]="estudio.nivel_estudio" type="text" class="form-input"
-            /></label>
-            <label class="form-label"
-              ><span>Carrera</span
-              ><input [(ngModel)]="estudio.carrera" type="text" class="form-input"
-            /></label>
-            <label class="form-label"
-              ><span>Institución</span
-              ><input [(ngModel)]="estudio.centro_estudio" type="text" class="form-input"
-            /></label>
-            <label class="form-label"
-              ><span>Inicio</span
+              ><span>Fecha Inicio</span
               ><input [(ngModel)]="estudio.fecha_inicio" type="date" class="form-input"
             /></label>
-            <label class="form-label"
-              ><span>Fin</span
-              ><input
+            <label class="form-label">
+              <span>Fecha Fin (o esperada)</span>
+              <input
                 [(ngModel)]="estudio.fecha_fin"
                 [disabled]="estudio.en_curso"
                 type="date"
                 class="form-input"
-            /></label>
-            <label class="checkbox-item"
-              ><input [(ngModel)]="estudio.en_curso" type="checkbox" class="checkbox-input" /><span
-                >En curso</span
-              ></label
-            >
+              />
+            </label>
+
+            <label class="checkbox-item full-width">
+              <input [(ngModel)]="estudio.en_curso" type="checkbox" class="checkbox-input" />
+              <span>Actualmente estoy estudiando aquí</span>
+            </label>
           </div>
-          <button (click)="removeEntry('estudios', i)" class="remove-btn"></button>
         </div>
-        <button (click)="addEntry('estudios')" class="add-btn">+ Agregar Estudio</button>
+        <button (click)="addEntry('estudios')" class="add-btn-dashed">
+          + Agregar otra Institución
+        </button>
       </div>
 
-      <div *ngIf="currentStep() === 3">
+      <div *ngIf="currentStep() === 3" class="animate-fade">
+        <div class="info-box">
+          💡 <strong>Tip:</strong> Si no tienes experiencia laboral formal, puedes incluir prácticas
+          profesionales, servicio social o voluntariados.
+        </div>
+
         <div *ngFor="let exp of perfil.experiencias; let i = index" class="entry-card">
-          <h3 class="entry-title">Experiencia #{{ i + 1 }}</h3>
+          <div class="card-header">
+            <h3>Experiencia #{{ i + 1 }}</h3>
+            <button (click)="removeEntry('experiencias', i)" class="btn-icon-remove">×</button>
+          </div>
           <div class="form-grid">
-            <label class="form-label"
-              ><span>Puesto</span
-              ><input [(ngModel)]="exp.titulo_puesto" type="text" class="form-input"
-            /></label>
-            <label class="form-label"
-              ><span>Empresa</span
-              ><input [(ngModel)]="exp.nombre_empresa" type="text" class="form-input"
-            /></label>
+            <label class="form-label">
+              <span>Puesto / Rol</span>
+              <input
+                [(ngModel)]="exp.titulo_puesto"
+                type="text"
+                class="form-input"
+                placeholder="Ej: Practicante, Auxiliar..."
+              />
+            </label>
+            <label class="form-label">
+              <span>Empresa / Organización</span>
+              <input [(ngModel)]="exp.nombre_empresa" type="text" class="form-input" />
+            </label>
+
             <label class="form-label"
               ><span>Inicio</span
               ><input [(ngModel)]="exp.fecha_inicio" type="date" class="form-input"
             /></label>
-            <label class="form-label"
-              ><span>Fin</span
-              ><input
+            <label class="form-label">
+              <span>Fin</span>
+              <input
                 [(ngModel)]="exp.fecha_fin"
                 [disabled]="exp.actualmente_trabajando"
                 type="date"
                 class="form-input"
-            /></label>
-            <label class="checkbox-item full-width"
-              ><input
+              />
+            </label>
+
+            <label class="checkbox-item full-width">
+              <input
                 [(ngModel)]="exp.actualmente_trabajando"
                 type="checkbox"
                 class="checkbox-input"
-              /><span>Trabajo actual</span></label
-            >
-            <label class="form-label full-width"
-              ><span>Tareas</span
-              ><textarea
+              />
+              <span>Trabajo aquí actualmente</span>
+            </label>
+
+            <label class="form-label full-width">
+              <span>Responsabilidades y Logros</span>
+              <textarea
                 [(ngModel)]="exp.descripcion_tareas"
                 rows="3"
                 class="form-textarea"
+                placeholder="Describe qué hacías y qué lograste..."
               ></textarea>
             </label>
           </div>
-          <button (click)="removeEntry('experiencias', i)" class="remove-btn"></button>
         </div>
-        <button (click)="addEntry('experiencias')" class="add-btn">+ Agregar Experiencia</button>
+        <button (click)="addEntry('experiencias')" class="add-btn-dashed">
+          + Agregar Experiencia
+        </button>
       </div>
 
-      <div *ngIf="currentStep() === 4">
-        <p style="margin-bottom: 1rem; color: #666">
-          Describe tus logros clave, portafolios, auditorías o proyectos académicos importantes.
+      <div *ngIf="currentStep() === 4" class="animate-fade">
+        <p class="section-desc">
+          Aquí puedes destacar proyectos escolares, investigaciones, diseños, códigos, campañas o
+          cualquier trabajo del que estés orgulloso.
         </p>
+
         <div *ngFor="let project of perfil.proyectos; let i = index" class="entry-card">
-          <h3 class="entry-title">Proyecto / Logro #{{ i + 1 }}</h3>
+          <div class="card-header">
+            <h3>Proyecto #{{ i + 1 }}</h3>
+            <button (click)="removeEntry('proyectos', i)" class="btn-icon-remove">×</button>
+          </div>
           <div class="form-grid">
-            <label class="form-label full-width"
-              ><span>Nombre del Proyecto/Logro</span
-              ><input
+            <label class="form-label full-width">
+              <span>Título del Proyecto</span>
+              <input
                 [(ngModel)]="project.nombre_proyecto"
                 type="text"
                 class="form-input"
-                placeholder="Ej: Auditoría 2024, Diseño Casa Lomas..."
-            /></label>
-            <label class="form-label full-width"
-              ><span>Descripción</span
-              ><textarea
+                placeholder="Ej: Plan de Negocios, Maqueta Estructural..."
+              />
+            </label>
+            <label class="form-label full-width">
+              <span>Descripción</span>
+              <textarea
                 [(ngModel)]="project.descripcion"
                 rows="3"
                 class="form-textarea"
+                placeholder="¿De qué trataba? ¿Qué herramientas usaste?"
               ></textarea>
             </label>
-            <label class="form-label"
-              ><span>Enlace Evidencia/Drive (Opcional)</span
-              ><input [(ngModel)]="project.url_repositorio" type="url" class="form-input"
-            /></label>
-            <label class="form-label"
-              ><span>Enlace Web/Demo (Opcional)</span
-              ><input [(ngModel)]="project.url_demo" type="url" class="form-input"
-            /></label>
+
+            <label class="form-label">
+              <span>Enlace a Evidencia (Drive, PDF...)</span>
+              <input
+                [(ngModel)]="project.url_repositorio"
+                type="url"
+                class="form-input"
+                placeholder="https://..."
+              />
+            </label>
+            <label class="form-label">
+              <span>Enlace Web / Publicación (Opcional)</span>
+              <input
+                [(ngModel)]="project.url_demo"
+                type="url"
+                class="form-input"
+                placeholder="https://..."
+              />
+            </label>
           </div>
-          <button (click)="removeEntry('proyectos', i)" class="remove-btn"></button>
         </div>
-        <button (click)="addEntry('proyectos')" class="add-btn">+ Agregar Proyecto</button>
+        <button (click)="addEntry('proyectos')" class="add-btn-dashed">+ Agregar Proyecto</button>
       </div>
 
-      <div *ngIf="currentStep() === 5">
-        <h3 class="entry-title">Tus Habilidades</h3>
-        <div *ngFor="let skill of perfil.habilidades; let i = index" class="skill-item">
-          <input [(ngModel)]="skill.nombre" placeholder="Habilidad" class="form-input" />
-          <select [(ngModel)]="skill.nivel" class="form-input">
-            <option>Básico</option>
-            <option>Intermedio</option>
-            <option>Avanzado</option>
-          </select>
-          <button
-            (click)="removeEntry('habilidades', i)"
-            class="remove-btn"
-            style="position: static"
-          ></button>
-        </div>
-        <button (click)="addEntry('habilidades')" class="add-btn" style="margin-bottom: 2rem">
-          + Habilidad
-        </button>
+      <div *ngIf="currentStep() === 5" class="animate-fade">
+        <div class="two-columns">
+          <div>
+            <h3 class="subsection-title">Habilidades Técnicas y Blandas</h3>
+            <small class="hint-block">Ej: Excel, Liderazgo, AutoCAD, Trabajo en equipo...</small>
 
-        <h3 class="entry-title">Idiomas</h3>
-        <div *ngFor="let lang of perfil.idiomas; let i = index" class="skill-item">
-          <input [(ngModel)]="lang.nombre" placeholder="Idioma" class="form-input" />
-          <select [(ngModel)]="lang.nivel" class="form-input">
-            <option>Básico</option>
-            <option>Intermedio</option>
-            <option>Avanzado</option>
-            <option>Nativo</option>
-          </select>
-          <button
-            (click)="removeEntry('idiomas', i)"
-            class="remove-btn"
-            style="position: static"
-          ></button>
+            <div *ngFor="let skill of perfil.habilidades; let i = index" class="skill-row">
+              <input
+                [(ngModel)]="skill.nombre"
+                placeholder="Habilidad"
+                class="form-input skill-input"
+              />
+              <select [(ngModel)]="skill.nivel" class="form-input skill-select">
+                <option>Básico</option>
+                <option>Intermedio</option>
+                <option>Avanzado</option>
+                <option>Experto</option>
+              </select>
+              <button (click)="removeEntry('habilidades', i)" class="btn-icon-mini">×</button>
+            </div>
+            <button (click)="addEntry('habilidades')" class="add-btn-mini">
+              + Añadir Habilidad
+            </button>
+          </div>
+
+          <div>
+            <h3 class="subsection-title">Idiomas</h3>
+            <div *ngFor="let lang of perfil.idiomas; let i = index" class="skill-row">
+              <input
+                [(ngModel)]="lang.nombre"
+                placeholder="Idioma (Ej: Inglés)"
+                class="form-input skill-input"
+              />
+              <select [(ngModel)]="lang.nivel" class="form-input skill-select">
+                <option>Básico (A1-A2)</option>
+                <option>Intermedio (B1-B2)</option>
+                <option>Avanzado (C1)</option>
+                <option>Nativo</option>
+              </select>
+              <button (click)="removeEntry('idiomas', i)" class="btn-icon-mini">×</button>
+            </div>
+            <button (click)="addEntry('idiomas')" class="add-btn-mini">+ Añadir Idioma</button>
+          </div>
         </div>
-        <button (click)="addEntry('idiomas')" class="add-btn">+ Idioma</button>
       </div>
 
-      <div *ngIf="currentStep() === 6">
-        <div
-          class="account-card"
-          style="
-            background: #f0fdf4;
-            padding: 2rem;
-            border-radius: 12px;
-            border: 2px solid #bbf7d0;
-            text-align: center;
-          "
-        >
-          <h2>¡Casi listo!</h2>
-          <p>Crea una cuenta para guardar tu CV y postularte a vacantes.</p>
-          <div class="form-grid" style="max-width: 400px; margin: 2rem auto">
-            <label class="form-label full-width"
-              ><span>Correo Electrónico</span
-              ><input [(ngModel)]="cuenta.email" type="email" class="form-input"
-            /></label>
-            <label class="form-label full-width"
-              ><span>Contraseña</span
-              ><input [(ngModel)]="cuenta.password" type="password" class="form-input"
-            /></label>
+      <div *ngIf="currentStep() === 6" class="animate-fade centered-step">
+        <div class="final-card">
+          <div class="icon-success">🚀</div>
+          <h2>¡CV Completo!</h2>
+          <p>Para guardar tu información y empezar a postularte, crea tu cuenta segura.</p>
+
+          <div class="form-grid compact-form">
+            <label class="form-label full-width">
+              <span>Correo Institucional o Personal</span>
+              <input
+                [(ngModel)]="cuenta.email"
+                type="email"
+                class="form-input"
+                placeholder="ejemplo@correo.com"
+              />
+            </label>
+            <label class="form-label full-width">
+              <span>Crea una Contraseña</span>
+              <input
+                [(ngModel)]="cuenta.password"
+                type="password"
+                class="form-input"
+                placeholder="Mínimo 6 caracteres"
+              />
+            </label>
           </div>
         </div>
       </div>
 
       <div class="nav-controls">
         <button (click)="prevStep()" [disabled]="currentStep() === 1" class="nav-btn prev-btn">
-          ← Anterior
+          Anterior
         </button>
+
+        <div class="dots-indicator">
+          <span
+            *ngFor="let s of steps; let i = index"
+            [class.active-dot]="currentStep() === i + 1"
+          ></span>
+        </div>
+
         <button *ngIf="currentStep() < steps.length" (click)="nextStep()" class="nav-btn next-btn">
-          Siguiente →
+          Siguiente
         </button>
         <button
           *ngIf="currentStep() === steps.length"
           (click)="saveProfile()"
           class="nav-btn final-btn"
         >
-          Guardar Todo y Finalizar
+          Finalizar y Guardar
         </button>
       </div>
     </div>

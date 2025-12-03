@@ -11,7 +11,7 @@ import { AuthService } from '../../services/auth.services';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './cv-builder.html',
-  styleUrl: './cv-builder.css',
+  styleUrl: './cv-builder.css', // Nota: es styleUrl (singular) en Angular 17+
 })
 export class CvBuilderComponent {
   private http = inject(HttpClient);
@@ -20,16 +20,16 @@ export class CvBuilderComponent {
 
   currentStepSignal = 1;
 
+  // Pasos con descripciones amigables
   steps = [
-    { name: 'Datos Personales' },
-    { name: 'Estudios' },
-    { name: 'Experiencia' },
-    { name: 'Proyectos/Logros' }, // Nombre más genérico
-    { name: 'Habilidades' },
-    { name: 'Crear Cuenta' }, // Paso Final
+    { name: '¿Quién eres?', desc: 'Empecemos por tus datos de contacto básicos.' },
+    { name: 'Tu Formación', desc: 'Cuéntanos qué has estudiado o estás estudiando.' },
+    { name: 'Experiencia', desc: 'Trabajos, prácticas, servicio social o voluntariados.' },
+    { name: 'Portafolio', desc: 'Proyectos académicos, investigaciones o logros clave.' },
+    { name: 'Habilidades', desc: '¿Qué herramientas dominas y qué idiomas hablas?' },
+    { name: 'Guardar', desc: 'Crea tu cuenta para no perder tu progreso.' },
   ];
 
-  // Objeto temporal para el paso final
   cuenta = { email: '', password: '' };
 
   perfil: any = {
@@ -50,12 +50,18 @@ export class CvBuilderComponent {
   currentStep() {
     return this.currentStepSignal;
   }
-
   changeStep(step: number) {
     this.currentStepSignal = step;
   }
 
   nextStep() {
+    // Validación básica antes de avanzar
+    if (this.currentStepSignal === 1) {
+      if (!this.perfil.nombre || !this.perfil.apellido) {
+        alert('Por favor completa tu nombre y apellido.');
+        return;
+      }
+    }
     if (this.currentStepSignal < this.steps.length) this.currentStepSignal++;
   }
 
@@ -64,7 +70,7 @@ export class CvBuilderComponent {
   }
 
   addEntry(type: string) {
-    if (type === 'estudios')
+    if (type === 'estudios') {
       this.perfil.estudios.push({
         nivel_estudio: '',
         carrera: '',
@@ -73,7 +79,7 @@ export class CvBuilderComponent {
         fecha_fin: '',
         en_curso: false,
       });
-    else if (type === 'experiencias')
+    } else if (type === 'experiencias') {
       this.perfil.experiencias.push({
         titulo_puesto: '',
         nombre_empresa: '',
@@ -82,51 +88,47 @@ export class CvBuilderComponent {
         actualmente_trabajando: false,
         descripcion_tareas: '',
       });
-    else if (type === 'proyectos')
+    } else if (type === 'proyectos') {
       this.perfil.proyectos.push({
         nombre_proyecto: '',
         url_repositorio: '',
         url_demo: '',
         descripcion: '',
       });
-    else if (type === 'habilidades') this.perfil.habilidades.push({ nombre: '', nivel: 'Básico' });
-    else if (type === 'idiomas') this.perfil.idiomas.push({ nombre: '', nivel: 'Básico' });
+    } else if (type === 'habilidades') {
+      this.perfil.habilidades.push({ nombre: '', nivel: 'Básico' });
+    } else if (type === 'idiomas') {
+      this.perfil.idiomas.push({ nombre: '', nivel: 'Básico' });
+    }
   }
 
   removeEntry(type: string, index: number) {
     if (this.perfil[type]) this.perfil[type].splice(index, 1);
   }
 
-  // --- LÓGICA PRINCIPAL DE GUARDADO ---
   saveProfile() {
     const usuarioLogueado = this.authService.obtenerUsuarioActual();
 
     if (usuarioLogueado && usuarioLogueado.id_usuario) {
-      // Si ya está logueado, guardamos directo
       this.enviarDatosBackend(usuarioLogueado.id_usuario);
     } else {
-      // Si NO está logueado, registramos primero
       if (!this.cuenta.email || !this.cuenta.password) {
-        alert('Ingresa un correo y contraseña para guardar tu CV.');
+        alert('Ingresa un correo y contraseña para crear tu cuenta.');
         return;
       }
 
+      // Registro de usuario nuevo
       this.authService.registro(this.cuenta.email, this.cuenta.password, 2).subscribe({
-        // 👇 AGREGA ": any" AQUÍ
         next: (res: any) => {
           console.log('Usuario registrado:', res);
-
           this.authService.guardarSesion('temp_token', {
             id_usuario: res.id_usuario,
             email: res.email,
           });
-
           this.enviarDatosBackend(res.id_usuario);
         },
-        // 👇 AGREGA ": any" AQUÍ TAMBIÉN
         error: (err: any) => {
           console.error(err);
-          // El ?. es importante por si error.error es undefined
           alert('Error al crear cuenta: ' + (err.error?.error || 'Verifica los datos'));
         },
       });
@@ -135,15 +137,14 @@ export class CvBuilderComponent {
 
   private enviarDatosBackend(idUsuario: number) {
     const payload = { id_usuario: idUsuario, ...this.perfil };
-
     this.http.post('http://localhost:3000/api/student/profile', payload).subscribe({
       next: () => {
-        alert('¡CV creado y guardado con éxito!');
+        alert('¡Bienvenido! Tu perfil ha sido creado. Ahora puedes postularte a vacantes.');
         this.router.navigate(['/welcome']);
       },
       error: (err) => {
         console.error(err);
-        alert('Error al guardar el CV en la base de datos.');
+        alert('Hubo un problema al guardar tu CV.');
       },
     });
   }

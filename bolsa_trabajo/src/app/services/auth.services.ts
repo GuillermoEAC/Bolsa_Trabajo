@@ -60,4 +60,15 @@ export class AuthService {
     // Si estamos en el servidor, retornamos null (no hay usuario logueado en el server)
     return null;
   }
+
+  solicitarRecuperacion(email: string): Observable<any> {
+    return this.http.post('http://localhost:3000/auth/recuperar-password', { email });
+  }
+
+  restablecerPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post('http://localhost:3000/auth/restablecer-password', {
+      token,
+      newPassword,
+    });
+  }
 }

@@ -3,19 +3,16 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { VacantesService } from '../../services/vacantes.service';
 import { AuthService } from '../../services/auth.services';
-// 👇 Importar IconComponent
 import { IconComponent } from '../../cositas/icon.component';
 
 @Component({
   selector: 'app-mis-vacantes',
   standalone: true,
-  // 👇 Agregar IconComponent aquí
   imports: [CommonModule, RouterLink, IconComponent],
   templateUrl: './mis-vacantes.html',
   styleUrls: ['./mis-vacantes.css'],
 })
 export class MisVacantesComponent implements OnInit {
-  // ... (el resto de tu lógica se queda EXACTAMENTE IGUAL) ...
   private vacantesService = inject(VacantesService);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -49,6 +46,26 @@ export class MisVacantesComponent implements OnInit {
         this.cd.detectChanges();
       },
     });
+  }
+
+  // 👇 NUEVO MÉTODO: Obtener el texto del estado en español
+  obtenerEstadoTexto(estado: string): string {
+    const estados: { [key: string]: string } = {
+      APROBADA: 'Activa',
+      PENDIENTE: 'En Revisión',
+      RECHAZADA: 'Rechazada',
+    };
+    return estados[estado] || 'Desconocido';
+  }
+
+  // 👇 NUEVO MÉTODO: Obtener la clase CSS según el estado
+  obtenerEstadoClase(estado: string): string {
+    const clases: { [key: string]: string } = {
+      APROBADA: 'active',
+      PENDIENTE: 'pending',
+      RECHAZADA: 'rejected',
+    };
+    return clases[estado] || 'unknown';
   }
 
   eliminar(id: number) {

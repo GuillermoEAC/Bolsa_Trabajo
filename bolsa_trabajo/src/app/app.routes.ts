@@ -84,6 +84,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/mis-favoritos/mis-favoritos').then((m) => m.MisFavoritosComponent),
   },
+
+  {
+    path: 'mi-perfil',
+    loadComponent: () => import('./pages/mi-perfil/mi-perfil').then((m) => m.MiPerfilComponent),
+  },
   // La ruta comodín siempre va AL FINAL
   {
     path: '**',

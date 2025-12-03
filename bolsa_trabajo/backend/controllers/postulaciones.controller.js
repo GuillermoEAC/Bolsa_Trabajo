@@ -1,51 +1,95 @@
+// backend/controllers/postulaciones.controller.js
+import { crearNotificacionInterna } from './notificaciones.controller.js';
+
+// ============================================
+// 1. REGISTRAR POSTULACIÓN (Aquí estaba el error)
+// ============================================
 export const registrarPostulacion = async (req, res) => {
   const pool = req.app.locals.pool;
   const { id_usuario, id_vacante } = req.body;
 
   try {
-    const [estudiantes] = await pool.query(
-      'SELECT id_estudiante FROM Estudiante WHERE id_usuario = ?',
+    // 1. Validar Estudiante
+    const [est] = await pool.query(
+      'SELECT id_estudiante, nombre, apellido FROM Estudiante WHERE id_usuario = ?',
       [id_usuario]
     );
-    if (estudiantes.length === 0) return res.status(403).json({ error: 'Solo estudiantes.' });
+    if (est.length === 0)
+      return res.status(403).json({ error: 'Solo los estudiantes pueden postularse.' });
+    const estudiante = est[0];
 
-    const id_estudiante = estudiantes[0].id_estudiante;
-
-    const [existente] = await pool.query(
-      'SELECT id_postulacion FROM Postulacion WHERE id_estudiante = ? AND id_vacante = ?',
-      [id_estudiante, id_vacante]
+    // 2. Validar si ya existe la postulación
+    const [exist] = await pool.query(
+      'SELECT * FROM Postulacion WHERE id_estudiante = ? AND id_vacante = ?',
+      [estudiante.id_estudiante, id_vacante]
     );
-    if (existente.length > 0) return res.status(400).json({ error: 'Ya estás postulado.' });
+    if (exist.length > 0)
+      return res.status(400).json({ error: 'Ya te has postulado a esta vacante.' });
 
+    // 3. Insertar Postulación (ESTO SÍ FUNCIONA)
     await pool.query(
-      `INSERT INTO Postulacion (id_estudiante, id_vacante, fecha_postulacion, estado_postulacion) 
-       VALUES (?, ?, NOW(), 'Postulado')`,
-      [id_estudiante, id_vacante]
+      'INSERT INTO Postulacion (id_estudiante, id_vacante, fecha_postulacion, estado_postulacion) VALUES (?, ?, NOW(), "Postulado")',
+      [estudiante.id_estudiante, id_vacante]
     );
 
-    res.status(201).json({ mensaje: 'Postulación enviada.' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al postular.' });
+    // =================================================================
+    // 🔥 ZONA DE SEGURIDAD PARA NOTIFICACIONES
+    // Si esto falla, NO queremos que le salga error al usuario
+    // =================================================================
+    try {
+      const [vacanteInfo] = await pool.query(
+        `
+            SELECT e.id_usuario, v.titulo_cargo 
+            FROM Vacante v 
+            JOIN Empresa e ON v.id_empresa = e.id_empresa 
+            WHERE v.id_vacante = ?
+          `,
+        [id_vacante]
+      );
+
+      if (vacanteInfo.length > 0) {
+        const { id_usuario: idEmpresa, titulo_cargo } = vacanteInfo[0];
+        const mensaje = `📢 Nuevo candidato: ${estudiante.nombre} ${estudiante.apellido} para "${titulo_cargo}".`;
+
+        // Intentamos enviar la notificación
+        // Si 'crearNotificacionInterna' no existe o falla, saltará al catch de abajo
+        if (typeof crearNotificacionInterna === 'function') {
+          await crearNotificacionInterna(pool, idEmpresa, mensaje, 'INFO');
+        } else {
+          console.warn('⚠️ La función crearNotificacionInterna no está disponible.');
+        }
+      }
+    } catch (notiError) {
+      // Solo imprimimos el error en la terminal del backend, pero NO detenemos la respuesta
+      console.error('⚠️ La postulación se guardó, pero falló la notificación:', notiError.message);
+    }
+    // =================================================================
+
+    // 4. Responder Éxito (Ahora siempre llegará aquí)
+    res.status(201).json({ mensaje: 'Postulado con éxito' });
+  } catch (e) {
+    console.error('❌ Error crítico en registrarPostulacion:', e);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
-// 2. OBTENER HISTORIAL (Para el estudiante)
+// ============================================
+// 2. OBTENER MIS POSTULACIONES
+// ============================================
 export const obtenerMisPostulaciones = async (req, res) => {
   const pool = req.app.locals.pool;
   const { id_usuario } = req.params;
-
   try {
     const [rows] = await pool.query(
       `
-      SELECT p.*, v.titulo_cargo, v.ubicacion, e.nombre_empresa, e.logo_path
-      FROM Postulacion p
-      JOIN Estudiante st ON p.id_estudiante = st.id_estudiante
-      JOIN Vacante v ON p.id_vacante = v.id_vacante
-      JOIN Empresa e ON v.id_empresa = e.id_empresa
-      WHERE st.id_usuario = ?
-      ORDER BY p.fecha_postulacion DESC
-    `,
+        SELECT p.*, v.titulo_cargo, v.ubicacion, e.nombre_empresa, e.logo_path, v.salario_min, v.salario_max
+        FROM Postulacion p
+        JOIN Estudiante st ON p.id_estudiante = st.id_estudiante
+        JOIN Vacante v ON p.id_vacante = v.id_vacante
+        JOIN Empresa e ON v.id_empresa = e.id_empresa
+        WHERE st.id_usuario = ?
+        ORDER BY p.fecha_postulacion DESC
+      `,
       [id_usuario]
     );
     res.json(rows);
@@ -54,35 +98,27 @@ export const obtenerMisPostulaciones = async (req, res) => {
   }
 };
 
-// 🔥 3. OBTENER CANDIDATOS DE UNA VACANTE (Para la Empresa)
+// ============================================
+// 3. OBTENER CANDIDATOS POR VACANTE (EMPRESA)
+// ============================================
 export const obtenerCandidatosPorVacante = async (req, res) => {
   const pool = req.app.locals.pool;
   const { id_vacante } = req.params;
-
   try {
-    // Hacemos JOIN con Estudiante y Usuario para traer nombres y correo
     const [candidatos] = await pool.query(
       `
-      SELECT 
-        p.id_postulacion, 
-        p.fecha_postulacion, 
-        p.estado_postulacion,
-        e.id_estudiante,
-        e.nombre, 
-        e.apellido, 
-        e.titulo_cv, 
-        e.telefono,
-        e.descripcion,
-        u.email
-      FROM Postulacion p
-      JOIN Estudiante e ON p.id_estudiante = e.id_estudiante
-      JOIN Usuario u ON e.id_usuario = u.id_usuario
-      WHERE p.id_vacante = ?
-      ORDER BY p.fecha_postulacion DESC
-    `,
+        SELECT 
+          p.id_postulacion, p.fecha_postulacion, p.estado_postulacion,
+          e.id_estudiante, e.nombre, e.apellido, e.titulo_cv, e.telefono, e.descripcion, e.url_foto_perfil,
+          u.email
+        FROM Postulacion p
+        JOIN Estudiante e ON p.id_estudiante = e.id_estudiante
+        JOIN Usuario u ON e.id_usuario = u.id_usuario
+        WHERE p.id_vacante = ?
+        ORDER BY p.fecha_postulacion DESC
+      `,
       [id_vacante]
     );
-
     res.json(candidatos);
   } catch (error) {
     console.error(error);
@@ -90,20 +126,104 @@ export const obtenerCandidatosPorVacante = async (req, res) => {
   }
 };
 
-// 🔥 4. CAMBIAR ESTADO (Para la Empresa: "Visto", "Entrevista", "Rechazado")
+// ============================================
+// 4. CAMBIAR ESTADO POSTULACIÓN
+// ============================================
 export const cambiarEstadoPostulacion = async (req, res) => {
   const pool = req.app.locals.pool;
-  const { id_postulacion } = req.params;
-  const { nuevo_estado } = req.body;
+  const { id_postulacion } = req.params; // <-- Usar el nombre del parámetro en la ruta
+  const { estado } = req.body;
+  try {
+    // Obtener datos de la postulación
+    const [postulacion] = await pool.query(
+      `
+        SELECT p.*, v.titulo_cargo, e.nombre_empresa
+        FROM Postulacion p
+        JOIN Vacante v ON p.id_vacante = v.id_vacante
+        JOIN Empresa e ON v.id_empresa = e.id_empresa
+        WHERE p.id_postulacion = ?
+      `,
+      [id]
+    );
+
+    if (postulacion.length === 0) {
+      return res.status(404).json({ error: 'Postulación no encontrada' });
+    }
+
+    // Actualizar estado
+    await pool.query('UPDATE Postulacion SET estado_postulacion = ? WHERE id_postulacion = ?', [
+      estado,
+      id,
+    ]);
+
+    // 🔥 CREAR NOTIFICACIÓN para el estudiante
+    const mensaje =
+      estado === 'ACEPTADA'
+        ? `¡Felicidades! Tu postulación para ${postulacion[0].titulo_cargo} en ${postulacion[0].nombre_empresa} fue aceptada.`
+        : `Tu postulación para ${postulacion[0].titulo_cargo} en ${postulacion[0].nombre_empresa} no fue seleccionada en esta ocasión.`;
+
+    const tipo = estado === 'ACEPTADA' ? 'EXITO' : 'INFO';
+
+    await pool.query(
+      'INSERT INTO Notificacion (id_usuario_destino, mensaje, tipo) VALUES (?, ?, ?)',
+      [postulacion[0].id_usuario, mensaje, tipo]
+    );
+
+    res.json({ message: 'Estado actualizado y notificación enviada' });
+  } catch (error) {
+    console.error('Error al cambiar estado:', error);
+    res.status(500).json({ error: 'Error al cambiar estado' });
+  }
+};
+
+export const postularse = async (req, res) => {
+  const pool = req.app.locals.pool;
+  const { id_vacante } = req.params;
+  const { id_usuario, carta_presentacion } = req.body;
 
   try {
-    await pool.query('UPDATE Postulacion SET estado_postulacion = ? WHERE id_postulacion = ?', [
-      nuevo_estado,
-      id_postulacion,
+    // Verificar si ya se postuló
+    const [existente] = await pool.query(
+      'SELECT * FROM Postulacion WHERE id_usuario = ? AND id_vacante = ?',
+      [id_usuario, id_vacante]
+    );
+
+    if (existente.length > 0) {
+      return res.status(400).json({ error: 'Ya te postulaste a esta vacante' });
+    }
+
+    // Crear postulación
+    await pool.query(
+      'INSERT INTO Postulacion (id_usuario, id_vacante, carta_presentacion) VALUES (?, ?, ?)',
+      [id_usuario, id_vacante, carta_presentacion]
+    );
+
+    // Obtener datos de la vacante y empresa
+    const [vacante] = await pool.query(
+      `
+        SELECT v.titulo_cargo, v.id_empresa, e.id_usuario as id_empresa_usuario, u.nombre
+        FROM Vacante v
+        JOIN Empresa e ON v.id_empresa = e.id_empresa
+        JOIN Usuario u ON e.id_usuario = u.id_usuario
+        WHERE v.id_vacante = ?
+      `,
+      [id_vacante]
+    );
+
+    // 🔥 CREAR NOTIFICACIÓN para la empresa
+    const [estudiante] = await pool.query('SELECT nombre FROM Usuario WHERE id_usuario = ?', [
+      id_usuario,
     ]);
-    res.json({ mensaje: 'Estado actualizado correctamente' });
+
+    await pool.query('INSERT INTO Notificacion (id_usuario, mensaje, tipo) VALUES (?, ?, ?)', [
+      vacante[0].id_empresa_usuario,
+      `${estudiante[0].nombre} se postuló para ${vacante[0].titulo_cargo}`,
+      'INFO',
+    ]);
+
+    res.status(201).json({ message: 'Postulación enviada con éxito' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al actualizar estado.' });
+    console.error('Error al postularse:', error);
+    res.status(500).json({ error: 'Error al postularse' });
   }
 };

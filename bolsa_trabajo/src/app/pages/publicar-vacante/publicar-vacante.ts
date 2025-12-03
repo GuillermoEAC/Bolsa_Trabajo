@@ -9,7 +9,6 @@ import { AuthService } from '../../services/auth.services';
   selector: 'app-publicar-vacante',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  // 👇 VERIFICA QUE ESTE NOMBRE COINCIDA CON TU ARCHIVO REAL
   templateUrl: './publicar-vacante.html',
   styleUrls: ['./publicar-vacante.css'],
 })
@@ -20,13 +19,14 @@ export class PublicarVacanteComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   vacante = {
-    titulo: '',
+    // FIX: Propiedades renombradas a titulo_cargo y descripcion_vacante
+    titulo_cargo: '',
+    descripcion_vacante: '',
     ubicacion: '',
     modalidad: 'Presencial',
     tipo_contrato: 'Tiempo Completo',
     salario_min: 0,
     salario_max: 0,
-    descripcion: '',
   };
 
   loading = false;
@@ -45,18 +45,18 @@ export class PublicarVacanteComponent implements OnInit {
   cargarDatosVacante(id: number) {
     this.vacantesService.obtenerVacantePorId(id).subscribe({
       next: (data: any) => {
-        // : any para evitar error
+        // Mapeamos los datos de la respuesta a las propiedades del modelo local
         this.vacante = {
-          titulo: data.titulo_cargo,
+          titulo_cargo: data.titulo_cargo,
+          descripcion_vacante: data.descripcion_vacante,
           ubicacion: data.ubicacion,
           modalidad: data.tipo_trabajo,
           tipo_contrato: 'Tiempo Completo',
           salario_min: data.salario_min,
           salario_max: data.salario_max,
-          descripcion: data.descripcion_vacante,
         };
       },
-      error: (err: any) => alert('Error al cargar datos'),
+      error: (err: any) => console.error('Error al cargar datos', err),
     });
   }
 
@@ -68,11 +68,12 @@ export class PublicarVacanteComponent implements OnInit {
       // EDITAR
       this.vacantesService.actualizarVacante(this.idVacanteEditar, this.vacante).subscribe({
         next: () => {
-          alert('Actualizado con éxito');
+          console.log('Vacante actualizada con éxito');
           this.router.navigate(['/mis-vacantes']);
         },
         error: (err: any) => {
           this.loading = false;
+          console.error('Error al actualizar', err);
           alert('Error al actualizar');
         },
       });
@@ -82,13 +83,15 @@ export class PublicarVacanteComponent implements OnInit {
         id_usuario: usuario.id_usuario,
         ...this.vacante,
       };
+
       this.vacantesService.publicarVacante(payload).subscribe({
         next: () => {
-          alert('Publicado con éxito');
+          console.log('Vacante publicada con éxito');
           this.router.navigate(['/mis-vacantes']);
         },
         error: (err: any) => {
           this.loading = false;
+          console.error('Error al publicar', err);
           alert('Error al publicar');
         },
       });

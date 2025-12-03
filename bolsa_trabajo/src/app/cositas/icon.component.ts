@@ -1,8 +1,7 @@
-// src/app/cositas/icon.component.ts
 import { Component, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { ICON_MAP } from '../icons'; // Importamos el archivo que acabamos de mover
+import { ICON_MAP } from '../assets/icons/icons';
 
 @Component({
   selector: 'app-icon',
@@ -25,15 +24,29 @@ import { ICON_MAP } from '../icons'; // Importamos el archivo que acabamos de mo
   ],
 })
 export class IconComponent implements OnChanges {
-  @Input() name: string = ''; // El nombre del icono (ej: 'Search')
+  // Aceptamos ambos inputs para evitar errores
+  @Input() name: string = '';
+  @Input() nombre: string = '';
+
   svgContent: SafeHtml = '';
 
   constructor(private sanitizer: DomSanitizer) {}
 
   ngOnChanges() {
-    // Busca el SVG en tu mapa. Si no existe, no muestra nada.
-    const svgString = ICON_MAP[this.name] || '';
-    // Le dice a Angular: "Confía en este HTML, es un SVG seguro"
+    // Usamos 'name' preferentemente, si no 'nombre'
+    let key = this.name || this.nombre || '';
+
+    // Si el nombre viene en minúscula (ej: 'check'), lo convertimos a PascalCase (ej: 'Check')
+    if (key && key.length > 0 && key[0] === key[0].toLowerCase()) {
+      key = key.charAt(0).toUpperCase() + key.slice(1);
+    }
+
+    const svgString = ICON_MAP[key] || '';
+
+    if (!svgString && key) {
+      console.warn(`⚠️ Icono no encontrado en ICON_MAP: ${key}`);
+    }
+
     this.svgContent = this.sanitizer.bypassSecurityTrustHtml(svgString);
   }
 }

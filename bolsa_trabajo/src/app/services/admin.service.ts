@@ -1,31 +1,55 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-const API_URL = 'http://localhost:3000/api/admin';
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class AdminService {
-  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:3000/api/admin';
 
+  constructor(private http: HttpClient) {}
+
+  // ========== EMPRESAS ==========
   obtenerEmpresas(): Observable<any> {
-    return this.http.get(`${API_URL}/empresas`);
+    return this.http.get(`${this.apiUrl}/empresas`);
   }
 
-  cambiarEstadoEmpresa(id: number, estado: boolean): Observable<any> {
-    return this.http.put(`${API_URL}/validar/${id}`, { estado });
+  cambiarEstadoEmpresa(id: number, validada: boolean): Observable<any> {
+    // Envía el estado de validación (true/false, que se mapeará a 1/0 en el backend)
+    return this.http.put(`${this.apiUrl}/empresas/${id}/estado`, { validada });
   }
+
+  // ========== VACANTES ==========
   obtenerVacantes(): Observable<any> {
-    return this.http.get(`${API_URL}/vacantes`);
+    return this.http.get(`${this.apiUrl}/vacantes`);
   }
 
-  // Aprobar/Rechazar
-  moderarVacante(id: number, estado: 'APROBADA' | 'RECHAZADA'): Observable<any> {
-    return this.http.put(`${API_URL}/vacantes/estado/${id}`, { estado });
+  moderarVacante(id: number, estado: string, idAdmin?: number): Observable<any> {
+    // El backend espera { estado: 'APROBADA' | 'RECHAZADA' }
+    return this.http.put(`${this.apiUrl}/vacantes/${id}/moderar`, {
+      estado: estado,
+      id_administrador_aprobador: idAdmin, // Opcional, si lo manejas
+    });
   }
 
-  // Eliminar definitivamente
   eliminarVacante(id: number): Observable<any> {
-    return this.http.delete(`${API_URL}/vacantes/${id}`);
+    return this.http.delete(`${this.apiUrl}/vacantes/${id}`);
+  }
+
+  // ========== USUARIOS (NUEVO) ==========
+  obtenerUsuarios(): Observable<any> {
+    // Retorna la lista de usuarios más el resumen estadístico
+    return this.http.get(`${this.apiUrl}/usuarios`);
+  }
+
+  eliminarUsuario(id: number, tipo: 'ESTUDIANTE' | 'EMPRESA'): Observable<any> {
+    // Ruta: DELETE /api/admin/usuarios/ESTUDIANTE/123 o /api/admin/usuarios/EMPRESA/456
+    return this.http.delete(`${this.apiUrl}/usuarios/${tipo}/${id}`);
+  }
+
+  // ========== ESTADÍSTICAS ==========
+  obtenerEstadisticas(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/estadisticas`);
   }
 }

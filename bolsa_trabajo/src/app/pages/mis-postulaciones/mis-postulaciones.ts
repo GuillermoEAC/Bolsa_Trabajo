@@ -15,7 +15,7 @@ import { IconComponent } from '../../cositas/icon.component';
 export class MisPostulacionesComponent implements OnInit {
   private postulacionesService = inject(PostulacionesService);
   private authService = inject(AuthService);
-  private cd = inject(ChangeDetectorRef); // 👈 2. Inyectar el Detector
+  private cd = inject(ChangeDetectorRef);
 
   postulaciones: any[] = [];
   loading = true;

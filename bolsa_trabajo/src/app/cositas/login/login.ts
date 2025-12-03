@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Output, input } from '@angular/core';
+import { Component, EventEmitter, Output, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.services';
+import { ValidationService } from '../../services/validation.service';
 
 @Component({
   selector: 'app-login',
@@ -12,6 +13,10 @@ import { AuthService } from '../../services/auth.services';
   styleUrl: './login.css',
 })
 export class Login {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private validationService = inject(ValidationService);
+
   logoPaht: string = 'Logo_Completo.png';
 
   email: string = '';
@@ -20,13 +25,16 @@ export class Login {
   error: string = '';
   exito: string = '';
 
+  // Errores específicos por campo
+  emailError: string = '';
+  passwordError: string = '';
+
   isVisible = input.required<boolean>();
   @Output() close = new EventEmitter<void>();
 
-  constructor(private authService: AuthService, private router: Router) {}
-
   onClose() {
     this.close.emit();
+    this.limpiarFormulario();
   }
 
   stopPropagation(event: Event) {
@@ -36,16 +44,58 @@ export class Login {
   limpiarMensajes() {
     this.error = '';
     this.exito = '';
+    this.emailError = '';
+    this.passwordError = '';
+  }
+
+  limpiarFormulario() {
+    this.email = '';
+    this.password = '';
+    this.limpiarMensajes();
+  }
+
+  // Validar en tiempo real mientras escribe
+  onEmailChange() {
+    const validation = this.validationService.validateEmail(this.email);
+    this.emailError = validation.error || '';
+  }
+
+  onPasswordChange() {
+    const validation = this.validationService.validatePassword(this.password);
+    this.passwordError = validation.error || '';
+  }
+
+  // Validación completa antes de enviar
+  validarFormulario(): boolean {
+    this.limpiarMensajes();
+    let isValid = true;
+
+    // Validar email
+    const emailValidation = this.validationService.validateEmail(this.email);
+    if (!emailValidation.valid) {
+      this.emailError = emailValidation.error || '';
+      isValid = false;
+    }
+
+    // Validar password
+    const passwordValidation = this.validationService.validatePassword(this.password);
+    if (!passwordValidation.valid) {
+      this.passwordError = passwordValidation.error || '';
+      isValid = false;
+    }
+
+    if (!isValid) {
+      this.error = 'Por favor corrige los errores en el formulario';
+    }
+
+    return isValid;
   }
 
   onLogin() {
     console.log('🔵 onLogin() llamado');
 
-    this.error = '';
-    this.exito = '';
-
-    if (!this.email || !this.password) {
-      this.error = 'Por favor ingresa tu email y contraseña';
+    // Validar formulario antes de enviar
+    if (!this.validarFormulario()) {
       return;
     }
 

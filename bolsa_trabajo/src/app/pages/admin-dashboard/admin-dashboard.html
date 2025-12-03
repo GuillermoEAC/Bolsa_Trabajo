@@ -1,12 +1,37 @@
 <div class="admin-container">
   <header class="admin-header">
     <div class="logo-area">
-      <span class="icon-logo"><app-icon name="ShieldCheck"></app-icon></span>
+      <span class="icon-logo">
+        <app-icon name="ShieldCheck"></app-icon>
+      </span>
       <h1>Panel de Administración</h1>
     </div>
-    <button (click)="logout()" class="btn-logout">
-      <app-icon name="Logout"></app-icon> Cerrar Sesión
-    </button>
+
+    <div class="user-menu">
+      <button class="user-menu-btn" (click)="toggleMenu()">
+        <div class="user-avatar">
+          <app-icon name="UserCircle"></app-icon>
+        </div>
+        <span class="user-name">admin</span>
+        <app-icon name="ChevronDown" [class.rotate]="menuOpen"></app-icon>
+      </button>
+
+      <div class="dropdown-menu" *ngIf="menuOpen">
+        <button class="menu-item" routerLink="/admin/perfil">
+          <app-icon name="User"></app-icon>
+          <span>Mi Perfil</span>
+        </button>
+        <button class="menu-item" routerLink="/admin/configuracion">
+          <app-icon name="Cog"></app-icon>
+          <span>Configuración</span>
+        </button>
+        <div class="menu-divider"></div>
+        <button class="menu-item danger" (click)="logout()">
+          <app-icon name="Logout"></app-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </div>
+    </div>
   </header>
 
   <div class="tabs-container">
@@ -15,27 +40,157 @@
       [class.active]="vistaActual === 'empresas'"
       (click)="cambiarVista('empresas')"
     >
-      <app-icon name="Building"></app-icon> Empresas
+      <app-icon name="Building"></app-icon>
+      <span>Empresas</span>
     </button>
     <button
       class="tab-btn"
       [class.active]="vistaActual === 'vacantes'"
       (click)="cambiarVista('vacantes')"
     >
-      <app-icon name="Briefcase"></app-icon> Vacantes
+      <app-icon name="Briefcase"></app-icon>
+      <span>Vacantes</span>
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="vistaActual === 'usuarios'"
+      (click)="cambiarVista('usuarios')"
+    >
+      <app-icon name="Users"></app-icon>
+      <span>Usuarios</span>
     </button>
   </div>
 
+  <div class="summary-cards" *ngIf="!loading">
+    <div class="summary-card empresas" *ngIf="vistaActual === 'empresas'">
+      <div class="card-header-row">
+        <div class="card-icon">
+          <app-icon name="Building"></app-icon>
+        </div>
+        <div class="card-content">
+          <h3>{{ resumenEmpresas.total }}</h3>
+          <p>Total de Empresas</p>
+        </div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-item">
+          <app-icon name="CheckCircle" class="stat-icon success"></app-icon>
+          <div>
+            <span class="stat-value">{{ resumenEmpresas.validadas }}</span>
+            <span class="stat-label">Validadas</span>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <app-icon name="Clock" class="stat-icon warning"></app-icon>
+          <div>
+            <span class="stat-value">{{ resumenEmpresas.pendientes }}</span>
+            <span class="stat-label">Pendientes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-card vacantes" *ngIf="vistaActual === 'vacantes'">
+      <div class="card-header-row">
+        <div class="card-icon">
+          <app-icon name="Briefcase"></app-icon>
+        </div>
+        <div class="card-content">
+          <h3>{{ resumenVacantes.total }}</h3>
+          <p>Total de Vacantes</p>
+        </div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-item">
+          <app-icon name="CheckCircle" class="stat-icon success"></app-icon>
+          <div>
+            <span class="stat-value">{{ resumenVacantes.aprobadas }}</span>
+            <span class="stat-label">Aprobadas</span>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <app-icon name="Clock" class="stat-icon warning"></app-icon>
+          <div>
+            <span class="stat-value">{{ resumenVacantes.pendientes }}</span>
+            <span class="stat-label">Pendientes</span>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <app-icon name="XCircle" class="stat-icon danger"></app-icon>
+          <div>
+            <span class="stat-value">{{ resumenVacantes.rechazadas }}</span>
+            <span class="stat-label">Rechazadas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-card usuarios" *ngIf="vistaActual === 'usuarios'">
+      <div class="card-header-row">
+        <div class="card-icon">
+          <app-icon name="Users"></app-icon>
+        </div>
+        <div class="card-content">
+          <h3>{{ resumenUsuarios.total }}</h3>
+          <p>Total de Usuarios</p>
+        </div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-item">
+          <app-icon name="AcademicCap" class="stat-icon info"></app-icon>
+          <div>
+            <span class="stat-value">{{ resumenUsuarios.estudiantes }}</span>
+            <span class="stat-label">Estudiantes</span>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <app-icon name="Building" class="stat-icon warning"></app-icon>
+          <div>
+            <span class="stat-value">{{ resumenUsuarios.empresas }}</span>
+            <span class="stat-label">Empresas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="table-card">
-    <div *ngIf="loading" class="loading">Cargando datos...</div>
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Cargando datos...</p>
+    </div>
 
     <table class="modern-table" *ngIf="!loading && vistaActual === 'empresas'">
       <thead>
         <tr>
-          <th>Empresa</th>
-          <th>Contacto</th>
-          <th>Estado</th>
-          <th style="text-align: right">Acciones</th>
+          <th>
+            <div class="th-content">
+              <app-icon name="Building"></app-icon>
+              <span>Empresa</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-content">
+              <app-icon name="Envelope"></app-icon>
+              <span>Contacto</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-content">
+              <app-icon name="CheckBadge"></app-icon>
+              <span>Estado</span>
+            </div>
+          </th>
+          <th style="text-align: right">
+            <div class="th-content" style="justify-content: flex-end">
+              <app-icon name="Cog"></app-icon>
+              <span>Acciones</span>
+            </div>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -82,10 +237,30 @@
     <table class="modern-table" *ngIf="!loading && vistaActual === 'vacantes'">
       <thead>
         <tr>
-          <th>Puesto</th>
-          <th>Fecha</th>
-          <th>Estado</th>
-          <th style="text-align: right">Moderación</th>
+          <th>
+            <div class="th-content">
+              <app-icon name="Briefcase"></app-icon>
+              <span>Puesto</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-content">
+              <app-icon name="Calendar"></app-icon>
+              <span>Fecha</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-content">
+              <app-icon name="Flag"></app-icon>
+              <span>Estado</span>
+            </div>
+          </th>
+          <th style="text-align: right">
+            <div class="th-content" style="justify-content: flex-end">
+              <app-icon name="Cog"></app-icon>
+              <span>Moderación</span>
+            </div>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -117,7 +292,6 @@
               >
                 <app-icon name="Check"></app-icon>
               </button>
-
               <button
                 *ngIf="v.estado_aprobacion === 'PENDIENTE'"
                 class="btn-icon btn-reject"
@@ -126,7 +300,6 @@
               >
                 <app-icon name="XMark"></app-icon>
               </button>
-
               <button
                 class="btn-icon btn-delete"
                 title="Eliminar"
@@ -135,6 +308,94 @@
                 <app-icon name="Trash"></app-icon>
               </button>
             </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="modern-table" *ngIf="!loading && vistaActual === 'usuarios'">
+      <thead>
+        <tr>
+          <th>
+            <div class="th-content">
+              <app-icon name="User"></app-icon>
+              <span>Usuario</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-content">
+              <app-icon name="AtSymbol"></app-icon>
+              <span>Contacto</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-content">
+              <app-icon name="Tag"></app-icon>
+              <span>Tipo</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-content">
+              <app-icon name="Calendar"></app-icon>
+              <span>Fecha de Registro</span>
+            </div>
+          </th>
+          <th style="text-align: right">
+            <div class="th-content" style="justify-content: flex-end">
+              <app-icon name="Cog"></app-icon>
+              <span>Acciones</span>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of usuarios">
+          <td>
+            <div class="info-cell">
+              <strong *ngIf="user.tipo_usuario === 'ESTUDIANTE'">
+                {{ user.nombre }} {{ user.apellido }}
+              </strong>
+              <strong *ngIf="user.tipo_usuario === 'EMPRESA'">
+                {{ user.nombre }}
+              </strong>
+              <small *ngIf="user.fecha_nacimiento">
+                <app-icon name="Cake" class="inline-icon"></app-icon>
+                {{ formatearFecha(user.fecha_nacimiento) }}
+              </small>
+            </div>
+          </td>
+          <td>
+            <div class="info-cell">
+              <span>{{ user.email }}</span>
+              <small *ngIf="user.telefono">
+                <app-icon name="Phone" class="inline-icon"></app-icon>
+                {{ user.telefono }}
+              </small>
+            </div>
+          </td>
+          <td>
+            <span
+              class="badge"
+              [class.valid]="user.tipo_usuario === 'ESTUDIANTE'"
+              [class.pending]="user.tipo_usuario === 'EMPRESA'"
+            >
+              <app-icon
+                [name]="user.tipo_usuario === 'ESTUDIANTE' ? 'AcademicCap' : 'Building'"
+                class="badge-icon"
+              >
+              </app-icon>
+              {{ user.tipo_usuario }}
+            </span>
+          </td>
+          <td>{{ formatearFecha(user.fecha_registro) }}</td>
+          <td style="text-align: right">
+            <button
+              class="btn-icon btn-delete"
+              title="Eliminar usuario"
+              (click)="eliminarUsuario(user)"
+            >
+              <app-icon name="Trash"></app-icon>
+            </button>
           </td>
         </tr>
       </tbody>

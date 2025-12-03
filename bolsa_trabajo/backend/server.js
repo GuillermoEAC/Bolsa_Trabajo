@@ -4,72 +4,65 @@ import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import vacantesRoutes from './routes/vacantes.routes.js';
-import postulacionesRoutes from './routes/postulaciones.routes.js';
-// Importar configuración de DB
-import DbConfig from './config/database.js';
-import adminRoutes from './routes/admin.routes.js';
-// Importar Rutas
-import authRoutes from './routes/auth.routes.js';
-import studentRoutes from './routes/student.routes.js';
-import companyRoutes from './routes/company.routes.js';
-import favoritosRoutes from './routes/favoritos.routes.js';
 
 dotenv.config();
 
-// Configuración para __dirname en ES Modules
+// Rutas
+import authRoutes from './routes/auth.routes.js';
+import studentRoutes from './routes/student.routes.js';
+import companyRoutes from './routes/company.routes.js';
+import vacantesRoutes from './routes/vacantes.routes.js';
+import postulacionesRoutes from './routes/postulaciones.routes.js';
+import favoritosRoutes from './routes/favoritos.routes.js';
+import adminRoutes from './routes/admin.routes.js';
+import notificacionesRoutes from './routes/notificaciones.routes.js';
+import analyticsRoutes from './routes/analytics.routes.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// --- MIDDLEWARES ---
+// Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use('/api/vacantes', vacantesRoutes);
-app.use('/api/favoritos', favoritosRoutes);
-// --- STATIC FILES ---
-// Esto permite que el navegador acceda a las imágenes en http://localhost:3000/uploads/...
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Conexión DB
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'bolsa_trabajo',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
+
+app.locals.pool = pool;
+
+pool
+  .getConnection()
+  .then(() => console.log('✅ Base de datos conectada.'))
+  .catch((err) => console.error('❌ Error de conexión DB:', err));
+
+// Rutas
+app.use('/auth', authRoutes);
+app.use('/api/student', studentRoutes);
+app.use('/api/company', companyRoutes);
+app.use('/api/vacantes', vacantesRoutes);
+app.use('/api/postulaciones', postulacionesRoutes);
+app.use('/api/favoritos', favoritosRoutes);
 app.use('/api/admin', adminRoutes);
-// --- DATABASE ---
-const dbConfig = DbConfig;
-let pool;
+app.use('/api/notificaciones', notificacionesRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
-async function start() {
-  try {
-    pool = mysql.createPool({
-      ...dbConfig,
-      waitForConnections: true,
-      connectionLimit: 10,
-    });
-
-    await pool.query('SELECT 1');
-    console.log('✅ Base de datos conectada.');
-
-    // Hacer el pool accesible globalmente en req.app.locals
-    app.locals.pool = pool;
-
-    // --- RUTAS ---
-    app.get('/', (req, res) => {
-      res.json({ mensaje: 'API Funcionando 🚀' });
-    });
-
-    app.use('/auth', authRoutes);
-    app.use('/api/student', studentRoutes);
-    app.use('/api/company', companyRoutes); // Ruta de empresas
-    app.use('/api/vacantes', vacantesRoutes);
-    app.use('/api/postulaciones', postulacionesRoutes);
-    app.use('/api/favoritos', favoritosRoutes);
-    // Iniciar servidor
-    app.listen(3000, () => {
-      console.log('✅ Servidor corriendo en http://localhost:3000');
-    });
-  } catch (err) {
-    console.error('❌ Error al conectar BD o iniciar servidor:', err);
-    process.exit(1);
-  }
-}
-
-start();
+app.listen(PORT, () => {
+  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+  console.log('📚 Rutas disponibles:');
+  console.log('   POST /auth/login');
+  console.log('   POST /auth/registro');
+  console.log('   GET  /api/analytics/empresa/:id_usuario');
+  console.log('   GET  /api/notificaciones/usuario/:id_usuario');
+});
