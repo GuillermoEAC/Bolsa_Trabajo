@@ -1,4 +1,5 @@
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export const registerCompany = async (req, res) => {
   const pool = req.app.locals.pool;
