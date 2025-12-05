@@ -111,21 +111,33 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 console.log('🔍 Configuración de Base de Datos:');
-console.log('MYSQL_HOST:', process.env.MYSQL_HOST);
-console.log('MYSQL_USER:', process.env.MYSQL_USER);
-console.log('MYSQL_DATABASE:', process.env.MYSQL_DATABASE);
-console.log('MYSQL_PORT:', process.env.MYSQL_PORT);
+console.log('Host:', process.env.MYSQL_HOST || process.env.MYSQLHOST || 'no encontrado');
+console.log('User:', process.env.MYSQL_USER || process.env.MYSQLUSER || 'no encontrado');
+console.log(
+  'Database:',
+  process.env.MYSQL_DATABASE || process.env.MYSQLDATABASE || 'no encontrado'
+);
+console.log('Port:', process.env.MYSQL_PORT || process.env.MYSQLPORT || 'no encontrado');
 console.log('MYSQL_PASSWORD existe:', !!process.env.MYSQL_PASSWORD);
 console.log('DB_HOST (fallback):', process.env.DB_HOST);
 console.log('---');
 
 // Conexión DB - Compatible con Railway (MYSQL_*) y local (DB_*)
 const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST || process.env.DB_HOST || 'localhost',
-  user: process.env.MYSQL_USER || process.env.DB_USER || 'root',
-  password: process.env.MYSQL_PASSWORD || process.env.DB_PASSWORD || '',
-  database: process.env.MYSQL_DATABASE || process.env.DB_NAME || 'bolsa_trabajo',
-  port: Number(process.env.MYSQL_PORT || process.env.DB_PORT || 3306),
+  host: process.env.MYSQL_HOST || process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
+  user: process.env.MYSQL_USER || process.env.MYSQLUSER || process.env.DB_USER || 'root',
+  password:
+    process.env.MYSQL_PASSWORD ||
+    process.env.MYSQLPASSWORD ||
+    process.env.MYSQL_ROOT_PASSWORD ||
+    process.env.DB_PASSWORD ||
+    '',
+  database:
+    process.env.MYSQL_DATABASE ||
+    process.env.MYSQLDATABASE ||
+    process.env.DB_NAME ||
+    'bolsa_trabajo',
+  port: Number(process.env.MYSQL_PORT || process.env.MYSQLPORT || process.env.DB_PORT || 3306),
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
