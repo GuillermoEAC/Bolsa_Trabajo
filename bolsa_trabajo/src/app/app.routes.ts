@@ -141,7 +141,7 @@ export const routes: Routes = [
     path: 'publicar-vacante/:id',
     loadComponent: () =>
       import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
-    // 👈 CORRECCIÓN: Desactiva el prerenderizado para evitar el error 'getPrerenderParams is missing'
+
     prerender: false,
   },
   {
@@ -176,7 +176,7 @@ export const routes: Routes = [
     path: 'ver-candidatos/:id',
     loadComponent: () =>
       import('./pages/ver-candidatos/ver-candidatos').then((m) => m.VerCandidatosComponent),
-    // 👈 CORRECCIÓN: Desactiva el prerrenderizado para evitar el error 'getPrerenderParams is missing'
+
     prerender: false,
   },
 
