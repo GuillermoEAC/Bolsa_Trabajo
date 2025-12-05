@@ -1,3 +1,101 @@
+// // src/app/app.routes.ts
+// import { Routes } from '@angular/router';
+
+// export const routes: Routes = [
+//   {
+//     path: '',
+//     redirectTo: '/welcome',
+//     pathMatch: 'full',
+//   },
+//   {
+//     path: 'welcome',
+//     loadComponent: () => import('./pages/welcome/welcome').then((m) => m.WelcomeComponent),
+//   },
+//   {
+//     path: 'registro-empresa',
+//     loadComponent: () =>
+//       import('./pages/company-register/company-register').then((m) => m.CompanyRegisterComponent),
+//     // ./pages/company-register/company-register.component
+//   },
+//   {
+//     path: 'dashboard-empresa',
+//     loadComponent: () =>
+//       import('./pages/dashboard-empresa/dashboard-empresa').then(
+//         (m) => m.DashboardEmpresaComponent
+//       ), // 👈 ASEGÚRATE QUE DIGA "Component" AL FINAL
+//   },
+//   {
+//     path: 'mis-vacantes',
+//     loadComponent: () =>
+//       import('./pages/mis-vacantes/mis-vacantes').then((m) => m.MisVacantesComponent),
+//   },
+//   {
+//     path: 'admin',
+//     loadComponent: () =>
+//       import('./pages/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboardComponent),
+//   },
+//   {
+//     path: 'publicar-vacante',
+//     loadComponent: () =>
+//       import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
+//   },
+//   {
+//     // Ruta con parámetro :id para editar
+//     path: 'publicar-vacante/:id',
+//     loadComponent: () =>
+//       import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
+//   },
+//   {
+//     path: 'cv-builder',
+//     // Asegúrate que 'm.CvBuilderComponent' coincida con el 'export class' de tu archivo cv-builder.ts
+//     loadComponent: () => import('./pages/cv-builder/cv-builder').then((m) => m.CvBuilderComponent),
+//   },
+//   {
+//     path: 'empleos',
+//     loadComponent: () =>
+//       import('./pages/buscador-empleos/buscador-empleos').then((m) => m.BuscadorEmpleosComponent),
+//   },
+//   {
+//     path: 'publicar-vacante',
+//     loadComponent: () =>
+//       import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
+//   },
+//   {
+//     path: 'login',
+//     loadComponent: () => import('./cositas/login/login').then((m) => m.Login),
+//   },
+
+//   {
+//     path: 'mis-postulaciones',
+//     loadComponent: () =>
+//       import('./pages/mis-postulaciones/mis-postulaciones').then(
+//         (m) => m.MisPostulacionesComponent
+//       ),
+//   },
+
+//   {
+//     path: 'ver-candidatos/:id',
+//     loadComponent: () =>
+//       import('./pages/ver-candidatos/ver-candidatos').then((m) => m.VerCandidatosComponent),
+//   },
+
+//   {
+//     path: 'mis-favoritos',
+//     loadComponent: () =>
+//       import('./pages/mis-favoritos/mis-favoritos').then((m) => m.MisFavoritosComponent),
+//   },
+
+//   {
+//     path: 'mi-perfil',
+//     loadComponent: () => import('./pages/mi-perfil/mi-perfil').then((m) => m.MiPerfilComponent),
+//   },
+//   // La ruta comodín siempre va AL FINAL
+//   {
+//     path: '**',
+//     redirectTo: '/welcome',
+//   },
+// ];
+
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
 
@@ -15,14 +113,13 @@ export const routes: Routes = [
     path: 'registro-empresa',
     loadComponent: () =>
       import('./pages/company-register/company-register').then((m) => m.CompanyRegisterComponent),
-    // ./pages/company-register/company-register.component
   },
   {
     path: 'dashboard-empresa',
     loadComponent: () =>
       import('./pages/dashboard-empresa/dashboard-empresa').then(
         (m) => m.DashboardEmpresaComponent
-      ), // 👈 ASEGÚRATE QUE DIGA "Component" AL FINAL
+      ),
   },
   {
     path: 'mis-vacantes',
@@ -40,14 +137,15 @@ export const routes: Routes = [
       import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
   },
   {
-    // Ruta con parámetro :id para editar
+    // RUTA DINÁMICA PROBLEMA 1 (Edición de Vacante)
     path: 'publicar-vacante/:id',
     loadComponent: () =>
       import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
+    // 👈 CORRECCIÓN: Desactiva el prerenderizado para evitar el error 'getPrerenderParams is missing'
+    prerender: false,
   },
   {
     path: 'cv-builder',
-    // Asegúrate que 'm.CvBuilderComponent' coincida con el 'export class' de tu archivo cv-builder.ts
     loadComponent: () => import('./pages/cv-builder/cv-builder').then((m) => m.CvBuilderComponent),
   },
   {
@@ -74,9 +172,12 @@ export const routes: Routes = [
   },
 
   {
+    // RUTA DINÁMICA PROBLEMA 2 (Ver Candidatos)
     path: 'ver-candidatos/:id',
     loadComponent: () =>
       import('./pages/ver-candidatos/ver-candidatos').then((m) => m.VerCandidatosComponent),
+    // 👈 CORRECCIÓN: Desactiva el prerrenderizado para evitar el error 'getPrerenderParams is missing'
+    prerender: false,
   },
 
   {
