@@ -142,7 +142,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
 
-    prerender: false,
+    // prerender: false,
   },
   {
     path: 'cv-builder',
@@ -177,7 +177,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/ver-candidatos/ver-candidatos').then((m) => m.VerCandidatosComponent),
 
-    prerender: false,
+    // prerender: false,
   },
 
   {
