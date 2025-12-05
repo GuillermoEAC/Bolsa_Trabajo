@@ -137,12 +137,10 @@ export const routes: Routes = [
       import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
   },
   {
-    // RUTA DINÁMICA PROBLEMA 1 (Edición de Vacante)
     path: 'publicar-vacante/:id',
     loadComponent: () =>
       import('./pages/publicar-vacante/publicar-vacante').then((m) => m.PublicarVacanteComponent),
-
-    // prerender: false,
+    data: { prerender: false },
   },
   {
     path: 'cv-builder',
@@ -172,12 +170,10 @@ export const routes: Routes = [
   },
 
   {
-    // RUTA DINÁMICA PROBLEMA 2 (Ver Candidatos)
     path: 'ver-candidatos/:id',
     loadComponent: () =>
       import('./pages/ver-candidatos/ver-candidatos').then((m) => m.VerCandidatosComponent),
-
-    // prerender: false,
+    data: { prerender: false },
   },
 
   {
