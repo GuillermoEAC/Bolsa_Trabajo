@@ -76,4 +76,5 @@ app.listen(PORT, () => {
   console.log('   POST /auth/registro');
   console.log('   GET  /api/analytics/empresa/:id_usuario');
   console.log('   GET  /api/notificaciones/usuario/:id_usuario');
+  console.olog(' Si se actuliza solo?');
 });
