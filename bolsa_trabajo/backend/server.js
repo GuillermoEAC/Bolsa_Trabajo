@@ -127,9 +127,9 @@ const pool = mysql.createPool({
   host: process.env.MYSQL_HOST || process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
   user: process.env.MYSQL_USER || process.env.MYSQLUSER || process.env.DB_USER || 'root',
   password:
-    process.env.MYSQL_PASSWORD ||
-    process.env.MYSQLPASSWORD ||
     process.env.MYSQL_ROOT_PASSWORD ||
+    process.env.MYSQLPASSWORD ||
+    process.env.MYSQL_PASSWORD ||
     process.env.DB_PASSWORD ||
     '',
   database:
