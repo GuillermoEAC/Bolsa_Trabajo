@@ -137,6 +137,7 @@
       <div class="spinner"></div>
       <p>Cargando datos...</p>
     </div>
+
     <table class="modern-table" *ngIf="!loading && vistaActual === 'empresas'">
       <thead>
         <tr>
@@ -175,14 +176,14 @@
               <ng-container *ngIf="emp.validada === 0">
                 <button
                   class="btn-icon btn-approve"
-                  title="Aprobar"
+                  title="Aprobar Solicitud"
                   (click)="toggleValidacion(emp)"
                 >
                   <app-icon name="Check"></app-icon>
                 </button>
                 <button
                   class="btn-icon btn-reject"
-                  title="Rechazar (Eliminar)"
+                  title="Rechazar y Eliminar"
                   (click)="rechazarEmpresa(emp)"
                 >
                   <app-icon name="XMark"></app-icon>
@@ -192,7 +193,7 @@
               <button
                 *ngIf="emp.validada === 1"
                 class="btn-icon btn-delete"
-                title="Desactivar"
+                title="Desactivar Empresa"
                 (click)="toggleValidacion(emp)"
               >
                 <app-icon name="NoSymbol"></app-icon>
@@ -201,55 +202,12 @@
               <button
                 *ngIf="emp.validada === 2"
                 class="btn-icon btn-approve"
-                title="Reactivar"
+                title="Reactivar Empresa"
                 (click)="toggleValidacion(emp)"
               >
                 <app-icon name="ArrowPath"></app-icon>
               </button>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <table class="modern-table" *ngIf="!loading && vistaActual === 'usuarios'">
-      <thead>
-        <tr>
-          <th>Estudiante</th>
-          <th>Contacto</th>
-          <th>Fecha Registro</th>
-          <th style="text-align: right">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of usuarios">
-          <td>
-            <div class="info-cell">
-              <strong>{{ user.nombre }} {{ user.apellido }}</strong>
-              <small *ngIf="user.fecha_nacimiento">
-                <app-icon name="Cake" class="inline-icon"></app-icon>
-                {{ formatearFecha(user.fecha_nacimiento) }}
-              </small>
-            </div>
-          </td>
-          <td>
-            <div class="info-cell">
-              <span>{{ user.email }}</span>
-              <small *ngIf="user.telefono">
-                <app-icon name="Phone" class="inline-icon"></app-icon>
-                {{ user.telefono }}
-              </small>
-            </div>
-          </td>
-          <td>{{ formatearFecha(user.fecha_registro) }}</td>
-          <td style="text-align: right">
-            <button
-              class="btn-icon btn-delete"
-              title="Eliminar estudiante"
-              (click)="eliminarUsuario(user)"
-            >
-              <app-icon name="Trash"></app-icon>
-            </button>
           </td>
         </tr>
       </tbody>
@@ -313,6 +271,7 @@
               >
                 <app-icon name="Check"></app-icon>
               </button>
+
               <button
                 *ngIf="v.estado_aprobacion === 'PENDIENTE'"
                 class="btn-icon btn-reject"
@@ -321,9 +280,10 @@
               >
                 <app-icon name="XMark"></app-icon>
               </button>
+
               <button
                 class="btn-icon btn-delete"
-                title="Eliminar"
+                title="Eliminar Vacante"
                 (click)="eliminarVacante(v.id_vacante)"
               >
                 <app-icon name="Trash"></app-icon>
@@ -340,19 +300,13 @@
           <th>
             <div class="th-content">
               <app-icon name="User"></app-icon>
-              <span>Usuario</span>
+              <span>Estudiante</span>
             </div>
           </th>
           <th>
             <div class="th-content">
               <app-icon name="AtSymbol"></app-icon>
               <span>Contacto</span>
-            </div>
-          </th>
-          <th>
-            <div class="th-content">
-              <app-icon name="Tag"></app-icon>
-              <span>Tipo</span>
             </div>
           </th>
           <th>
@@ -373,12 +327,7 @@
         <tr *ngFor="let user of usuarios">
           <td>
             <div class="info-cell">
-              <strong *ngIf="user.tipo_usuario === 'ESTUDIANTE'">
-                {{ user.nombre }} {{ user.apellido }}
-              </strong>
-              <strong *ngIf="user.tipo_usuario === 'EMPRESA'">
-                {{ user.nombre }}
-              </strong>
+              <strong>{{ user.nombre }} {{ user.apellido }}</strong>
               <small *ngIf="user.fecha_nacimiento">
                 <app-icon name="Cake" class="inline-icon"></app-icon>
                 {{ formatearFecha(user.fecha_nacimiento) }}
@@ -394,25 +343,11 @@
               </small>
             </div>
           </td>
-          <td>
-            <span
-              class="badge"
-              [class.valid]="user.tipo_usuario === 'ESTUDIANTE'"
-              [class.pending]="user.tipo_usuario === 'EMPRESA'"
-            >
-              <app-icon
-                [name]="user.tipo_usuario === 'ESTUDIANTE' ? 'AcademicCap' : 'Building'"
-                class="badge-icon"
-              >
-              </app-icon>
-              {{ user.tipo_usuario }}
-            </span>
-          </td>
           <td>{{ formatearFecha(user.fecha_registro) }}</td>
           <td style="text-align: right">
             <button
               class="btn-icon btn-delete"
-              title="Eliminar usuario"
+              title="Eliminar estudiante"
               (click)="eliminarUsuario(user)"
             >
               <app-icon name="Trash"></app-icon>

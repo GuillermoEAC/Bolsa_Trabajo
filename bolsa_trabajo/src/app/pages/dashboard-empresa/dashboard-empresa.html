@@ -3,7 +3,22 @@
     <div class="logo-area">🏢 Panel Empresa</div>
     <nav>
       <ng-container *ngIf="empresaValidada; else menuBloqueado">
-        <a class="nav-item active">Resumen</a>
+        <a
+          class="nav-item"
+          [class.active]="vistaActual === 'resumen'"
+          (click)="cambiarVista('resumen')"
+        >
+          Resumen
+        </a>
+
+        <a
+          class="nav-item"
+          [class.active]="vistaActual === 'perfil'"
+          (click)="cambiarVista('perfil')"
+        >
+          <app-icon name="User"></app-icon> Mi Perfil
+        </a>
+
         <a class="nav-item" routerLink="/mis-vacantes">Mis Vacantes</a>
         <a class="nav-item">Candidatos</a>
       </ng-container>
@@ -21,7 +36,9 @@
   <main class="content">
     <header class="top-header">
       <div>
-        <h1>Bienvenido al Reclutamiento</h1>
+        <h1>
+          {{ vistaActual === 'perfil' ? 'Configuración de Perfil' : 'Bienvenido al Reclutamiento' }}
+        </h1>
         <p>Usuario: {{ usuario?.email }}</p>
       </div>
     </header>
@@ -48,87 +65,58 @@
         </svg>
       </div>
       <h2>⏳ Tu cuenta está en revisión</h2>
-      <p>
-        ¡Gracias por registrarte! Para garantizar la seguridad de la plataforma, un administrador
-        debe validar los datos de tu empresa antes de que puedas publicar ofertas.
-      </p>
-
-      <div class="info-box">
-        <h4>Proceso de activación:</h4>
-        <ul>
-          <li>Revisión de NIT/RFC y Razón Social.</li>
-          <li>Confirmación de datos de contacto.</li>
-          <li>Activación en 24-48 horas hábiles.</li>
-        </ul>
-      </div>
-
-      <button class="btn-secondary" (click)="verificarAcceso()">Consultar estado nuevamente</button>
     </div>
 
     <ng-container *ngIf="!verificandoEstado && empresaValidada">
-      <div *ngIf="loading" class="loading-state">
-        <div class="spinner"></div>
-        <p>Cargando estadísticas...</p>
+      <div *ngIf="vistaActual === 'resumen'">
+        <div *ngIf="loading" class="loading-state">
+          <div class="spinner"></div>
+          <p>Cargando estadísticas...</p>
+        </div>
+
+        <div *ngIf="!loading" class="dashboard-content">
+          <div *ngIf="stats" class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue"><app-icon name="Briefcase"></app-icon></div>
+              <div class="stat-info">
+                <span class="stat-number">{{ stats.totalVacantes }}</span>
+                <span class="stat-label">Vacantes Publicadas</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green"><app-icon name="Users"></app-icon></div>
+              <div class="stat-info">
+                <span class="stat-number">{{ stats.totalPostulaciones }}</span>
+                <span class="stat-label">Postulaciones Recibidas</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple"><app-icon name="TrendUp"></app-icon></div>
+              <div class="stat-info">
+                <span class="stat-number">{{
+                  stats.totalVacantes > 0
+                    ? (stats.totalPostulaciones / stats.totalVacantes).toFixed(1)
+                    : 0
+                }}</span>
+                <span class="stat-label">Promedio por Vacante</span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="stats && stats.vacantesMasPostuladas?.length > 0" class="popular-section">
+            <h3>Vacantes más Populares</h3>
+            <div class="popular-list">
+              <div *ngFor="let vacante of stats.vacantesMasPostuladas" class="popular-item">
+                <span class="popular-title">{{ vacante.titulo_cargo }}</span>
+                <span class="popular-count">{{ vacante.postulaciones }} postulaciones</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div *ngIf="!loading" class="dashboard-content">
-        <div *ngIf="stats" class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon blue">
-              <app-icon name="Briefcase"></app-icon>
-            </div>
-            <div class="stat-info">
-              <span class="stat-number">{{ stats.totalVacantes }}</span>
-              <span class="stat-label">Vacantes Publicadas</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon green">
-              <app-icon name="Users"></app-icon>
-            </div>
-            <div class="stat-info">
-              <span class="stat-number">{{ stats.totalPostulaciones }}</span>
-              <span class="stat-label">Postulaciones Recibidas</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon purple">
-              <app-icon name="TrendUp"></app-icon>
-            </div>
-            <div class="stat-info">
-              <span class="stat-number">{{
-                stats.totalVacantes > 0
-                  ? (stats.totalPostulaciones / stats.totalVacantes).toFixed(1)
-                  : 0
-              }}</span>
-              <span class="stat-label">Promedio por Vacante</span>
-            </div>
-          </div>
-        </div>
-
-        <div *ngIf="stats && stats.vacantesMasPostuladas?.length > 0" class="popular-section">
-          <h3>Vacantes más Populares</h3>
-          <div class="popular-list">
-            <div *ngFor="let vacante of stats.vacantesMasPostuladas" class="popular-item">
-              <span class="popular-title">{{ vacante.titulo_cargo }}</span>
-              <span class="popular-count">{{ vacante.postulaciones }} postulaciones</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="action-section">
-          <button class="btn-primary" routerLink="/publicar-vacante">
-            <app-icon name="Plus"></app-icon> Publicar Nueva Vacante
-          </button>
-        </div>
-
-        <div *ngIf="!stats && !loading" class="empty-state">
-          <h2>🚀 Tu Dashboard está listo</h2>
-          <p>Aquí es donde gestionarás tus ofertas de empleo y candidatos.</p>
-          <button class="btn-primary" routerLink="/publicar-vacante">Publicar Nueva Vacante</button>
-        </div>
+      <div *ngIf="vistaActual === 'perfil'">
+        <app-perfil-empresa></app-perfil-empresa>
       </div>
     </ng-container>
   </main>

@@ -1,3 +1,4 @@
+// src\app\pages\dashboard-empresa\dashboard-empresa.ts
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -5,11 +6,12 @@ import { AuthService } from '../../services/auth.services';
 import { AnalyticsService } from '../../services/analytics.service';
 import { CompanyService } from '../../services/company.service'; // <--- Importar servicio
 import { IconComponent } from '../../cositas/icon.component';
+import { PerfilEmpresaComponent } from './perfil-empresa/perfil-empresa';
 
 @Component({
   selector: 'app-dashboard-empresa',
   standalone: true,
-  imports: [CommonModule, RouterLink, IconComponent],
+  imports: [CommonModule, RouterLink, IconComponent, PerfilEmpresaComponent],
   templateUrl: './dashboard-empresa.html',
   styleUrl: './dashboard-empresa.css',
 })
@@ -23,11 +25,14 @@ export class DashboardEmpresaComponent implements OnInit {
   usuario = this.authService.obtenerUsuarioActual();
   stats: any = null;
 
-  // Variables de estado de carga y validación
   loading = true;
-  verificandoEstado = true; // Para mostrar el loader inicial de verificación
-  empresaValidada = false; // Determina qué vista mostrar
+  verificandoEstado = true;
+  empresaValidada = false;
+  vistaActual: 'resumen' | 'perfil' = 'resumen';
 
+  cambiarVista(vista: 'resumen' | 'perfil') {
+    this.vistaActual = vista;
+  }
   ngOnInit() {
     if (this.usuario) {
       this.verificarAcceso();

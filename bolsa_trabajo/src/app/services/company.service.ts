@@ -10,13 +10,19 @@ export class CompanyService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/api/company`;
 
-  // Registrar nueva empresa (envía FormData con el logo y datos)
   registrarEmpresa(payload: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, payload);
   }
 
-  // Obtener estado de validación de la empresa
   obtenerEstadoEmpresa(idUsuario: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/estado/${idUsuario}`);
+  }
+
+  getProfile(idUsuario: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/profile/${idUsuario}`);
+  }
+
+  updateProfile(idUsuario: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/profile/${idUsuario}`, formData);
   }
 }

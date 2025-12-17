@@ -96,9 +96,8 @@ export class Login implements OnInit {
   }
 
   onLogin() {
-    console.log('🔵 onLogin() llamado');
+    console.log(' onLogin() llamado');
 
-    // Validar formulario antes de enviar
     if (!this.validarFormulario()) {
       return;
     }
@@ -118,20 +117,15 @@ export class Login implements OnInit {
         this.exito = `¡Bienvenido ${respuesta.usuario.email}!`;
 
         setTimeout(() => {
-          // 2. Cerrar modal
           this.onClose();
 
-          // 3. 🔥 REDIRECCIÓN POR ROLES 🔥
           const rol = respuesta.usuario.id_rol;
 
           if (rol === 1) {
-            // 🛡️ ES ADMINISTRADOR -> Va al panel de admin
             this.router.navigate(['/admin']);
           } else if (rol === 3) {
-            // 🏢 ES EMPRESA -> Va al dashboard de empresa
             this.router.navigate(['/dashboard-empresa']);
           } else {
-            // 🎓 ES ESTUDIANTE (Rol 2) -> Va al inicio
             this.router.navigate(['/welcome']);
           }
         }, 1500);

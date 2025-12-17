@@ -1,14 +1,5 @@
 // backend/controllers/jobs.controller.js
-// Lógica para Publicar, Buscar y Postular Vacantes
 
-// Importamos pool de la base de datos (se obtiene de req.app.locals en Server.js)
-// IMPORTANTE: Asegúrate de que esta línea es correcta en tu setup si usas app.locals
-// Si usas app.locals, elimina esta línea y usa 'const pool = req.app.locals.pool;' dentro de cada función.
-
-/**
- * Publicar una nueva oferta de trabajo. (RF: Empresas deben poder publicar ofertas)
- * Requiere título, empresa, salario, descripción, ubicación.
- */
 export const createJob = async (req, res) => {
   const pool = req.app.locals.pool;
   try {
@@ -37,10 +28,6 @@ export const createJob = async (req, res) => {
   }
 };
 
-/**
- * Buscar y listar vacantes. (RF: Búsqueda por títulos, empresa, salario, ubicación, etc.)
- * Implementación simplificada para demostrar la estructura. La búsqueda real requiere lógica de filtros compleja.
- */
 export const searchJobs = async (req, res) => {
   const pool = req.app.locals.pool;
   try {
@@ -77,9 +64,6 @@ export const searchJobs = async (req, res) => {
   }
 };
 
-/**
- * Postularse a una vacante. (RF: Los usuarios podrán postularse a una vacante con un clic)
- */
 export const applyToJob = async (req, res) => {
   const pool = req.app.locals.pool;
   try {
@@ -89,13 +73,11 @@ export const applyToJob = async (req, res) => {
       return res.status(400).json({ error: 'Se requiere ID de usuario y ID de vacante.' });
     }
 
-    // 1. Insertar la postulación.
     const [result] = await pool.query(
       'INSERT INTO Postulacion (id_usuario, id_vacante, fecha_postulacion, estado) VALUES (?, ?, NOW(), ?)',
       [id_usuario, id_vacante, 'Pendiente']
     );
 
-    // 2. (Simular notificación a la empresa - RF: Las empresas deben recibir notificaciones)
     console.log(`[NOTIFICACIÓN] Usuario ${id_usuario} se postuló a la vacante ${id_vacante}.`);
 
     res.status(201).json({

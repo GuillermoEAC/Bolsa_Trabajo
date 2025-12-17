@@ -210,50 +210,85 @@ export class AdminDashboardComponent implements OnInit {
   // ========== LÓGICA VACANTES ==========
 
   moderarVacante(id: number, estado: 'APROBADA' | 'RECHAZADA') {
-    const accion = estado === 'APROBADA' ? 'aprobar' : 'rechazar';
-    const color = estado === 'APROBADA' ? '#10b981' : '#ef4444';
-
+    // CASO 1: APROBAR (Simple confirmación)
+    if (estado === 'APROBADA') {
+      Swal.fire({
+        title: '¿Aprobar vacante?',
+        text: 'La vacante será visible para todos los estudiantes.',
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Sí, aprobar',
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.ejecutarModeracion(id, 'aprobar', '');
+        }
+      });
+    } else {
+      Swal.fire({
+        title: 'Rechazar Vacante',
+        text: 'Por favor, indica el motivo del rechazo para la empresa:',
+        input: 'textarea',
+        inputPlaceholder: 'Ej: La descripción es muy vaga...',
+        inputAttributes: {
+          'aria-label': 'Escribe el motivo del rechazo',
+        },
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Rechazar vacante',
+        cancelButtonText: 'Cancelar',
+        inputValidator: (value) => {
+          if (!value) {
+            return '¡Debes escribir un motivo obligatoriamente!';
+          }
+          return null;
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.ejecutarModeracion(id, 'rechazar', result.value);
+        }
+      });
+    }
+  }
+  private ejecutarModeracion(id: number, accion: 'aprobar' | 'rechazar', motivo: string) {
     Swal.fire({
-      title: `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} vacante?`,
-      text: 'Esta acción notificará a la empresa.',
-      icon: estado === 'APROBADA' ? 'success' : 'warning',
-      showCancelButton: true,
-      confirmButtonColor: color,
-      cancelButtonColor: '#64748b',
-      confirmButtonText: `Sí, ${accion}`,
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.adminService.moderarVacante(id, accion).subscribe({
-          next: () => {
-            const vacanteIndex = this.vacantes.findIndex((v) => v.id_vacante === id);
-            if (vacanteIndex !== -1) {
-              this.vacantes[vacanteIndex].estado_aprobacion = estado;
-              this.calcularResumenVacantes();
-            }
-            this.cdr.detectChanges();
+      title: 'Procesando...',
+      didOpen: () => Swal.showLoading(),
+    });
 
-            const Toast = Swal.mixin({
-              toast: true,
-              position: 'top-end',
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true,
-            });
-            Toast.fire({
-              icon: 'success',
-              title: `Vacante ${estado.toLowerCase()} con éxito`,
-            });
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire('Error', 'No se pudo moderar la vacante.', 'error');
-          },
+    this.adminService.moderarVacante(id, accion, motivo).subscribe({
+      next: () => {
+        // Actualizar la lista localmente
+        const vacanteIndex = this.vacantes.findIndex((v) => v.id_vacante === id);
+        if (vacanteIndex !== -1) {
+          this.vacantes[vacanteIndex].estado_aprobacion =
+            accion === 'aprobar' ? 'APROBADA' : 'RECHAZADA';
+          this.calcularResumenVacantes();
+        }
+        this.cdr.detectChanges();
+
+        // Mensaje de éxito final
+        Swal.fire({
+          icon: 'success',
+          title: accion === 'aprobar' ? 'Vacante Aprobada' : 'Vacante Rechazada',
+          text:
+            accion === 'rechazar'
+              ? 'Se ha notificado a la empresa.'
+              : 'Ya está visible para estudiantes.',
+          timer: 2000,
+          showConfirmButton: false,
         });
-      }
+      },
+      error: (err) => {
+        console.error(err);
+        Swal.fire('Error', 'No se pudo procesar la solicitud.', 'error');
+      },
     });
   }
-
   eliminarVacante(id: number) {
     Swal.fire({
       title: '¿Eliminar vacante?',

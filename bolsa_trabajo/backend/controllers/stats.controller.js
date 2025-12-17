@@ -8,7 +8,6 @@ export const obtenerContadoresPublicos = async (req, res) => {
       "SELECT COUNT(*) as total FROM Vacante WHERE estado_aprobacion = 'APROBADA'"
     );
 
-    // Construimos la respuesta con los datos reales
     const respuesta = {
       total_empresas: empresas[0].total || 0,
       total_vacantes: vacantes[0].total || 0,

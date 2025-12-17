@@ -123,7 +123,6 @@ export class BuscadorEmpleosComponent implements OnInit {
     });
   }
 
-  // 🔥 LÓGICA DE FAVORITOS VISUAL 🔥
   toggleFavorito(vacante: any) {
     const usuario = this.authService.obtenerUsuarioActual();
 
@@ -179,5 +178,21 @@ export class BuscadorEmpleosComponent implements OnInit {
     return logoPath
       ? `${environment.apiUrl.replace('/api', '')}/${logoPath}`
       : 'assets/img/Logo_Completo.png';
+  }
+
+  construirUrlImagen(ruta: string | null): string {
+    if (!ruta) {
+      return 'assets/img/Logo_Completo.png';
+    }
+
+    if (ruta.startsWith('http')) {
+      return ruta;
+    }
+
+    const baseUrl = environment.apiUrl.replace('/api', '');
+
+    const rutaLimpia = ruta.startsWith('/') ? ruta.substring(1) : ruta;
+
+    return `${baseUrl}/${rutaLimpia}`;
   }
 }

@@ -88,9 +88,6 @@ export const registerCompany = async (req, res) => {
   }
 };
 
-// ==========================================
-// NUEVO: Verificar estado de validación
-// ==========================================
 export const obtenerEstadoEmpresa = async (req, res) => {
   const pool = req.app.locals.pool;
   const { id_usuario } = req.params;
@@ -109,5 +106,65 @@ export const obtenerEstadoEmpresa = async (req, res) => {
   } catch (error) {
     console.error('Error al obtener estado empresa:', error);
     res.status(500).json({ error: 'Error del servidor al verificar estado.' });
+  }
+};
+
+export const getCompanyProfile = async (req, res) => {
+  const pool = req.app.locals.pool;
+  const { id_usuario } = req.params;
+
+  try {
+    const [rows] = await pool.query(
+      `SELECT nombre_empresa, razon_social, nit, email_contacto, sitio_web, descripcion, logo_path, validada 
+       FROM Empresa WHERE id_usuario = ?`,
+      [id_usuario]
+    );
+
+    if (rows.length === 0) return res.status(404).json({ error: 'Empresa no encontrada' });
+
+    res.json(rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al cargar perfil' });
+  }
+};
+
+export const updateCompanyProfile = async (req, res) => {
+  const pool = req.app.locals.pool;
+  const { id_usuario } = req.params;
+
+  // Datos del formulario
+  const { nombre_empresa, razon_social, nit, email_contacto, sitio_web, descripcion } = req.body;
+
+  // Si subieron archivo, usamos la nueva ruta, si no, null
+  const newLogoPath = req.file ? `uploads/logos/${req.file.filename}` : null;
+
+  try {
+    // Construcción dinámica de la query
+    let query = `
+      UPDATE Empresa 
+      SET nombre_empresa = ?, razon_social = ?, nit = ?, email_contacto = ?, sitio_web = ?, descripcion = ?
+    `;
+    const params = [nombre_empresa, razon_social, nit, email_contacto, sitio_web, descripcion];
+
+    // Si hay logo nuevo, lo agregamos a la query
+    if (newLogoPath) {
+      query += `, logo_path = ?`;
+      params.push(newLogoPath);
+    }
+
+    query += ` WHERE id_usuario = ?`;
+    params.push(id_usuario);
+
+    await pool.query(query, params);
+
+    // Devolvemos el path del logo para actualizar el frontend si cambió
+    res.json({
+      message: 'Perfil actualizado correctamente',
+      logo_path: newLogoPath,
+    });
+  } catch (error) {
+    console.error('Error al actualizar perfil empresa:', error);
+    res.status(500).json({ error: 'Error interno al actualizar.' });
   }
 };
