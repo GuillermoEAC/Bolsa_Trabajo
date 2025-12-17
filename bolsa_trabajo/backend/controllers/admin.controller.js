@@ -1,7 +1,7 @@
 // Backend/controllers/Admin.controller.js
 
 import e from 'express';
-
+import { pool } from '../config/database.js';
 // ==========================================
 const calcularResumenUsuarios = (usuarios) => {
   let estudiantes = 0;
