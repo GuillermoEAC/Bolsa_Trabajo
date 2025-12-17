@@ -1,14 +1,14 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { VacantesService } from '../../services/vacantes.service';
 import { AuthService } from '../../services/auth.services';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-publicar-vacante',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './publicar-vacante.html',
   styleUrls: ['./publicar-vacante.css'],
 })
@@ -18,87 +18,101 @@ export class PublicarVacanteComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
+  // Objeto local (Frontend)
   vacante = {
-    // FIX: Propiedades renombradas a titulo_cargo y descripcion_vacante
-    titulo_cargo: '',
-    descripcion_vacante: '',
+    titulo: '',
+    descripcion: '',
     ubicacion: '',
     modalidad: 'Presencial',
-    tipo_contrato: 'Tiempo Completo',
-    salario_min: 0,
-    salario_max: 0,
+    tipo_contrato: 'Tiempo Completo', // Valor por defecto
+    salario_min: null,
+    salario_max: null,
+    id_categoria: null,
   };
 
-  loading = false;
+  categorias: any[] = [];
   esEdicion = false;
-  idVacanteEditar: number | null = null;
+  idVacante: number = 0;
+  usuario: any = null;
 
   ngOnInit() {
+    this.usuario = this.authService.obtenerUsuarioActual();
+
+    this.vacantesService.obtenerCategorias().subscribe({
+      next: (data) => {
+        console.log('Categorías cargadas:', data);
+        this.categorias = data;
+      },
+      error: (err) => console.error('Error cargando categorías', err),
+    });
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.esEdicion = true;
-      this.idVacanteEditar = Number(id);
-      this.cargarDatosVacante(this.idVacanteEditar);
+      this.idVacante = Number(id);
+      this.cargarDatosVacante(this.idVacante);
     }
   }
 
   cargarDatosVacante(id: number) {
     this.vacantesService.obtenerVacantePorId(id).subscribe({
       next: (data: any) => {
-        // Mapeamos los datos de la respuesta a las propiedades del modelo local
         this.vacante = {
-          titulo_cargo: data.titulo_cargo,
-          descripcion_vacante: data.descripcion_vacante,
+          titulo: data.titulo_cargo,
+          descripcion: data.descripcion_vacante,
           ubicacion: data.ubicacion,
           modalidad: data.tipo_trabajo,
-          tipo_contrato: 'Tiempo Completo',
+          tipo_contrato: data.tipo_contrato || 'Tiempo Completo',
           salario_min: data.salario_min,
           salario_max: data.salario_max,
+          id_categoria: data.id_categoria,
         };
       },
-      error: (err: any) => console.error('Error al cargar datos', err),
+      error: (err) => console.error('Error al cargar vacante:', err),
     });
   }
 
-  onSubmit() {
-    this.loading = true;
-    const usuario = this.authService.obtenerUsuarioActual();
+  guardarVacante() {
+    if (!this.usuario) {
+      Swal.fire('Atención', 'Debes iniciar sesión como empresa para publicar.', 'warning');
+      return;
+    }
 
-    if (this.esEdicion && this.idVacanteEditar) {
-      // EDITAR
-      this.vacantesService.actualizarVacante(this.idVacanteEditar, this.vacante).subscribe({
+    const datosParaEnviar = { ...this.vacante, id_usuario: this.usuario.id_usuario };
+
+    if (this.esEdicion) {
+      this.vacantesService.actualizarVacante(this.idVacante, datosParaEnviar).subscribe({
         next: () => {
-          console.log('Vacante actualizada con éxito');
-          this.router.navigate(['/mis-vacantes']);
+          Swal.fire({
+            title: '¡Actualizado!',
+            text: 'La vacante se actualizó correctamente.',
+            icon: 'success',
+            confirmButtonColor: '#2563eb',
+          }).then(() => {
+            this.router.navigate(['/mis-vacantes']);
+          });
         },
-        error: (err: any) => {
-          this.loading = false;
-          console.error('Error al actualizar', err);
-          alert('Error al actualizar');
+        error: (err) => {
+          Swal.fire('Error', 'No se pudo actualizar la vacante.', 'error');
         },
       });
     } else {
-      // CREAR
-      const payload = {
-        id_usuario: usuario.id_usuario,
-        ...this.vacante,
-      };
-
-      this.vacantesService.publicarVacante(payload).subscribe({
+      this.vacantesService.publicarVacante(datosParaEnviar).subscribe({
         next: () => {
-          console.log('Vacante publicada con éxito');
-          this.router.navigate(['/mis-vacantes']);
+          Swal.fire({
+            title: '¡Publicado!',
+            text: 'Tu vacante ha sido creada y enviada a revisión.',
+            icon: 'success',
+            confirmButtonColor: '#2563eb',
+          }).then(() => {
+            this.router.navigate(['/mis-vacantes']);
+          });
         },
-        error: (err: any) => {
-          this.loading = false;
-          console.error('Error al publicar', err);
-          alert('Error al publicar');
+        error: (err) => {
+          console.error(err);
+          Swal.fire('Oops...', 'Hubo un error al publicar la vacante.', 'error');
         },
       });
     }
-  }
-
-  cancelar() {
-    this.router.navigate(['/mis-vacantes']);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, input, inject } from '@angular/core';
+import { Component, EventEmitter, Output, input, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,7 +12,7 @@ import { ValidationService } from '../../services/validation.service';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private validationService = inject(ValidationService);
@@ -32,6 +32,10 @@ export class Login {
   isVisible = input.required<boolean>();
   @Output() close = new EventEmitter<void>();
 
+  ngOnInit() {
+    // Esto asegura que cada vez que el componente se crea, las variables nacen vacías
+    this.limpiarFormulario();
+  }
   onClose() {
     this.close.emit();
     this.limpiarFormulario();

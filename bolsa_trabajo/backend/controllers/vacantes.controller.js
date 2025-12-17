@@ -1,82 +1,96 @@
-// file:///C:/Users/guill/.../controllers/vacantes.controller.js
-
+// Backend/controlloer/vacantes.controller.js
 import { crearNotificacionInterna } from './notificaciones.controller.js';
 
-// ==========================================
-// 1. OBTENER TODAS LAS VACANTES (PÚBLICO)
-// ==========================================
 export const buscarVacantes = async (req, res) => {
   const pool = req.app.locals.pool;
-  const { q, ubicacion, modalidad, minSalario, maxSalario, tipoContrato, fecha } = req.query;
+
+  // Recibimos los filtros y el ID del usuario actual
+  const { q, ubicacion, modalidad, tipoContrato, minSalario, maxSalario, fecha, id_usuario } =
+    req.query;
 
   try {
-    console.log('🔍 Parámetros de búsqueda:', req.query); // 🔥 Debug
-
     let sql = `
-      SELECT v.*, e.nombre_empresa, e.logo_path 
+      SELECT 
+        v.*, 
+        e.nombre_empresa, 
+        e.logo_path, 
+        c.nombre_categoria,
+        /* SUB-CONSULTA: Devuelve 1 si es favorito de ESTE usuario, 0 si no */
+        (SELECT COUNT(*) FROM Favorito f 
+         JOIN Estudiante est ON f.id_estudiante = est.id_estudiante
+         WHERE f.id_vacante = v.id_vacante 
+         AND est.id_usuario = ?) as es_favorito
       FROM Vacante v
       INNER JOIN Empresa e ON v.id_empresa = e.id_empresa
-      WHERE v.estado_aprobacion = 'APROBADA'
+      LEFT JOIN Categoria c ON v.id_categoria = c.id_categoria
+      WHERE v.estado_aprobacion = 'APROBADA' 
       AND e.validada = 1
     `;
 
-    const params = [];
+    // El primer parámetro es el id_usuario (o null si no hay login)
+    // Si pasas null, la subconsulta da 0, así que nadie lo ve como favorito (correcto)
+    const params = [id_usuario || null];
 
-    // Filtro de búsqueda general
+    // --- APLICACIÓN DE FILTROS ---
     if (q && q.trim() !== '') {
       sql += ` AND (v.titulo_cargo LIKE ? OR v.descripcion_vacante LIKE ? OR e.nombre_empresa LIKE ?)`;
       params.push(`%${q}%`, `%${q}%`, `%${q}%`);
     }
 
-    // Filtro de ubicación
-    if (ubicacion && ubicacion.trim() !== '') {
+    if (ubicacion) {
       sql += ` AND v.ubicacion LIKE ?`;
       params.push(`%${ubicacion}%`);
     }
 
-    // Filtro de modalidad
-    if (modalidad && modalidad.trim() !== '') {
+    if (modalidad) {
       sql += ` AND v.tipo_trabajo = ?`;
       params.push(modalidad);
     }
 
-    // Filtro de tipo de contrato (si lo tienes en tu BD)
-    if (tipoContrato && tipoContrato.trim() !== '') {
+    if (tipoContrato) {
       sql += ` AND v.tipo_contrato = ?`;
       params.push(tipoContrato);
     }
 
-    // Filtro de rango salarial
-    if (minSalario && !isNaN(minSalario)) {
+    if (minSalario) {
       sql += ` AND v.salario_max >= ?`;
       params.push(parseInt(minSalario));
     }
 
-    if (maxSalario && !isNaN(maxSalario)) {
+    if (maxSalario) {
       sql += ` AND v.salario_min <= ?`;
       params.push(parseInt(maxSalario));
     }
 
-    // Ordenar por fecha
-    sql += ` ORDER BY v.fecha_publicacion DESC`;
+    // Filtro de fecha (Opcional, según tu lógica anterior)
+    if (fecha) {
+      const hoy = new Date();
+      if (fecha === 'hoy') {
+        sql += ` AND v.fecha_publicacion >= DATE_SUB(NOW(), INTERVAL 1 DAY)`;
+      } else if (fecha === 'semana') {
+        sql += ` AND v.fecha_publicacion >= DATE_SUB(NOW(), INTERVAL 1 WEEK)`;
+      } else if (fecha === 'mes') {
+        sql += ` AND v.fecha_publicacion >= DATE_SUB(NOW(), INTERVAL 1 MONTH)`;
+      }
+    }
 
-    console.log('📊 SQL Query:', sql); // 🔥 Debug
-    console.log('📊 Params:', params); // 🔥 Debug
+    sql += ` ORDER BY v.fecha_publicacion DESC`;
 
     const [rows] = await pool.query(sql, params);
 
-    console.log('✅ Vacantes encontradas:', rows.length); // 🔥 Debug
+    // Convertimos el 1 o 0 de SQL a true/false para que Angular lo entienda fácil
+    const vacantes = rows.map((v) => ({
+      ...v,
+      es_favorito: v.es_favorito > 0,
+    }));
 
-    res.json(rows);
+    res.json(vacantes);
   } catch (error) {
     console.error('❌ Error al buscar vacantes:', error);
     res.status(500).json({ error: 'Error al buscar vacantes' });
   }
 };
 
-// ==========================================
-// 2. OBTENER VACANTE POR ID (PÚBLICO)
-// ==========================================
 export const obtenerVacantePorId = async (req, res) => {
   const pool = req.app.locals.pool;
   const { id } = req.params;
@@ -140,7 +154,6 @@ export const obtenerMisVacantes = async (req, res) => {
   }
 };
 
-// O si se llama getVacantesByEmpresa
 export const getVacantesByEmpresa = async (req, res) => {
   const pool = req.app.locals.pool;
   const { id_usuario } = req.params;
@@ -164,48 +177,117 @@ export const getVacantesByEmpresa = async (req, res) => {
   }
 };
 
-// ==========================================
-// 4. CREAR NUEVA VACANTE
-// Nombre Corregido de createVacante a crearVacante
-// ==========================================
 export const crearVacante = async (req, res) => {
   const pool = req.app.locals.pool;
-  const { id_empresa, ...datosVacante } = req.body;
-
   try {
-    const [result] = await pool.query('INSERT INTO Vacante SET ?', { ...datosVacante, id_empresa });
+    const {
+      id_usuario,
+      titulo,
+      descripcion,
+      ubicacion,
+      modalidad,
+      tipo_contrato,
+      salario_min,
+      salario_max,
+      id_categoria,
+    } = req.body;
 
-    // 🔥 CREAR NOTIFICACIÓN para los admins
-    // Obtener todos los admins
-    const [admins] = await pool.query('SELECT id_usuario FROM Usuario WHERE id_rol = 1');
+    const [empresas] = await pool.query(
+      'SELECT id_empresa, validada FROM Empresa WHERE id_usuario = ?',
+      [id_usuario]
+    );
 
-    const [empresa] = await pool.query('SELECT nombre_empresa FROM Empresa WHERE id_empresa = ?', [
-      id_empresa,
-    ]);
+    if (empresas.length === 0) return res.status(404).json({ error: 'No eres empresa.' });
 
-    // Crear notificación para cada admin
-    for (const admin of admins) {
-      await pool.query('INSERT INTO Notificacion (id_usuario, mensaje, tipo) VALUES (?, ?, ?)', [
-        admin.id_usuario,
-        `Nueva vacante publicada por ${empresa[0].nombre_empresa}: "${datosVacante.titulo_cargo}". Requiere moderación.`,
-        'INFO',
-      ]);
-    }
+    const [result] = await pool.query(
+      `INSERT INTO Vacante (
+        id_empresa, 
+        id_categoria, 
+        titulo_cargo,        
+        descripcion_vacante, 
+        ubicacion, 
+        tipo_trabajo,       
+        tipo_contrato,       
+        salario_min, 
+        salario_max, 
+        estado_activa, 
+        estado_aprobacion, 
+        fecha_publicacion
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'PENDIENTE', NOW())`,
+      [
+        empresas[0].id_empresa,
+        id_categoria || null,
+        titulo,
+        descripcion,
+        ubicacion,
+        modalidad,
+        tipo_contrato,
+        salario_min || 0,
+        salario_max || 0,
+      ]
+    );
 
-    res.status(201).json({
-      id_vacante: result.insertId,
-      message: 'Vacante creada, pendiente de aprobación',
-    });
+    res.status(201).json({ mensaje: 'Vacante creada', id_vacante: result.insertId });
   } catch (error) {
     console.error('Error al crear vacante:', error);
-    res.status(500).json({ error: 'Error al crear vacante' });
+    res.status(500).json({ error: 'Error al crear vacante.' });
   }
 };
 
-// ==========================================
-// 5. ELIMINAR VACANTE (EMPRESA)
-// Nombre Corregido de deleteVacante a eliminarVacante
-// ==========================================
+export const actualizarVacante = async (req, res) => {
+  const pool = req.app.locals.pool;
+  const { id } = req.params;
+
+  // Recibimos nombres cortos del Frontend
+  const {
+    titulo,
+    descripcion,
+    ubicacion,
+    modalidad,
+    tipo_contrato,
+    salario_min,
+    salario_max,
+    id_categoria,
+  } = req.body;
+
+  try {
+    // Mapeamos a los nombres de la Base de Datos
+    const [result] = await pool.query(
+      `UPDATE Vacante SET
+        titulo_cargo = ?, 
+        descripcion_vacante = ?, 
+        ubicacion = ?, 
+        tipo_trabajo = ?, 
+        tipo_contrato = ?,
+        salario_min = ?, 
+        salario_max = ?,
+        id_categoria = ?,
+        estado_aprobacion = 'PENDIENTE' 
+      WHERE id_vacante = ?`,
+      [
+        titulo,
+        descripcion,
+        ubicacion,
+        modalidad,
+        tipo_contrato,
+        salario_min,
+        salario_max,
+        id_categoria,
+        id,
+      ]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Vacante no encontrada.' });
+    }
+
+    res.json({ mensaje: 'Vacante actualizada correctamente' });
+  } catch (error) {
+    console.error('Error al actualizar:', error);
+    res.status(500).json({ error: 'Error al actualizar vacante' });
+  }
+};
+
 export const eliminarVacante = async (req, res) => {
   const pool = req.app.locals.pool;
   const { id } = req.params;
@@ -224,38 +306,14 @@ export const eliminarVacante = async (req, res) => {
   }
 };
 
-// ==========================================
-// 6. ACTUALIZAR VACANTE (EMPRESA)
-// ==========================================
-export const actualizarVacante = async (req, res) => {
+export const obtenerCategorias = async (req, res) => {
   const pool = req.app.locals.pool;
-  const { id } = req.params; // id de la vacante a editar
-  const { titulo_cargo, descripcion_vacante, ubicacion, tipo_trabajo, salario_min, salario_max } =
-    req.body;
-
   try {
-    const [result] = await pool.query(
-      `
-      UPDATE Vacante SET
-        titulo_cargo = ?, 
-        descripcion_vacante = ?, 
-        ubicacion = ?, 
-        tipo_trabajo = ?, 
-        salario_min = ?, 
-        salario_max = ?,
-        estado_aprobacion = 'PENDIENTE' 
-      WHERE id_vacante = ?
-    `,
-      [titulo_cargo, descripcion_vacante, ubicacion, tipo_trabajo, salario_min, salario_max, id]
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Vacante no encontrada para actualizar.' });
-    }
-
-    res.json({ mensaje: 'Vacante actualizada correctamente (Enviada a revisión)' });
+    // Pedimos todas las categorías ordenadas alfabéticamente
+    const [rows] = await pool.query('SELECT * FROM Categoria ORDER BY nombre_categoria ASC');
+    res.json(rows);
   } catch (error) {
-    console.error('Error al actualizar vacante:', error);
-    res.status(500).json({ error: 'Error al actualizar vacante' });
+    console.error('Error al obtener categorías:', error);
+    res.status(500).json({ error: 'Error al cargar categorías' });
   }
 };

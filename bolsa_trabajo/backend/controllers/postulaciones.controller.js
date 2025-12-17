@@ -108,8 +108,17 @@ export const obtenerCandidatosPorVacante = async (req, res) => {
     const [candidatos] = await pool.query(
       `
         SELECT 
-          p.id_postulacion, p.fecha_postulacion, p.estado_postulacion,
-          e.id_estudiante, e.nombre, e.apellido, e.titulo_cv, e.telefono, e.descripcion, e.url_foto_perfil,
+          p.id_postulacion, 
+          p.fecha_postulacion, 
+          p.estado_postulacion,
+          e.id_estudiante, 
+          e.id_usuario,  /* 👈 ¡ESTE FALTABA! Sin esto, el frontend recibe 'undefined' */
+          e.nombre, 
+          e.apellido, 
+          e.titulo_cv, 
+          e.telefono, 
+          e.descripcion, 
+          e.url_foto_perfil,
           u.email
         FROM Postulacion p
         JOIN Estudiante e ON p.id_estudiante = e.id_estudiante
@@ -131,51 +140,62 @@ export const obtenerCandidatosPorVacante = async (req, res) => {
 // ============================================
 export const cambiarEstadoPostulacion = async (req, res) => {
   const pool = req.app.locals.pool;
-  const { id_postulacion } = req.params; // <-- Usar el nombre del parámetro en la ruta
-  const { estado } = req.body;
+
+  const { id_postulacion } = req.params;
+
+  const { nuevo_estado } = req.body;
+
   try {
-    // Obtener datos de la postulación
-    const [postulacion] = await pool.query(
+    const [rows] = await pool.query(
       `
-        SELECT p.*, v.titulo_cargo, e.nombre_empresa
-        FROM Postulacion p
-        JOIN Vacante v ON p.id_vacante = v.id_vacante
-        JOIN Empresa e ON v.id_empresa = e.id_empresa
-        WHERE p.id_postulacion = ?
+      SELECT 
+        p.id_postulacion, 
+        v.titulo_cargo, 
+        e.nombre_empresa, 
+        st.id_usuario 
+      FROM Postulacion p
+      INNER JOIN Vacante v ON p.id_vacante = v.id_vacante
+      INNER JOIN Empresa e ON v.id_empresa = e.id_empresa
+      INNER JOIN Estudiante st ON p.id_estudiante = st.id_estudiante
+      WHERE p.id_postulacion = ?
       `,
-      [id]
+      [id_postulacion]
     );
 
-    if (postulacion.length === 0) {
-      return res.status(404).json({ error: 'Postulación no encontrada' });
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'La postulación no existe.' });
     }
 
-    // Actualizar estado
+    const info = rows[0];
+
     await pool.query('UPDATE Postulacion SET estado_postulacion = ? WHERE id_postulacion = ?', [
-      estado,
-      id,
+      nuevo_estado,
+      id_postulacion,
     ]);
 
-    // 🔥 CREAR NOTIFICACIÓN para el estudiante
-    const mensaje =
-      estado === 'ACEPTADA'
-        ? `¡Felicidades! Tu postulación para ${postulacion[0].titulo_cargo} en ${postulacion[0].nombre_empresa} fue aceptada.`
-        : `Tu postulación para ${postulacion[0].titulo_cargo} en ${postulacion[0].nombre_empresa} no fue seleccionada en esta ocasión.`;
+    let mensaje = `El estado de tu postulación para ${info.titulo_cargo} ha cambiado a: ${nuevo_estado}.`;
+    let tipo = 'INFO';
 
-    const tipo = estado === 'ACEPTADA' ? 'EXITO' : 'INFO';
+    if (nuevo_estado === 'Visto') {
+      mensaje = `Tu postulación para ${info.titulo_cargo} en ${info.nombre_empresa} ha sido vista.`;
+    } else if (nuevo_estado === 'Entrevista') {
+      mensaje = `¡Felicidades! ${info.nombre_empresa} quiere una entrevista para el puesto ${info.titulo_cargo}.`;
+      tipo = 'EXITO';
+    } else if (nuevo_estado === 'Rechazado') {
+      mensaje = `Gracias por tu interés, pero tu proceso para ${info.titulo_cargo} ha finalizado.`;
+    }
 
     await pool.query(
-      'INSERT INTO Notificacion (id_usuario_destino, mensaje, tipo) VALUES (?, ?, ?)',
-      [postulacion[0].id_usuario, mensaje, tipo]
+      'INSERT INTO Notificacion (id_usuario, mensaje, tipo, fecha_creacion) VALUES (?, ?, ?, NOW())',
+      [info.id_usuario, mensaje, tipo]
     );
 
-    res.json({ message: 'Estado actualizado y notificación enviada' });
+    res.json({ message: 'Estado actualizado correctamente' });
   } catch (error) {
-    console.error('Error al cambiar estado:', error);
-    res.status(500).json({ error: 'Error al cambiar estado' });
+    console.error('❌ Error al cambiar estado:', error);
+    res.status(500).json({ error: 'Error interno al actualizar el estado.' });
   }
 };
-
 export const postularse = async (req, res) => {
   const pool = req.app.locals.pool;
   const { id_vacante } = req.params;

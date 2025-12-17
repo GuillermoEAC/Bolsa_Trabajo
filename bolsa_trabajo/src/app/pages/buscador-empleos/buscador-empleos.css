@@ -516,4 +516,41 @@
     display: flex;
     gap: 5px;
   }
+
+  .btn-favorite {
+    font-size: 1.4rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    padding: 5px;
+    line-height: 1;
+  }
+
+  /* 1. Estado Normal (No es favorito): Corazón Gris/Blanco */
+  .btn-favorite::after {
+    content: '🤍'; /* Corazón blanco/gris */
+    filter: grayscale(100%); /* Asegura que se vea grisáceo */
+    opacity: 0.6;
+  }
+
+  .btn-favorite:hover {
+    transform: scale(1.2); /* Efecto de zoom al pasar mouse */
+  }
+
+  .btn-favorite:hover::after {
+    opacity: 1; /* Se ilumina un poco al pasar el mouse antes de dar click */
+  }
+
+  /* 2. Estado Activo (Ya es favorito): Corazón Rojo */
+  .btn-favorite.is-active::after {
+    content: '❤️';
+    filter: none;
+    opacity: 1;
+  }
+
+  /* 3. Efecto "Romper" (Hover sobre uno que ya es favorito) */
+  .btn-favorite.is-active:hover::after {
+    content: '💔'; /* Se rompe indicando "quitar" */
+  }
 }

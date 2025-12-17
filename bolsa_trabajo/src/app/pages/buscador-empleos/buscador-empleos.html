@@ -96,16 +96,6 @@
       </button>
     </aside>
 
-    <div class="mobile-filters-scroll">
-      <div class="filter-chip"><app-icon name="Filter"></app-icon> Filtros</div>
-      <div class="filter-chip">
-        <select [(ngModel)]="filtros.modalidad" (change)="aplicarFiltros()">
-          <option value="">Modalidad</option>
-          <option value="Remoto">Remoto</option>
-        </select>
-      </div>
-    </div>
-
     <section class="results-area">
       <div class="results-info">
         <span
@@ -134,9 +124,9 @@
             <div class="header-info">
               <h3 class="job-title">{{ job.titulo_cargo }}</h3>
               <div class="company-row">
-                <span class="icon-verified" title="Verificado"
-                  ><app-icon name="CheckBadge"></app-icon
-                ></span>
+                <span class="icon-verified" title="Verificado">
+                  <app-icon name="CheckBadge"></app-icon>
+                </span>
                 <p class="company-name">{{ job.nombre_empresa }}</p>
               </div>
             </div>
@@ -144,27 +134,27 @@
             <div class="card-actions-top">
               <button
                 class="btn-icon btn-favorite"
+                [class.is-active]="job.es_favorito"
                 title="Guardar en favoritos"
-                (click)="toggleFavorito(job.id_vacante)"
-              >
-                <app-icon name="Heart"></app-icon>
-              </button>
-              <button class="btn-icon btn-more">
-                <app-icon name="MoreVertical"></app-icon>
-              </button>
+                (click)="toggleFavorito(job)"
+              ></button>
+
+              <!-- <button class="btn-icon btn-more" title="Más opciones" style="font-size: 1.2rem">
+                ⚙️
+              </button> -->
             </div>
           </div>
 
           <div class="card-badges">
-            <span class="badge badge-gray"
-              ><app-icon name="MapPin"></app-icon> {{ job.ubicacion }}</span
-            >
-            <span class="badge badge-blue"
-              ><app-icon name="Briefcase"></app-icon> {{ job.tipo_trabajo }}</span
-            >
-            <span class="badge badge-green" *ngIf="job.salario_min"
-              ><app-icon name="CurrencyDollar"></app-icon> ${{ job.salario_min | number }}</span
-            >
+            <span class="badge badge-gray">
+              <app-icon name="MapPin"></app-icon> {{ job.ubicacion }}
+            </span>
+            <span class="badge badge-blue">
+              <app-icon name="Briefcase"></app-icon> {{ job.tipo_trabajo }}
+            </span>
+            <span class="badge badge-green" *ngIf="job.salario_min">
+              <app-icon name="CurrencyDollar"></app-icon> ${{ job.salario_min | number }}
+            </span>
           </div>
 
           <p class="job-description">{{ job.descripcion_vacante | slice : 0 : 130 }}...</p>

@@ -1,77 +1,114 @@
 <div class="page-container">
   <div class="form-card">
-    <h2 class="form-title">
-      {{ esEdicion ? 'Editar Vacante' : 'Publicar Nueva Vacante' }}
-    </h2>
-    <p class="form-subtitle">Describe el puesto para encontrar al talento ideal.</p>
-
-    <div class="form-grid">
-      <div class="form-group full-width">
-        <label>Título del Puesto</label>
-        <input
-          [(ngModel)]="vacante.titulo_cargo"
-          type="text"
-          class="input-modern"
-          placeholder="Ej: Desarrollador Junior Java"
-        />
-      </div>
-
-      <div class="form-group">
-        <label>Ubicación</label>
-        <input
-          [(ngModel)]="vacante.ubicacion"
-          type="text"
-          class="input-modern"
-          placeholder="Ciudad, Estado"
-        />
-      </div>
-
-      <div class="form-group">
-        <label>Modalidad</label>
-        <select [(ngModel)]="vacante.modalidad" class="input-modern">
-          <option value="Presencial">Presencial</option>
-          <option value="Remoto">Remoto</option>
-          <option value="Hibrido">Híbrido</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Salario Mínimo (MXN)</label>
-        <input
-          [(ngModel)]="vacante.salario_min"
-          type="number"
-          class="input-modern"
-          placeholder="Ej: 8000"
-        />
-      </div>
-
-      <div class="form-group">
-        <label>Salario Máximo (MXN)</label>
-        <input
-          [(ngModel)]="vacante.salario_max"
-          type="number"
-          class="input-modern"
-          placeholder="Ej: 12000"
-        />
-      </div>
-
-      <div class="form-group full-width">
-        <label>Descripción del Puesto</label>
-        <textarea
-          [(ngModel)]="vacante.descripcion_vacante"
-          rows="6"
-          class="input-modern textarea"
-          placeholder="Responsabilidades, requisitos, beneficios..."
-        ></textarea>
-      </div>
+    <div class="header-section">
+      <h2 class="form-title">{{ esEdicion ? 'Editar Vacante' : 'Nueva Vacante' }}</h2>
+      <p class="form-subtitle">Completa la información para atraer al mejor talento.</p>
     </div>
 
-    <div class="actions">
-      <button (click)="cancelar()" class="btn-cancel">Cancelar</button>
+    <form (ngSubmit)="guardarVacante()">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label>Título del Cargo</label>
+          <input
+            type="text"
+            [(ngModel)]="vacante.titulo"
+            name="titulo"
+            placeholder="Ej: Desarrollador Frontend Senior"
+            required
+            class="input-modern"
+          />
+        </div>
 
-      <button (click)="onSubmit()" [disabled]="loading" class="btn-submit">
-        {{ loading ? 'Guardando...' : esEdicion ? 'Actualizar Oferta' : 'Publicar Oferta' }}
-      </button>
-    </div>
+        <div class="form-group">
+          <label>Categoría</label>
+          <select [(ngModel)]="vacante.id_categoria" name="categoria" class="input-modern" required>
+            <option [ngValue]="null" disabled selected>Selecciona...</option>
+            <option *ngFor="let cat of categorias" [value]="cat.id_categoria">
+              {{ cat.nombre_categoria }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Modalidad</label>
+          <select [(ngModel)]="vacante.modalidad" name="modalidad" class="input-modern" required>
+            <option value="Presencial">🏢 Presencial</option>
+            <option value="Remoto">🏠 Remoto</option>
+            <option value="Híbrido">🔄 Híbrido</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de Contrato</label>
+          <select
+            [(ngModel)]="vacante.tipo_contrato"
+            name="tipoContrato"
+            class="input-modern"
+            required
+          >
+            <option value="Tiempo Completo">Tiempo Completo</option>
+            <option value="Medio Tiempo">Medio Tiempo</option>
+            <option value="Pasantia">Pasantía / Prácticas</option>
+            <option value="Por Proyecto">Por Proyecto</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Ubicación</label>
+          <input
+            type="text"
+            [(ngModel)]="vacante.ubicacion"
+            name="ubicacion"
+            placeholder="Ej: Ciudad de México, CDMX"
+            required
+            class="input-modern"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label>Descripción del Puesto</label>
+          <textarea
+            [(ngModel)]="vacante.descripcion"
+            name="descripcion"
+            placeholder="Describe las responsabilidades, requisitos y beneficios..."
+            required
+            class="input-modern"
+          ></textarea>
+        </div>
+
+        <div class="full-width salary-section">
+          <span class="salary-label">Rango Salarial (Opcional)</span>
+          <div class="form-grid" style="gap: 20px">
+            <div class="form-group">
+              <label>Mínimo <span class="optional-text">(MXN)</span></label>
+              <input
+                type="number"
+                [(ngModel)]="vacante.salario_min"
+                name="salarioMin"
+                placeholder="0"
+                class="input-modern"
+              />
+            </div>
+            <div class="form-group">
+              <label>Máximo <span class="optional-text">(MXN)</span></label>
+              <input
+                type="number"
+                [(ngModel)]="vacante.salario_max"
+                name="salarioMax"
+                placeholder="0"
+                class="input-modern"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-cancel" routerLink="/mis-vacantes">Cancelar</button>
+        <button type="submit" class="btn-submit">
+          {{ esEdicion ? 'Guardar Cambios' : 'Publicar Vacante' }}
+        </button>
+      </div>
+    </form>
   </div>
 </div>

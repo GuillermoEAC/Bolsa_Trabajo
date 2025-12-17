@@ -3,25 +3,31 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.services';
 import { NotificacionesService } from '../../services/notificaciones.service';
+import { StudentService } from '../../services/student.service';
 import { Login } from '../../cositas/login/login';
+import { IconComponent } from '../../cositas/icon.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, Login],
+  imports: [CommonModule, RouterModule, Login, IconComponent],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class HeaderComponent implements OnInit {
   authService = inject(AuthService);
   notificacionesService = inject(NotificacionesService);
+  studentService = inject(StudentService);
   router = inject(Router);
 
   currentUser: any = null;
+
+  // Variables de estado
   isModalVisible = false;
   isMenuOpen = false;
+  tienePerfilCompleto = false;
 
-  // Notificaciones
+  // Variables de notificaciones
   notificaciones: any[] = [];
   noLeidasCount = 0;
   showNotifications = false;
@@ -34,9 +40,16 @@ export class HeaderComponent implements OnInit {
         this.cargarNotificaciones();
         // Actualizar notificaciones cada 30 segundos
         setInterval(() => this.cargarNotificaciones(), 30000);
+
+        // Si es estudiante (Rol 2), verificamos si ya creó su perfil
+        if (user.id_rol === 2) {
+          this.verificarPerfil(user.id_usuario);
+        }
       }
     });
   }
+
+  // --- LÓGICA DE NOTIFICACIONES ---
 
   cargarNotificaciones() {
     if (!this.currentUser) return;
@@ -48,14 +61,6 @@ export class HeaderComponent implements OnInit {
       },
       error: (err) => console.error('Error al cargar notificaciones:', err),
     });
-  }
-
-  toggleMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
-    // Cerrar notificaciones si están abiertas
-    if (this.isMenuOpen) {
-      this.showNotifications = false;
-    }
   }
 
   toggleNotifications() {
@@ -71,14 +76,62 @@ export class HeaderComponent implements OnInit {
       this.notificacionesService.marcarTodasLeidas(this.currentUser.id_usuario).subscribe({
         next: () => {
           this.noLeidasCount = 0;
-          // Actualizar estado local
           this.notificaciones.forEach((n) => (n.leida = true));
         },
       });
     }
   }
 
-  // 🔥 TUS FUNCIONES ORIGINALES DE ROLES
+  // --- LÓGICA DE MENÚ Y PERFIL ---
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+    // Cerrar notificaciones si están abiertas
+    if (this.isMenuOpen) {
+      this.showNotifications = false;
+    }
+  }
+
+  verificarPerfil(idUsuario: number) {
+    this.studentService.getProfile(idUsuario).subscribe({
+      next: (perfil) => {
+        // Si el perfil existe y tiene nombre, asumimos que está completo
+        this.tienePerfilCompleto = !!(perfil && perfil.nombre);
+      },
+      error: () => {
+        this.tienePerfilCompleto = false;
+      },
+    });
+  }
+
+  navegarAlPerfil() {
+    this.isMenuOpen = false;
+    if (this.tienePerfilCompleto) {
+      this.router.navigate(['/mi-perfil']);
+    } else {
+      this.router.navigate(['/cv-builder']);
+    }
+  }
+
+  // --- LÓGICA DE LOGIN / LOGOUT ---
+
+  openLogin() {
+    this.isModalVisible = true;
+  }
+
+  closeLogin() {
+    this.isModalVisible = false;
+  }
+
+  logout() {
+    this.isMenuOpen = false;
+    this.showNotifications = false;
+    this.authService.logout();
+    this.router.navigate(['/welcome']);
+  }
+
+  // ---  ROLES ---
+
   esEstudiante(): boolean {
     return this.currentUser?.id_rol === 2;
   }
@@ -103,20 +156,5 @@ export class HeaderComponent implements OnInit {
       default:
         return '';
     }
-  }
-
-  openLogin() {
-    this.isModalVisible = true;
-  }
-
-  closeLogin() {
-    this.isModalVisible = false;
-  }
-
-  logout() {
-    this.isMenuOpen = false;
-    this.showNotifications = false;
-    this.authService.logout();
-    this.router.navigate(['/welcome']);
   }
 }

@@ -1,5 +1,4 @@
-// ==========================================
-// Funciones de utilidad para el resumen de usuarios (asumiendo lógica simple)
+// Backend/controllers/Admin.controller.js
 
 import e from 'express';
 

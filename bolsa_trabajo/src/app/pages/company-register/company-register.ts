@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CompanyService } from '../../services/company.service';
 import { ValidationService } from '../../services/validation.service';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-company-register',
   standalone: true,
@@ -81,7 +81,6 @@ export class CompanyRegisterComponent {
     this.validationErrors.nombre_empresa = validation.error || '';
   }
 
-  // Validar todo el formulario antes de enviar
   validateForm(): boolean {
     let isValid = true;
     this.error = '';
@@ -135,7 +134,6 @@ export class CompanyRegisterComponent {
     return isValid;
   }
 
-  // Evento al seleccionar un archivo
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -166,21 +164,31 @@ export class CompanyRegisterComponent {
   onSubmit() {
     this.error = '';
 
-    // Validar formulario
     if (!this.validateForm()) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      Toast.fire({ icon: 'warning', title: 'Corrige los errores del formulario' });
+      return;
+    }
+
+    if (!this.cuenta.password || this.cuenta.password.trim() === '') {
+      Swal.fire('Error', 'La contraseña es obligatoria y no puede estar vacía.', 'error');
       return;
     }
 
     this.loading = true;
 
-    // Crear FormData
     const formData = new FormData();
 
-    // Datos de la cuenta
+    console.log('Enviando password:', this.cuenta.password);
+
     formData.append('email', this.cuenta.email);
     formData.append('password', this.cuenta.password);
 
-    // Datos de la empresa
     formData.append('nombre_empresa', this.empresa.nombre_empresa);
     formData.append('razon_social', this.empresa.razon_social || '');
     formData.append('nit', this.empresa.nit || '');
@@ -188,22 +196,31 @@ export class CompanyRegisterComponent {
     formData.append('descripcion', this.empresa.descripcion || '');
     formData.append('email_contacto', this.cuenta.email);
 
-    // Archivo del Logo
     if (this.selectedFile) {
       formData.append('logo', this.selectedFile);
     }
 
-    // Enviar al backend
     this.companyService.registrarEmpresa(formData).subscribe({
       next: () => {
         this.loading = false;
-        alert('¡Registro Exitoso! Tu cuenta está pendiente de validación.');
-        this.router.navigate(['/welcome']);
+        Swal.fire({
+          title: '¡Registro Exitoso!',
+          text: 'Tu cuenta ha sido creada. Ahora espera la validación del administrador.',
+          icon: 'success',
+          confirmButtonColor: '#2563eb',
+        }).then(() => {
+          this.router.navigate(['/welcome']);
+        });
       },
       error: (err) => {
         this.loading = false;
-        console.error(err);
-        this.error = err.error?.message || 'Error al registrar la empresa.';
+        console.error('Error del servidor:', err);
+
+        Swal.fire({
+          title: 'Error de Registro',
+          text: err.error?.message || 'Hubo un problema de conexión.',
+          icon: 'error',
+        });
       },
     });
   }

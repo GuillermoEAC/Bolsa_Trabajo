@@ -1,4 +1,4 @@
-<div class="page-container">
+<!-- <div class="page-container">
   <div class="header-section">
     <a routerLink="/mis-vacantes" class="back-link">← Volver a Mis Vacantes</a>
     <h1>Gestión de Candidatos</h1>
@@ -49,6 +49,156 @@
         </div>
 
         <button class="btn-cv">Ver CV Completo</button>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<div class="page-container">
+  <div class="header-section">
+    <a routerLink="/mis-vacantes" class="back-link">← Volver a Mis Vacantes</a>
+    <h1>Gestión de Candidatos</h1>
+    <p>Revisa quién se ha postulado a tu vacante.</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">Cargando postulantes...</div>
+
+  <div *ngIf="!loading && candidatos.length === 0" class="empty-state">
+    <h3>Aún no hay candidatos</h3>
+    <p>Tu vacante está visible, espera a que los estudiantes se postulen.</p>
+  </div>
+
+  <div class="candidates-list">
+    <div *ngFor="let c of candidatos" class="candidate-card">
+      <div class="candidate-info">
+        <div class="avatar-circle">{{ c.nombre ? c.nombre[0] : 'U' }}</div>
+        <div>
+          <h3>{{ c.nombre }} {{ c.apellido }}</h3>
+          <p class="role">{{ c.titulo_cv || 'Sin título definido' }}</p>
+          <div class="contact-info">
+            <span>📧 {{ c.email }}</span> • <span>📞 {{ c.telefono }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-panel">
+        <span
+          class="status-label"
+          [ngClass]="{
+            visto: c.estado_postulacion === 'Visto',
+            entrevista: c.estado_postulacion === 'Entrevista',
+            rechazado: c.estado_postulacion === 'Rechazado'
+          }"
+        >
+          Estado: <strong>{{ c.estado_postulacion }}</strong>
+        </span>
+
+        <div class="buttons">
+          <button class="btn-action btn-view" (click)="actualizarEstado(c.id_postulacion, 'Visto')">
+            👁️ Visto
+          </button>
+          <button
+            class="btn-action btn-interview"
+            (click)="actualizarEstado(c.id_postulacion, 'Entrevista')"
+          >
+            📅 Entrevista
+          </button>
+          <button
+            class="btn-action btn-reject"
+            (click)="actualizarEstado(c.id_postulacion, 'Rechazado')"
+          >
+            ❌ Rechazar
+          </button>
+        </div>
+
+        <button class="btn-cv" (click)="verPerfilCompleto(c.id_usuario)">Ver CV Completo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="cerrarModal()">×</button>
+
+    <div *ngIf="loadingPerfil" class="loading-modal">
+      <div class="spinner"></div>
+      Cargando perfil...
+    </div>
+
+    <div *ngIf="!loadingPerfil && perfilSeleccionado" class="perfil-readonly">
+      <div class="modal-header-profile">
+        <img
+          [src]="perfilSeleccionado.url_foto_perfil || 'assets/avatar-default.png'"
+          class="modal-avatar"
+        />
+        <div>
+          <h2>{{ perfilSeleccionado.nombre }} {{ perfilSeleccionado.apellido }}</h2>
+          <p class="modal-subtitle">{{ perfilSeleccionado.titulo_cv }}</p>
+          <p class="modal-location">📍 {{ perfilSeleccionado.ubicacion }}</p>
+        </div>
+      </div>
+
+      <hr />
+
+      <section class="modal-section">
+        <h4>Sobre Mí</h4>
+        <p>{{ perfilSeleccionado.descripcion || 'Sin descripción.' }}</p>
+      </section>
+
+      <section class="modal-section">
+        <h4>Experiencia Laboral</h4>
+        <div *ngIf="perfilSeleccionado.experiencias.length === 0" class="empty-txt">
+          Sin experiencias registradas.
+        </div>
+
+        <div *ngFor="let exp of perfilSeleccionado.experiencias" class="item-list">
+          <h5>
+            {{ exp.titulo_puesto }} <span class="company-at">en {{ exp.nombre_empresa }}</span>
+          </h5>
+          <p class="fechas">
+            {{ exp.fecha_inicio | date : 'MMM yyyy' }} -
+            {{ exp.actualmente_trabajando ? 'Presente' : (exp.fecha_fin | date : 'MMM yyyy') }}
+          </p>
+          <p class="desc-item">{{ exp.descripcion_tareas }}</p>
+        </div>
+      </section>
+
+      <section class="modal-section">
+        <h4>Educación</h4>
+        <div *ngIf="perfilSeleccionado.estudios.length === 0" class="empty-txt">
+          Sin estudios registrados.
+        </div>
+
+        <div *ngFor="let est of perfilSeleccionado.estudios" class="item-list">
+          <h5>{{ est.carrera }}</h5>
+          <p class="sub-item">{{ est.centro_estudio }} ({{ est.nivel_estudio }})</p>
+          <p class="fechas">
+            {{ est.fecha_inicio | date : 'yyyy' }} -
+            {{ est.en_curso ? 'Presente' : (est.fecha_fin | date : 'yyyy') }}
+          </p>
+        </div>
+      </section>
+
+      <section class="modal-section">
+        <h4>Proyectos</h4>
+        <div *ngIf="perfilSeleccionado.proyectos.length === 0" class="empty-txt">
+          Sin proyectos registrados.
+        </div>
+
+        <div *ngFor="let proy of perfilSeleccionado.proyectos" class="item-list">
+          <h5>{{ proy.nombre_proyecto }}</h5>
+          <p class="desc-item">{{ proy.descripcion }}</p>
+          <small class="techs">🛠 {{ proy.tecnologias }}</small>
+          <br />
+          <a *ngIf="proy.url_proyecto" [href]="proy.url_proyecto" target="_blank">Ver Proyecto</a>
+        </div>
+      </section>
+
+      <div class="modal-footer-actions">
+        <a [href]="'mailto:' + perfilSeleccionado.email" class="btn-contactar">
+          📧 Contactar por Email
+        </a>
       </div>
     </div>
   </div>

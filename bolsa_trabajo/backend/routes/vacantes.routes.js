@@ -26,20 +26,22 @@ import express from 'express';
 const router = express.Router();
 
 import {
-  crearVacante,
-  obtenerMisVacantes,
-  eliminarVacante,
-  obtenerVacantePorId,
-  actualizarVacante,
   buscarVacantes,
+  obtenerVacantePorId,
+  obtenerMisVacantes,
+  crearVacante,
+  actualizarVacante,
+  eliminarVacante,
+  obtenerCategorias,
 } from '../controllers/vacantes.controller.js';
 import { validarVacante } from '../middleware/validaciones.js';
 
-router.post('/crear', validarVacante, crearVacante); // 🔥 Agregar validación
+router.post('/crear', validarVacante, crearVacante);
 router.get('/usuario/:id_usuario', obtenerMisVacantes);
 router.get('/detalle/:id', obtenerVacantePorId);
 router.put('/actualizar/:id', actualizarVacante);
 router.delete('/eliminar/:id', eliminarVacante);
 router.get('/buscar', buscarVacantes);
+router.get('/categorias', obtenerCategorias);
 
 export default router;

@@ -17,10 +17,9 @@
 
     <ng-container *ngIf="currentUser">
       <div class="user-controls">
-        <!-- 🔔 NOTIFICACIONES -->
         <div class="notification-container">
           <button class="icon-btn" (click)="toggleNotifications()" title="Notificaciones">
-            🔔
+            <span style="font-size: 1.3rem">🔔</span>
             <span *ngIf="noLeidasCount > 0" class="badge-count">{{ noLeidasCount }}</span>
           </button>
 
@@ -32,7 +31,7 @@
                 (click)="showNotifications = false"
                 class="close-noti"
               >
-                ✕
+                <app-icon name="XMark"></app-icon>
               </button>
             </div>
             <div class="noti-list">
@@ -49,7 +48,8 @@
                   [class.success]="noti.tipo === 'EXITO'"
                   [class.info]="noti.tipo === 'INFO'"
                 >
-                  {{ noti.tipo === 'EXITO' ? '✓' : 'ℹ' }}
+                  <app-icon *ngIf="noti.tipo === 'EXITO'" name="Check"></app-icon>
+                  <app-icon *ngIf="noti.tipo !== 'EXITO'" name="InformationCircle"></app-icon>
                 </div>
                 <div class="noti-content">
                   <p>{{ noti.mensaje }}</p>
@@ -60,14 +60,15 @@
           </div>
         </div>
 
-        <!-- 👤 PERFIL DESPLEGABLE -->
         <div class="profile-dropdown-container">
           <div class="user-profile" (click)="toggleMenu()">
             <span class="user-name">{{ currentUser.email.split('@')[0] }}</span>
             <div class="user-avatar">
               {{ currentUser.email[0] | uppercase }}
             </div>
-            <span class="dropdown-arrow">▼</span>
+            <div class="dropdown-arrow-icon">
+              <app-icon name="ChevronDown"></app-icon>
+            </div>
           </div>
 
           <div *ngIf="isMenuOpen" class="dropdown-menu">
@@ -76,14 +77,13 @@
               <div class="role-badge">{{ getTipoUsuario() }}</div>
             </div>
 
-            <!-- MENÚ ESTUDIANTE -->
             <ng-container *ngIf="esEstudiante()">
-              <a routerLink="/cv-builder" class="dropdown-item" (click)="isMenuOpen = false">
-                <span class="menu-icon">👤</span>
+              <button class="dropdown-item" (click)="navegarAlPerfil()">
+                <span class="menu-icon"><app-icon name="User"></app-icon></span>
                 Mi Perfil
-              </a>
+              </button>
               <a routerLink="/mis-postulaciones" class="dropdown-item" (click)="isMenuOpen = false">
-                <span class="menu-icon">💼</span>
+                <span class="menu-icon"><app-icon name="Briefcase"></app-icon></span>
                 Mis Postulaciones
               </a>
               <a routerLink="/mis-favoritos" class="dropdown-item" (click)="isMenuOpen = false">
@@ -93,34 +93,32 @@
               <div class="dropdown-divider"></div>
             </ng-container>
 
-            <!-- MENÚ EMPRESA -->
             <ng-container *ngIf="esEmpresa()">
               <a routerLink="/dashboard-empresa" class="dropdown-item" (click)="isMenuOpen = false">
-                <span class="menu-icon">📊</span>
+                <span class="menu-icon"><app-icon name="ChartBar"></app-icon></span>
                 Dashboard
               </a>
               <a routerLink="/mis-vacantes" class="dropdown-item" (click)="isMenuOpen = false">
-                <span class="menu-icon">🏢</span>
+                <span class="menu-icon"><app-icon name="Building"></app-icon></span>
                 Mis Vacantes
               </a>
               <a routerLink="/publicar-vacante" class="dropdown-item" (click)="isMenuOpen = false">
-                <span class="menu-icon">➕</span>
+                <span class="menu-icon"><app-icon name="Plus"></app-icon></span>
                 Publicar Vacante
               </a>
               <div class="dropdown-divider"></div>
             </ng-container>
 
-            <!-- MENÚ ADMIN -->
             <ng-container *ngIf="esAdmin()">
               <a routerLink="/admin" class="dropdown-item" (click)="isMenuOpen = false">
-                <span class="menu-icon">🛡️</span>
+                <span class="menu-icon"><app-icon name="ShieldCheck"></app-icon></span>
                 Panel Admin
               </a>
               <div class="dropdown-divider"></div>
             </ng-container>
 
             <button class="dropdown-item text-danger" (click)="logout()">
-              <span class="menu-icon">🚪</span>
+              <span class="menu-icon"><app-icon name="Logout"></app-icon></span>
               Cerrar Sesión
             </button>
           </div>

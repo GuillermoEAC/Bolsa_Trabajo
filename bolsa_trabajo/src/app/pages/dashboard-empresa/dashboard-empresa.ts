@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.services';
 import { AnalyticsService } from '../../services/analytics.service';
+import { CompanyService } from '../../services/company.service'; // <--- Importar servicio
 import { IconComponent } from '../../cositas/icon.component';
 
 @Component({
@@ -15,19 +16,53 @@ import { IconComponent } from '../../cositas/icon.component';
 export class DashboardEmpresaComponent implements OnInit {
   private authService = inject(AuthService);
   private analyticsService = inject(AnalyticsService);
+  private companyService = inject(CompanyService); // <--- Inyectar
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
 
   usuario = this.authService.obtenerUsuarioActual();
   stats: any = null;
+
+  // Variables de estado de carga y validación
   loading = true;
+  verificandoEstado = true; // Para mostrar el loader inicial de verificación
+  empresaValidada = false; // Determina qué vista mostrar
 
   ngOnInit() {
     if (this.usuario) {
-      this.cargarEstadisticas();
+      this.verificarAcceso();
     } else {
       this.loading = false;
+      this.router.navigate(['/welcome']);
     }
+  }
+
+  // Verificar si la empresa está validada en BD
+  verificarAcceso() {
+    this.verificandoEstado = true;
+
+    this.companyService.obtenerEstadoEmpresa(this.usuario.id_usuario).subscribe({
+      next: (data) => {
+        // El backend devuelve { validada: 1 (o 0), ... }
+        this.empresaValidada = data.validada === 1;
+        this.verificandoEstado = false;
+
+        // Si está validada, cargamos las estadísticas normales
+        if (this.empresaValidada) {
+          this.cargarEstadisticas();
+        } else {
+          // Si no, detenemos loading y mostramos pantalla de bloqueo
+          this.loading = false;
+          this.cd.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Error verificando estado de empresa:', err);
+        this.verificandoEstado = false;
+        this.loading = false;
+        this.cd.detectChanges();
+      },
+    });
   }
 
   cargarEstadisticas() {

@@ -19,9 +19,7 @@
 
       <div class="search-bar-container">
         <div class="input-wrapper">
-          <span class="search-icon">
-            <app-icon name="Search"></app-icon>
-          </span>
+          <span class="search-emoji">🔍</span>
 
           <input
             [(ngModel)]="terminoBusqueda"
@@ -39,23 +37,30 @@
 
   <section class="stats-bar">
     <div class="stat-item">
-      <div class="stat-icon-wrapper"><app-icon name="Building"></app-icon></div>
+      <div class="stat-emoji">🏢</div>
       <div class="stat-text">
-        <span class="stat-number">500+</span><span class="stat-label">Empresas</span>
+        <span class="stat-number">{{ stats.empresas }}+</span>
+        <span class="stat-label">Empresas</span>
       </div>
     </div>
+
     <div class="stat-separator"></div>
+
     <div class="stat-item">
-      <div class="stat-icon-wrapper"><app-icon name="Briefcase"></app-icon></div>
+      <div class="stat-emoji">💼</div>
       <div class="stat-text">
-        <span class="stat-number">1.2k</span><span class="stat-label">Vacantes Activas</span>
+        <span class="stat-number">{{ stats.vacantes }}</span>
+        <span class="stat-label">Vacantes Activas</span>
       </div>
     </div>
+
     <div class="stat-separator"></div>
+
     <div class="stat-item">
-      <div class="stat-icon-wrapper"><app-icon name="AcademicCap"></app-icon></div>
+      <div class="stat-emoji">🎓</div>
       <div class="stat-text">
-        <span class="stat-number">100%</span><span class="stat-label">Para Estudiantes</span>
+        <span class="stat-number">100%</span>
+        <span class="stat-label">Para Estudiantes</span>
       </div>
     </div>
   </section>
@@ -68,39 +73,39 @@
 
     <div class="categories-grid">
       <div class="category-card" (click)="buscarPorCategoria('Desarrollador')">
-        <div class="icon-bg"><app-icon name="Code"></app-icon></div>
+        <div class="icon-bg">💻</div>
         <h3>Desarrollo Web</h3>
-        <p>120 vacantes</p>
+        <p>Alta demanda</p>
       </div>
 
       <div class="category-card" (click)="buscarPorCategoria('Diseñador')">
-        <div class="icon-bg"><app-icon name="PaintBrush"></app-icon></div>
+        <div class="icon-bg">🎨</div>
         <h3>Diseño Gráfico</h3>
-        <p>85 vacantes</p>
+        <p>Creatividad</p>
       </div>
 
       <div class="category-card" (click)="buscarPorCategoria('Marketing')">
-        <div class="icon-bg"><app-icon name="TrendUp"></app-icon></div>
+        <div class="icon-bg">📈</div>
         <h3>Marketing</h3>
-        <p>64 vacantes</p>
+        <p>Estrategia</p>
       </div>
 
       <div class="category-card" (click)="buscarPorCategoria('Legal')">
-        <div class="icon-bg"><app-icon name="Scale"></app-icon></div>
+        <div class="icon-bg">⚖️</div>
         <h3>Leyes / Legal</h3>
-        <p>40 vacantes</p>
+        <p>Normativa</p>
       </div>
 
       <div class="category-card" (click)="buscarPorCategoria('Ingeniero')">
-        <div class="icon-bg"><app-icon name="HardHat"></app-icon></div>
+        <div class="icon-bg">👷</div>
         <h3>Ingeniería</h3>
-        <p>90 vacantes</p>
+        <p>Industrial / Civil</p>
       </div>
 
       <div class="category-card" (click)="buscarPorCategoria('Salud')">
-        <div class="icon-bg"><app-icon name="Heart"></app-icon></div>
+        <div class="icon-bg">❤️</div>
         <h3>Salud</h3>
-        <p>30 vacantes</p>
+        <p>Medicina / Enfermería</p>
       </div>
     </div>
   </section>

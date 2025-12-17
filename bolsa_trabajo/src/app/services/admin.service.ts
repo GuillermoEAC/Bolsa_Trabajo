@@ -1,3 +1,4 @@
+// /src/app/serices/AdminService.serve.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -10,26 +11,35 @@ export class AdminService {
 
   constructor(private http: HttpClient) {}
 
+  // ==========================================
   // ========== EMPRESAS ==========
+  // ==========================================
+
   obtenerEmpresas(): Observable<any> {
     return this.http.get(`${this.apiUrl}/empresas`);
   }
 
   cambiarEstadoEmpresa(id: number, validada: boolean): Observable<any> {
-    // Envía el estado de validación (true/false, que se mapeará a 1/0 en el backend)
+    // Envía el estado de validación (true = 1, false = 0)
     return this.http.put(`${this.apiUrl}/empresas/${id}/estado`, { validada });
   }
 
+  // ==========================================
   // ========== VACANTES ==========
+  // ==========================================
+
   obtenerVacantes(): Observable<any> {
     return this.http.get(`${this.apiUrl}/vacantes`);
   }
 
-  moderarVacante(id: number, estado: string, idAdmin?: number): Observable<any> {
-    // El backend espera { estado: 'APROBADA' | 'RECHAZADA' }
+  /**
+   * Modera una vacante (Aprobar o Rechazar)
+   * Nota: Ajustado para coincidir con el backend que espera 'accion'
+   */
+  moderarVacante(id: number, accion: 'aprobar' | 'rechazar', motivo: string = ''): Observable<any> {
     return this.http.put(`${this.apiUrl}/vacantes/${id}/moderar`, {
-      estado: estado,
-      id_administrador_aprobador: idAdmin, // Opcional, si lo manejas
+      accion: accion, // 'aprobar' o 'rechazar'
+      motivo_rechazo: motivo, // Opcional, solo si se rechaza
     });
   }
 
@@ -37,7 +47,10 @@ export class AdminService {
     return this.http.delete(`${this.apiUrl}/vacantes/${id}`);
   }
 
-  // ========== USUARIOS (NUEVO) ==========
+  // ==========================================
+  // ========== USUARIOS ==========
+  // ==========================================
+
   obtenerUsuarios(): Observable<any> {
     // Retorna la lista de usuarios más el resumen estadístico
     return this.http.get(`${this.apiUrl}/usuarios`);
@@ -48,7 +61,10 @@ export class AdminService {
     return this.http.delete(`${this.apiUrl}/usuarios/${tipo}/${id}`);
   }
 
+  // ==========================================
   // ========== ESTADÍSTICAS ==========
+  // ==========================================
+
   obtenerEstadisticas(): Observable<any> {
     return this.http.get(`${this.apiUrl}/estadisticas`);
   }

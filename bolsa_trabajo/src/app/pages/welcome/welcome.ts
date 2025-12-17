@@ -1,41 +1,52 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router'; // 👈 1. Importamos Router
-import { IconComponent } from '../../cositas/icon.component'; // Tu componente de íconos
+import { Router, RouterLink } from '@angular/router';
+import { StatsService } from '../../services/stats.service';
 
 @Component({
   selector: 'app-welcome',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, IconComponent],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './welcome.html',
   styleUrl: './welcome.css',
-  // changeDetection: ChangeDetectionStrategy.OnPush, // Opcional, si lo usas recuerda importar ChangeDetectionStrategy
 })
-export class WelcomeComponent {
-  // 2. Inyectamos el Router
+export class WelcomeComponent implements OnInit {
   private router = inject(Router);
+  private statsService = inject(StatsService);
 
-  // Variable para el input de búsqueda (vinculada con ngModel en el HTML)
   terminoBusqueda: string = '';
 
-  // 3. Lógica para buscar desde el Input principal
+  stats = {
+    empresas: 0,
+    vacantes: 0,
+  };
+
+  ngOnInit() {
+    this.cargarEstadisticas();
+  }
+
+  cargarEstadisticas() {
+    this.statsService.obtenerContadores().subscribe({
+      next: (data) => {
+        this.stats.empresas = data.total_empresas;
+        this.stats.vacantes = data.total_vacantes;
+      },
+      error: (err) => console.error('No se pudieron cargar stats', err),
+    });
+  }
+
   buscar() {
     if (this.terminoBusqueda.trim()) {
-      console.log('Navegando a empleos con:', this.terminoBusqueda);
-      // Navegamos pasando el parámetro 'q'
       this.router.navigate(['/empleos'], {
         queryParams: { q: this.terminoBusqueda },
       });
     } else {
-      // Si está vacío, vamos al buscador general
       this.router.navigate(['/empleos']);
     }
   }
 
-  // 4. Lógica para buscar al dar clic en una Categoría
   buscarPorCategoria(categoria: string) {
-    console.log('Navegando a categoría:', categoria);
     this.router.navigate(['/empleos'], {
       queryParams: { q: categoria },
     });

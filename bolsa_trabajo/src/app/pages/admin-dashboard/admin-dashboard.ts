@@ -10,6 +10,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.services';
 import { IconComponent } from '../../cositas/icon.component';
+import Swal from 'sweetalert2'; // <--- IMPORTAR AQUÍ
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -33,25 +34,10 @@ export class AdminDashboardComponent implements OnInit {
   loading = true;
   menuOpen = false;
 
-  // RESÚMENES ESTADÍSTICOS
-  resumenEmpresas = {
-    total: 0,
-    validadas: 0,
-    pendientes: 0,
-  };
-
-  resumenVacantes = {
-    total: 0,
-    aprobadas: 0,
-    pendientes: 0,
-    rechazadas: 0,
-  };
-
-  resumenUsuarios = {
-    total: 0,
-    estudiantes: 0,
-    empresas: 0,
-  };
+  // Resúmenes
+  resumenEmpresas = { total: 0, validadas: 0, pendientes: 0 };
+  resumenVacantes = { total: 0, aprobadas: 0, pendientes: 0, rechazadas: 0 };
+  resumenUsuarios = { total: 0, estudiantes: 0, empresas: 0 };
 
   ngOnInit() {
     this.cargarDatos();
@@ -70,7 +56,7 @@ export class AdminDashboardComponent implements OnInit {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('Error al cargar empresas:', err);
+          console.error(err);
           this.loading = false;
           this.cdr.detectChanges();
         },
@@ -84,13 +70,12 @@ export class AdminDashboardComponent implements OnInit {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('Error al cargar vacantes:', err);
+          console.error(err);
           this.loading = false;
           this.cdr.detectChanges();
         },
       });
     } else if (this.vistaActual === 'usuarios') {
-      // CARGAR USUARIOS
       this.adminService.obtenerUsuarios().subscribe({
         next: (data) => {
           this.usuarios = data.usuarios;
@@ -99,7 +84,7 @@ export class AdminDashboardComponent implements OnInit {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('Error al cargar usuarios:', err);
+          console.error(err);
           this.loading = false;
           this.cdr.detectChanges();
         },
@@ -107,15 +92,12 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  // CALCULAR RESUMEN DE EMPRESAS
   calcularResumenEmpresas() {
     this.resumenEmpresas.total = this.empresas.length;
-    // Asumiendo que 'validada' es 1 (true) o 0 (false)
     this.resumenEmpresas.validadas = this.empresas.filter((e) => e.validada === 1).length;
     this.resumenEmpresas.pendientes = this.empresas.filter((e) => e.validada === 0).length;
   }
 
-  // CALCULAR RESUMEN DE VACANTES
   calcularResumenVacantes() {
     this.resumenVacantes.total = this.vacantes.length;
     this.resumenVacantes.aprobadas = this.vacantes.filter(
@@ -135,89 +117,145 @@ export class AdminDashboardComponent implements OnInit {
     this.cargarDatos();
   }
 
-  // ========== LÓGICA EMPRESAS ==========
+  // ========== LÓGICA EMPRESAS (Con SweetAlert) ==========
   toggleValidacion(empresa: any) {
-    // Si validada es 1 (true), el nuevo estado será 0 (false) y viceversa.
     const nuevoEstado = empresa.validada === 0 ? true : false;
+    const accionTexto = nuevoEstado ? 'Aprobar' : 'Desactivar';
+    const colorBoton = nuevoEstado ? '#10b981' : '#ef4444'; // Verde o Rojo
 
-    // NOTA: Usar confirm() y alert() debe ser reemplazado por un modal en producción.
-    if (confirm(`¿${nuevoEstado ? 'Aprobar' : 'Desactivar'} a ${empresa.nombre_empresa}?`)) {
-      this.adminService.cambiarEstadoEmpresa(empresa.id_empresa, nuevoEstado).subscribe({
-        next: () => {
-          this.cargarDatos();
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Error al cambiar estado:', err);
-          alert('Error al actualizar el estado de la empresa');
-        },
-      });
-    }
+    Swal.fire({
+      title: `¿${accionTexto} empresa?`,
+      text: `Vas a ${accionTexto.toLowerCase()} a "${empresa.nombre_empresa}"`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: colorBoton,
+      cancelButtonColor: '#64748b',
+      confirmButtonText: `Sí, ${accionTexto.toLowerCase()}`,
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.adminService.cambiarEstadoEmpresa(empresa.id_empresa, nuevoEstado).subscribe({
+          next: () => {
+            this.cargarDatos();
+            this.cdr.detectChanges();
+            Swal.fire('¡Listo!', `Empresa ${nuevoEstado ? 'aprobada' : 'desactivada'}.`, 'success');
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire('Error', 'No se pudo cambiar el estado.', 'error');
+          },
+        });
+      }
+    });
   }
 
-  // ========== LÓGICA VACANTES ==========
+  // ========== LÓGICA VACANTES (Con SweetAlert) ==========
   moderarVacante(id: number, estado: 'APROBADA' | 'RECHAZADA') {
-    if (confirm(`¿Confirmas cambiar el estado a ${estado}?`)) {
-      // 💡 Nota: Aquí podrías obtener el ID del admin de tu servicio de autenticación
-      // const adminId = this.authService.getAdminId();
+    const accion = estado === 'APROBADA' ? 'aprobar' : 'rechazar';
+    const color = estado === 'APROBADA' ? '#10b981' : '#ef4444';
 
-      this.adminService.moderarVacante(id, estado).subscribe({
-        next: () => {
-          alert(`Vacante moderada como ${estado}.`); // Alerta de éxito // *** MODIFICACIÓN CLAVE: Actualiza la lista sin recargar todo ***
+    Swal.fire({
+      title: `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} vacante?`,
+      text: 'Esta acción notificará a la empresa.',
+      icon: estado === 'APROBADA' ? 'success' : 'warning',
+      showCancelButton: true,
+      confirmButtonColor: color,
+      cancelButtonColor: '#64748b',
+      confirmButtonText: `Sí, ${accion}`,
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.adminService.moderarVacante(id, accion).subscribe({
+          next: () => {
+            const vacanteIndex = this.vacantes.findIndex((v) => v.id_vacante === id);
+            if (vacanteIndex !== -1) {
+              this.vacantes[vacanteIndex].estado_aprobacion = estado;
+              this.calcularResumenVacantes();
+            }
+            this.cdr.detectChanges();
 
-          const vacanteIndex = this.vacantes.findIndex((v) => v.id_vacante === id);
-          if (vacanteIndex !== -1) {
-            this.vacantes[vacanteIndex].estado_aprobacion = estado; // Actualiza el estado
-            this.calcularResumenVacantes(); // Recalcula el resumen
-          }
-          this.cdr.detectChanges(); // Forzar la actualización de la vista
-        },
-        error: (err) => {
-          console.error('Error al moderar vacante:', err);
-          alert('Error al moderar la vacante. Revisa la consola del backend.');
-        },
-      });
-    }
+            // Alerta pequeña (Toast) en la esquina
+            const Toast = Swal.mixin({
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true,
+            });
+            Toast.fire({
+              icon: 'success',
+              title: `Vacante ${estado.toLowerCase()} con éxito`,
+            });
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire('Error', 'No se pudo moderar la vacante.', 'error');
+          },
+        });
+      }
+    });
   }
 
   eliminarVacante(id: number) {
-    if (confirm('¿Eliminar definitivamente? Se borrarán las postulaciones asociadas.')) {
-      this.adminService.eliminarVacante(id).subscribe({
-        next: () => {
-          this.cargarDatos();
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Error al eliminar vacante:', err);
-          alert('Error al eliminar la vacante');
-        },
-      });
-    }
+    Swal.fire({
+      title: '¿Eliminar vacante?',
+      text: 'Se borrarán todas las postulaciones asociadas. ¡No hay vuelta atrás!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.adminService.eliminarVacante(id).subscribe({
+          next: () => {
+            this.cargarDatos();
+            this.cdr.detectChanges();
+            Swal.fire('Eliminado', 'La vacante ha sido eliminada.', 'success');
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire('Error', 'No se pudo eliminar la vacante.', 'error');
+          },
+        });
+      }
+    });
   }
 
-  // ========== LÓGICA USUARIOS ==========
+  // ========== LÓGICA USUARIOS (Con SweetAlert) ==========
   eliminarUsuario(usuario: any) {
     const tipo = usuario.tipo_usuario;
     const nombre = tipo === 'ESTUDIANTE' ? `${usuario.nombre} ${usuario.apellido}` : usuario.nombre;
-
-    const mensaje =
+    const textoAdvertencia =
       tipo === 'ESTUDIANTE'
-        ? `¿Eliminar a ${nombre}? Se borrarán todas sus postulaciones.`
-        : `¿Eliminar a ${nombre}? Se borrarán todas sus vacantes y postulaciones asociadas.`;
+        ? 'Se borrarán todas sus postulaciones y CV.'
+        : 'Se borrarán sus vacantes y postulaciones recibidas.';
 
-    if (confirm(mensaje)) {
-      // Nota: El backend recibe el tipo como parte de la ruta.
-      this.adminService.eliminarUsuario(usuario.id, tipo).subscribe({
-        next: () => {
-          this.cargarDatos();
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Error al eliminar usuario:', err);
-          alert('Error al eliminar el usuario');
-        },
-      });
-    }
+    Swal.fire({
+      title: `¿Eliminar a ${nombre}?`,
+      text: textoAdvertencia,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, eliminar usuario',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.adminService.eliminarUsuario(usuario.id, tipo).subscribe({
+          next: () => {
+            this.cargarDatos();
+            this.cdr.detectChanges();
+            Swal.fire('Eliminado', 'El usuario ha sido eliminado.', 'success');
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
+          },
+        });
+      }
+    });
   }
 
   formatearFecha(fecha: string): string {

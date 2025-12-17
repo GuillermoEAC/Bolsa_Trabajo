@@ -1,26 +1,22 @@
 <div class="perfil-container">
-  <!-- ========== LOADING ========== -->
   <div *ngIf="loading" class="loading-state">
     <div class="spinner"></div>
     <p>Cargando tu perfil...</p>
   </div>
 
-  <!-- ========== ERROR ========== -->
   <div *ngIf="error && !loading" class="error-state">
-    <app-icon nombre="alert-circle" class="error-icon"></app-icon>
+    <app-icon name="XMark" class="error-icon"></app-icon>
     <h3>{{ error }}</h3>
     <button (click)="cargarPerfilAutomatico()" class="btn-reintentar">Reintentar</button>
   </div>
 
-  <!-- ========== PERFIL CARGADO ========== -->
   <div *ngIf="perfil && !loading" class="perfil-content">
-    <!-- HEADER CON BOTONES -->
     <div class="perfil-header">
       <h1>{{ editando ? 'Editando Mi Perfil' : 'Mi Perfil' }}</h1>
 
       <div class="acciones">
         <button *ngIf="!editando" (click)="toggleEdicion()" class="btn-editar">
-          <app-icon nombre="edit"></app-icon>
+          <app-icon name="Pencil"></app-icon>
           Editar Perfil
         </button>
 
@@ -35,9 +31,7 @@
       </div>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL: 2 COLUMNAS -->
     <div class="perfil-layout">
-      <!-- ========== COLUMNA IZQUIERDA: DATOS PERSONALES ========== -->
       <aside class="perfil-sidebar">
         <div class="foto-perfil">
           <img
@@ -48,7 +42,7 @@
 
           <div *ngIf="editando" class="overlay-camara">
             <button (click)="fileInput.click()" class="btn-cambiar-foto">
-              <app-icon nombre="camera"></app-icon>
+              <app-icon name="Camera"></app-icon>
             </button>
             <input
               #fileInput
@@ -60,7 +54,6 @@
           </div>
         </div>
 
-        <!-- Nombre -->
         <div class="info-section">
           <h2 *ngIf="!editando">{{ nombreCompleto }}</h2>
 
@@ -85,7 +78,6 @@
           </div>
         </div>
 
-        <!-- Título/Profesión -->
         <div class="info-section">
           <h3 *ngIf="!editando && perfil.titulo_cv">{{ perfil.titulo_cv }}</h3>
           <p *ngIf="!editando && !perfil.titulo_cv" class="texto-vacio">
@@ -103,15 +95,14 @@
           </div>
         </div>
 
-        <!-- Datos de Contacto -->
         <div class="info-section">
           <div class="contacto-item">
-            <app-icon nombre="mail"></app-icon>
+            <app-icon name="Mail"></app-icon>
             <span>{{ perfil.email }}</span>
           </div>
 
           <div class="contacto-item" *ngIf="!editando && perfil.telefono">
-            <app-icon nombre="phone"></app-icon>
+            <app-icon name="Phone"></app-icon>
             <span>{{ perfil.telefono }}</span>
           </div>
 
@@ -126,7 +117,7 @@
           </div>
 
           <div class="contacto-item" *ngIf="!editando && perfil.ubicacion">
-            <app-icon nombre="map-pin"></app-icon>
+            <app-icon name="MapPin"></app-icon>
             <span>{{ perfil.ubicacion }}</span>
           </div>
 
@@ -141,7 +132,6 @@
           </div>
         </div>
 
-        <!-- Disponibilidad -->
         <div class="info-section" *ngIf="editando">
           <label class="checkbox-label">
             <input type="checkbox" [(ngModel)]="perfil.disponibilidad_viajar" />
@@ -155,12 +145,10 @@
         </div>
       </aside>
 
-      <!-- ========== COLUMNA DERECHA: TIMELINE ========== -->
       <main class="perfil-main">
-        <!-- SOBRE MÍ -->
         <section class="seccion-cv">
           <h3>
-            <app-icon nombre="user"></app-icon>
+            <app-icon name="User"></app-icon>
             Sobre Mí
           </h3>
 
@@ -182,11 +170,10 @@
           </div>
         </section>
 
-        <!-- EDUCACIÓN -->
         <section class="seccion-cv">
           <div class="seccion-header">
             <h3>
-              <app-icon nombre="book"></app-icon>
+              <app-icon name="AcademicCap"></app-icon>
               Educación
             </h3>
             <button *ngIf="editando" (click)="agregarItem('estudios')" class="btn-agregar-mini">
@@ -200,7 +187,6 @@
 
           <div class="timeline">
             <div *ngFor="let estudio of perfil.estudios; let i = index" class="timeline-item">
-              <!-- MODO VER -->
               <ng-container *ngIf="!editando">
                 <div class="timeline-marker"></div>
                 <div class="timeline-content">
@@ -214,76 +200,26 @@
                 </div>
               </ng-container>
 
-              <!-- MODO EDITAR -->
               <ng-container *ngIf="editando">
                 <div class="form-card">
                   <button (click)="eliminarItem(perfil.estudios, i)" class="btn-eliminar-item">
-                    <app-icon nombre="trash"></app-icon>
+                    <app-icon name="Trash"></app-icon>
                   </button>
 
                   <div class="form-group">
-                    <label>Nivel de Estudios</label>
-                    <select [(ngModel)]="estudio.nivel_estudio" class="select-field">
-                      <option value="">Selecciona...</option>
-                      <option value="Bachillerato">Bachillerato</option>
-                      <option value="Licenciatura">Licenciatura</option>
-                      <option value="Maestría">Maestría</option>
-                      <option value="Doctorado">Doctorado</option>
-                    </select>
+                    <label>Carrera</label>
+                    <input type="text" [(ngModel)]="estudio.carrera" class="input-field" />
                   </div>
-
-                  <div class="form-group">
-                    <label>Carrera *</label>
-                    <input
-                      type="text"
-                      [(ngModel)]="estudio.carrera"
-                      placeholder="Ingeniería en Sistemas"
-                      class="input-field"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label>Institución *</label>
-                    <input
-                      type="text"
-                      [(ngModel)]="estudio.centro_estudio"
-                      placeholder="Universidad..."
-                      class="input-field"
-                    />
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label>Fecha Inicio</label>
-                      <input type="date" [(ngModel)]="estudio.fecha_inicio" class="input-field" />
-                    </div>
-
-                    <div class="form-group">
-                      <label>Fecha Fin</label>
-                      <input
-                        type="date"
-                        [(ngModel)]="estudio.fecha_fin"
-                        [disabled]="estudio.en_curso"
-                        class="input-field"
-                      />
-                    </div>
-                  </div>
-
-                  <label class="checkbox-label">
-                    <input type="checkbox" [(ngModel)]="estudio.en_curso" />
-                    Cursando actualmente
-                  </label>
                 </div>
               </ng-container>
             </div>
           </div>
         </section>
 
-        <!-- EXPERIENCIA LABORAL -->
         <section class="seccion-cv">
           <div class="seccion-header">
             <h3>
-              <app-icon nombre="briefcase"></app-icon>
+              <app-icon name="Briefcase"></app-icon>
               Experiencia Laboral
             </h3>
             <button *ngIf="editando" (click)="agregarItem('experiencias')" class="btn-agregar-mini">
@@ -297,7 +233,6 @@
 
           <div class="timeline">
             <div *ngFor="let exp of perfil.experiencias; let i = index" class="timeline-item">
-              <!-- MODO VER -->
               <ng-container *ngIf="!editando">
                 <div class="timeline-marker"></div>
                 <div class="timeline-content">
@@ -313,75 +248,25 @@
                 </div>
               </ng-container>
 
-              <!-- MODO EDITAR -->
               <ng-container *ngIf="editando">
                 <div class="form-card">
                   <button (click)="eliminarItem(perfil.experiencias, i)" class="btn-eliminar-item">
-                    <app-icon nombre="trash"></app-icon>
+                    <app-icon name="Trash"></app-icon>
                   </button>
-
                   <div class="form-group">
-                    <label>Puesto *</label>
-                    <input
-                      type="text"
-                      [(ngModel)]="exp.titulo_puesto"
-                      placeholder="Desarrollador Backend"
-                      class="input-field"
-                    />
+                    <label>Puesto</label>
+                    <input type="text" [(ngModel)]="exp.titulo_puesto" class="input-field" />
                   </div>
-
-                  <div class="form-group">
-                    <label>Empresa *</label>
-                    <input
-                      type="text"
-                      [(ngModel)]="exp.nombre_empresa"
-                      placeholder="Nombre de la empresa"
-                      class="input-field"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label>Descripción</label>
-                    <textarea
-                      [(ngModel)]="exp.descripcion_tareas"
-                      placeholder="¿Qué hiciste en este trabajo?"
-                      rows="3"
-                      class="textarea-field"
-                    ></textarea>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label>Fecha Inicio</label>
-                      <input type="date" [(ngModel)]="exp.fecha_inicio" class="input-field" />
-                    </div>
-
-                    <div class="form-group">
-                      <label>Fecha Fin</label>
-                      <input
-                        type="date"
-                        [(ngModel)]="exp.fecha_fin"
-                        [disabled]="exp.actualmente_trabajando"
-                        class="input-field"
-                      />
-                    </div>
-                  </div>
-
-                  <label class="checkbox-label">
-                    <input type="checkbox" [(ngModel)]="exp.actualmente_trabajando" />
-                    Trabajo aquí actualmente
-                  </label>
                 </div>
               </ng-container>
             </div>
           </div>
         </section>
 
-        <!-- PROYECTOS -->
         <section class="seccion-cv">
           <div class="seccion-header">
             <h3>
-              <app-icon nombre="code"></app-icon>
+              <app-icon name="Code"></app-icon>
               Proyectos
             </h3>
             <button *ngIf="editando" (click)="agregarItem('proyectos')" class="btn-agregar-mini">
@@ -395,7 +280,6 @@
 
           <div class="proyectos-grid">
             <div *ngFor="let proy of perfil.proyectos; let i = index" class="proyecto-card">
-              <!-- MODO VER -->
               <ng-container *ngIf="!editando">
                 <h4>{{ proy.nombre_proyecto }}</h4>
                 <p class="descripcion">{{ proy.descripcion }}</p>
@@ -406,55 +290,18 @@
                   target="_blank"
                   class="link-proyecto"
                 >
-                  Ver proyecto <app-icon nombre="external-link"></app-icon>
+                  Ver proyecto <app-icon name="ExternalLink"></app-icon>
                 </a>
               </ng-container>
 
-              <!-- MODO EDITAR -->
               <ng-container *ngIf="editando">
                 <div class="form-card">
                   <button (click)="eliminarItem(perfil.proyectos, i)" class="btn-eliminar-item">
-                    <app-icon nombre="trash"></app-icon>
+                    <app-icon name="Trash"></app-icon>
                   </button>
-
                   <div class="form-group">
-                    <label>Nombre del Proyecto *</label>
-                    <input
-                      type="text"
-                      [(ngModel)]="proy.nombre_proyecto"
-                      placeholder="Mi proyecto increíble"
-                      class="input-field"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label>Descripción</label>
-                    <textarea
-                      [(ngModel)]="proy.descripcion"
-                      placeholder="¿De qué trata?"
-                      rows="3"
-                      class="textarea-field"
-                    ></textarea>
-                  </div>
-
-                  <div class="form-group">
-                    <label>Tecnologías</label>
-                    <input
-                      type="text"
-                      [(ngModel)]="proy.tecnologias"
-                      placeholder="Angular, Node.js, MySQL"
-                      class="input-field"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label>URL</label>
-                    <input
-                      type="url"
-                      [(ngModel)]="proy.url_proyecto"
-                      placeholder="https://..."
-                      class="input-field"
-                    />
+                    <label>Nombre Proyecto</label>
+                    <input type="text" [(ngModel)]="proy.nombre_proyecto" class="input-field" />
                   </div>
                 </div>
               </ng-container>

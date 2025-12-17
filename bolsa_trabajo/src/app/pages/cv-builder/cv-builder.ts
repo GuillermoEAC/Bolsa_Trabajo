@@ -5,13 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.services';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-cv-builder',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './cv-builder.html',
-  styleUrl: './cv-builder.css', // Nota: es styleUrl (singular) en Angular 17+
+  styleUrl: './cv-builder.css',
 })
 export class CvBuilderComponent {
   private http = inject(HttpClient);
@@ -20,7 +21,6 @@ export class CvBuilderComponent {
 
   currentStepSignal = 1;
 
-  // Pasos con descripciones amigables
   steps = [
     { name: '¿Quién eres?', desc: 'Empecemos por tus datos de contacto básicos.' },
     { name: 'Tu Formación', desc: 'Cuéntanos qué has estudiado o estás estudiando.' },
@@ -55,10 +55,14 @@ export class CvBuilderComponent {
   }
 
   nextStep() {
-    // Validación básica antes de avanzar
     if (this.currentStepSignal === 1) {
       if (!this.perfil.nombre || !this.perfil.apellido) {
-        alert('Por favor completa tu nombre y apellido.');
+        Swal.fire({
+          title: 'Faltan datos',
+          text: 'Por favor completa tu nombre y apellido para continuar.',
+          icon: 'warning',
+          confirmButtonColor: '#2563eb',
+        });
         return;
       }
     }
@@ -113,11 +117,15 @@ export class CvBuilderComponent {
       this.enviarDatosBackend(usuarioLogueado.id_usuario);
     } else {
       if (!this.cuenta.email || !this.cuenta.password) {
-        alert('Ingresa un correo y contraseña para crear tu cuenta.');
+        Swal.fire({
+          title: 'Atención',
+          text: 'Ingresa un correo y contraseña para crear tu cuenta.',
+          icon: 'info',
+          confirmButtonColor: '#2563eb',
+        });
         return;
       }
 
-      // Registro de usuario nuevo
       this.authService.registro(this.cuenta.email, this.cuenta.password, 2).subscribe({
         next: (res: any) => {
           console.log('Usuario registrado:', res);
@@ -129,7 +137,12 @@ export class CvBuilderComponent {
         },
         error: (err: any) => {
           console.error(err);
-          alert('Error al crear cuenta: ' + (err.error?.error || 'Verifica los datos'));
+
+          Swal.fire({
+            title: 'Error de Registro',
+            text: err.error?.error || 'No se pudo crear la cuenta, verifica los datos.',
+            icon: 'error',
+          });
         },
       });
     }
@@ -137,14 +150,36 @@ export class CvBuilderComponent {
 
   private enviarDatosBackend(idUsuario: number) {
     const payload = { id_usuario: idUsuario, ...this.perfil };
+
+    Swal.fire({
+      title: 'Guardando...',
+      text: 'Estamos creando tu perfil',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     this.http.post('http://localhost:3000/api/student/profile', payload).subscribe({
       next: () => {
-        alert('¡Bienvenido! Tu perfil ha sido creado. Ahora puedes postularte a vacantes.');
-        this.router.navigate(['/welcome']);
+        Swal.fire({
+          title: '¡Bienvenido!',
+          text: 'Tu perfil ha sido creado. Ahora puedes postularte a vacantes.',
+          icon: 'success',
+          confirmButtonText: 'Comenzar',
+          confirmButtonColor: '#16a34a',
+        }).then(() => {
+          this.router.navigate(['/welcome']);
+        });
       },
       error: (err) => {
         console.error(err);
-        alert('Hubo un problema al guardar tu CV.');
+
+        Swal.fire({
+          title: 'Error',
+          text: 'Hubo un problema al guardar tu CV en el servidor.',
+          icon: 'error',
+        });
       },
     });
   }

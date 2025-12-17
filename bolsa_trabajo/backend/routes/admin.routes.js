@@ -1,3 +1,4 @@
+// Backend/routes/admin.routes.js
 import express from 'express';
 const router = express.Router();
 

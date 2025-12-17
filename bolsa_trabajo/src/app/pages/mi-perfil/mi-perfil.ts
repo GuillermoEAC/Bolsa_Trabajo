@@ -15,7 +15,7 @@ import { IconComponent } from '../../cositas/icon.component';
 export class MiPerfilComponent implements OnInit {
   private authService = inject(AuthService);
   private studentService = inject(StudentService);
-  private cd = inject(ChangeDetectorRef); // 👈 CRUCIAL para forzar actualización
+  private cd = inject(ChangeDetectorRef);
 
   perfil: any = null;
   loading = true;

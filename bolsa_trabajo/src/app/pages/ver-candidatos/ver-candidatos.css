@@ -151,3 +151,156 @@ h1 {
   filter: brightness(0.95);
   transform: translateY(-2px);
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(3px);
+}
+
+.modal-content {
+  background: white;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  border-radius: 12px;
+  padding: 2rem;
+  position: relative;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
+}
+
+/* Header del Modal */
+.modal-header-profile {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #f0f0f0;
+}
+
+.modal-subtitle {
+  font-size: 1.1rem;
+  color: #0056b3;
+  font-weight: 500;
+  margin: 4px 0;
+}
+
+.modal-location {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.modal-section {
+  margin-bottom: 1.5rem;
+}
+
+.modal-section h4 {
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.item-list {
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+}
+
+.item-list h5 {
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+}
+
+.company-at {
+  font-weight: normal;
+  color: #666;
+}
+
+.desc-item {
+  font-size: 0.9rem;
+  color: #444;
+  margin: 5px 0;
+}
+
+.fechas {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.btn-contactar {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: #0056b3;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.btn-contactar:hover {
+  background: #004494;
+}
+
+/* Colores para etiquetas de estado */
+.status-label.visto {
+  color: #d97706;
+  background: #fef3c7;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.status-label.entrevista {
+  color: #16a34a;
+  background: #dcfce7;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.status-label.rechazado {
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 2px 8px;
+  border-radius: 4px;
+}

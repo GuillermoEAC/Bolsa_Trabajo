@@ -16,7 +16,7 @@
     <div class="alert success-alert">{{ exito }}</div>
     }
 
-    <form (ngSubmit)="onLogin()">
+    <form (ngSubmit)="onLogin()" autocomplete="off">
       <div class="form-group">
         <label for="email">Email:</label>
         <input
@@ -30,6 +30,7 @@
           class="form-input"
           [class.input-error]="emailError"
           [disabled]="cargando"
+          autocomplete="off"
         />
         @if (emailError) {
         <span class="field-error">{{ emailError }}</span>
@@ -49,6 +50,7 @@
           class="form-input"
           [class.input-error]="passwordError"
           [disabled]="cargando"
+          autocomplete="new-password"
         />
         @if (passwordError) {
         <span class="field-error">{{ passwordError }}</span>

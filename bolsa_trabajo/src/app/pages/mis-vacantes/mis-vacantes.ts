@@ -1,10 +1,11 @@
+// /src/app/pages/mis-vacantes/mis-vacantes.ts
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { VacantesService } from '../../services/vacantes.service';
 import { AuthService } from '../../services/auth.services';
 import { IconComponent } from '../../cositas/icon.component';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-mis-vacantes',
   standalone: true,
@@ -48,7 +49,6 @@ export class MisVacantesComponent implements OnInit {
     });
   }
 
-  // 👇 NUEVO MÉTODO: Obtener el texto del estado en español
   obtenerEstadoTexto(estado: string): string {
     const estados: { [key: string]: string } = {
       APROBADA: 'Activa',
@@ -58,7 +58,6 @@ export class MisVacantesComponent implements OnInit {
     return estados[estado] || 'Desconocido';
   }
 
-  // 👇 NUEVO MÉTODO: Obtener la clase CSS según el estado
   obtenerEstadoClase(estado: string): string {
     const clases: { [key: string]: string } = {
       APROBADA: 'active',
@@ -69,16 +68,28 @@ export class MisVacantesComponent implements OnInit {
   }
 
   eliminar(id: number) {
-    if (confirm('¿Estás seguro de eliminar esta vacante?')) {
-      this.vacantesService.eliminarVacante(id).subscribe({
-        next: () => {
-          alert('Vacante eliminada');
-          const usuario = this.authService.obtenerUsuarioActual();
-          if (usuario) this.cargarVacantes(usuario.id_usuario);
-        },
-        error: (err: any) => alert('Error al eliminar'),
-      });
-    }
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'No podrás revertir esta acción',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Si el usuario dijo que SÍ, ejecutamos el servicio
+        this.vacantesService.eliminarVacante(id).subscribe({
+          next: () => {
+            Swal.fire('Eliminado', 'La vacante ha sido eliminada.', 'success');
+            const usuario = this.authService.obtenerUsuarioActual();
+            if (usuario) this.cargarVacantes(usuario.id_usuario);
+          },
+          error: (err) => Swal.fire('Error', 'No se pudo eliminar la vacante.', 'error'),
+        });
+      }
+    });
   }
 
   editar(id: number) {

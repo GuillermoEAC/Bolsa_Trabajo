@@ -1,19 +1,32 @@
-// Este archivo solo exporta la configuración de la base de datos.
-// const DbConfig = {
+// import { createPool } from 'mysql2/promise';
+// import 'dotenv/config';
+
+// export const pool = createPool({
 //   host: process.env.DB_HOST || 'localhost',
 //   user: process.env.DB_USER || 'root',
-//   port: Number(process.env.DB_PORT) || 3306,
-//   password: process.env.DB_PASSWORD || 'root',
-//   database: process.env.DB_NAME || 'primerpaso_db',
-// };
+//   password: process.env.DB_PASSWORD || '',
+//   database: process.env.DB_NAME || 'PrimerPaso_DB',
+//   port: process.env.DB_PORT || 3306,
+//   waitForConnections: true,
+//   connectionLimit: 10,
+//   queueLimit: 0,
+// });
 
-const DbConfig = {
-  host: process.env.MYSQL_HOST || process.env.DB_HOST || 'localhost',
-  user: process.env.MYSQL_USER || process.env.DB_USER || 'root',
-  port: Number(process.env.MYSQL_PORT || process.env.DB_PORT || 3306),
-  password: process.env.MYSQL_PASSWORD || process.env.DB_PASSWORD || 'root',
-  database: process.env.MYSQL_DATABASE || process.env.DB_NAME || 'primerpaso_db',
-};
+import { createPool } from 'mysql2/promise';
+import 'dotenv/config';
 
-// ✅ Exportación por defecto
-export default DbConfig;
+export const pool = createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT || 4000,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  // 👇 ESTO ES VITAL PARA TIDB EN RENDER
+  ssl: {
+    minVersion: 'TLSv1.2',
+    rejectUnauthorized: true,
+  },
+});
