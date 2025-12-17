@@ -1,38 +1,58 @@
 import { createPool } from 'mysql2/promise';
 import 'dotenv/config';
 
-// 1. Logs de diagnóstico (Para ver en el Dashboard de Render)
 console.log('🔌 Iniciando configuración de DB...');
 console.log('   -> Host detectado:', process.env.DB_HOST);
 
+// Validación de variables críticas
+const requiredVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
+const missingVars = requiredVars.filter((v) => !process.env[v]);
+
+if (missingVars.length > 0) {
+  console.error('❌ Variables de entorno faltantes:', missingVars);
+  throw new Error(`Configuración incompleta: ${missingVars.join(', ')}`);
+}
+
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'PrimerPaso_DB',
-  port: process.env.DB_PORT || 3306,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: parseInt(process.env.DB_PORT) || 4000,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
 };
 
-// 2. Lógica BLINDADA para activar SSL
-// Verificamos si el host es de TiDB Cloud específicamente
-const esTiDB = process.env.DB_HOST && process.env.DB_HOST.includes('tidbcloud');
-const esProduccion = process.env.DB_HOST && process.env.DB_HOST !== 'localhost';
+// Activar SSL para TiDB Cloud
+const esTiDB = process.env.DB_HOST.includes('tidbcloud');
 
-if (esTiDB || esProduccion) {
-  console.log('🔒 Modo Nube/TiDB detectado: Activando SSL obligatorio.');
+if (esTiDB) {
+  console.log('🔒 Modo TiDB Cloud: Activando SSL obligatorio.');
   dbConfig.ssl = {
     minVersion: 'TLSv1.2',
     rejectUnauthorized: true,
   };
-  // Aseguramos el puerto 4000 si es TiDB
-  if (esTiDB) {
-    dbConfig.port = 4000;
-  }
-} else {
-  console.log('🏠 Modo Local detectado: SSL desactivado.');
 }
 
+console.log('🔍 Configuración final (sin password):');
+console.log({
+  host: dbConfig.host,
+  user: dbConfig.user,
+  database: dbConfig.database,
+  port: dbConfig.port,
+  ssl: dbConfig.ssl ? 'Habilitado' : 'Deshabilitado',
+});
+
 export const pool = createPool(dbConfig);
+
+// Test de conexión
+pool
+  .getConnection()
+  .then((conn) => {
+    console.log('✅ Conexión a DB exitosa');
+    conn.release();
+  })
+  .catch((err) => {
+    console.error('❌ Error de conexión DB:', err.message);
+  });
