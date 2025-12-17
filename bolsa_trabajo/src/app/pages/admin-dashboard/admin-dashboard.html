@@ -6,32 +6,6 @@
       </span>
       <h1>Panel de Administración</h1>
     </div>
-
-    <div class="user-menu">
-      <button class="user-menu-btn" (click)="toggleMenu()">
-        <div class="user-avatar">
-          <app-icon name="UserCircle"></app-icon>
-        </div>
-        <span class="user-name">admin</span>
-        <app-icon name="ChevronDown" [class.rotate]="menuOpen"></app-icon>
-      </button>
-
-      <div class="dropdown-menu" *ngIf="menuOpen">
-        <button class="menu-item" routerLink="/admin/perfil">
-          <app-icon name="User"></app-icon>
-          <span>Mi Perfil</span>
-        </button>
-        <button class="menu-item" routerLink="/admin/configuracion">
-          <app-icon name="Cog"></app-icon>
-          <span>Configuración</span>
-        </button>
-        <div class="menu-divider"></div>
-        <button class="menu-item danger" (click)="logout()">
-          <app-icon name="Logout"></app-icon>
-          <span>Cerrar Sesión</span>
-        </button>
-      </div>
-    </div>
   </header>
 
   <div class="tabs-container">
@@ -213,22 +187,34 @@
             </span>
           </td>
           <td style="text-align: right">
-            <button
-              *ngIf="!emp.validada"
-              class="btn-icon btn-approve"
-              title="Aprobar"
-              (click)="toggleValidacion(emp)"
-            >
-              <app-icon name="Check"></app-icon>
-            </button>
-            <button
-              *ngIf="emp.validada"
-              class="btn-icon btn-reject"
-              title="Desactivar"
-              (click)="toggleValidacion(emp)"
-            >
-              <app-icon name="XMark"></app-icon>
-            </button>
+            <div class="actions-row" style="display: flex; justify-content: flex-end; gap: 8px">
+              <ng-container *ngIf="!emp.validada">
+                <button
+                  class="btn-icon btn-approve"
+                  title="Aprobar Solicitud"
+                  (click)="toggleValidacion(emp)"
+                >
+                  <app-icon name="Check"></app-icon>
+                </button>
+
+                <button
+                  class="btn-icon btn-reject"
+                  title="Rechazar y Eliminar"
+                  (click)="rechazarEmpresa(emp)"
+                >
+                  <app-icon name="XMark"></app-icon>
+                </button>
+              </ng-container>
+
+              <button
+                *ngIf="emp.validada"
+                class="btn-icon btn-delete"
+                title="Desactivar Empresa"
+                (click)="toggleValidacion(emp)"
+              >
+                <app-icon name="NoSymbol"></app-icon>
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>

@@ -104,7 +104,7 @@ export const obtenerVacantesAdmin = async (req, res) => {
 export const moderarVacante = async (req, res) => {
   const { id } = req.params;
   const { accion, motivo_rechazo } = req.body;
-  // Asegúrate de que tu middleware de auth agregue req.usuario
+
   const id_administrador = req.usuario ? req.usuario.id_usuario : null;
 
   try {
@@ -166,7 +166,6 @@ export const eliminarVacanteAdmin = async (req, res) => {
 
 export const obtenerUsuarios = async (req, res) => {
   try {
-    // 🔥 CONSULTA REAL CON LEFT JOIN PARA OBTENER NOMBRES REALES
     const [usuarios] = await pool.query(`
       SELECT 
         u.id_usuario as id, 
@@ -192,9 +191,9 @@ export const obtenerUsuarios = async (req, res) => {
     const usuariosFormateados = usuarios.map((u) => ({
       id: u.id,
       email: u.email,
-      tipo_usuario: u.tipo_usuario.toUpperCase(), // ESTUDIANTE o EMPRESA
+      tipo_usuario: u.tipo_usuario.toUpperCase(),
       fecha_registro: u.fecha_registro,
-      // Si es empresa, usamos nombre_empresa, si es estudiante, usamos su nombre
+
       nombre: u.tipo_usuario === 'Empresa' ? u.nombre_empresa : u.nombre,
       apellido: u.apellido,
       telefono: u.telefono,
@@ -217,10 +216,8 @@ export const eliminarUsuario = async (req, res) => {
   try {
     let profileTable = tipo.toUpperCase() === 'ESTUDIANTE' ? 'Estudiante' : 'Empresa';
 
-    // 1. Eliminamos el perfil específico
     await pool.query(`DELETE FROM ${profileTable} WHERE id_usuario = ?`, [id]);
 
-    // 2. Eliminamos el Usuario base (Esto borrará notificaciones, etc. si hay Cascade)
     const [result] = await pool.query('DELETE FROM Usuario WHERE id_usuario = ?', [id]);
 
     if (result.affectedRows === 0)
@@ -234,6 +231,5 @@ export const eliminarUsuario = async (req, res) => {
 };
 
 export const obtenerEstadisticas = async (req, res) => {
-  // Aquí podrías hacer queries de COUNT(*) reales a la BD
   res.json({ mensaje: 'Estadísticas placeholder' });
 };

@@ -10,7 +10,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.services';
 import { IconComponent } from '../../cositas/icon.component';
-import Swal from 'sweetalert2'; // <--- IMPORTAR AQUÍ
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -32,7 +32,6 @@ export class AdminDashboardComponent implements OnInit {
 
   vistaActual: 'empresas' | 'vacantes' | 'usuarios' = 'empresas';
   loading = true;
-  menuOpen = false;
 
   // Resúmenes
   resumenEmpresas = { total: 0, validadas: 0, pendientes: 0 };
@@ -117,11 +116,12 @@ export class AdminDashboardComponent implements OnInit {
     this.cargarDatos();
   }
 
-  // ========== LÓGICA EMPRESAS (Con SweetAlert) ==========
+  // ========== LÓGICA EMPRESAS ==========
+
   toggleValidacion(empresa: any) {
     const nuevoEstado = empresa.validada === 0 ? true : false;
     const accionTexto = nuevoEstado ? 'Aprobar' : 'Desactivar';
-    const colorBoton = nuevoEstado ? '#10b981' : '#ef4444'; // Verde o Rojo
+    const colorBoton = nuevoEstado ? '#10b981' : '#ef4444';
 
     Swal.fire({
       title: `¿${accionTexto} empresa?`,
@@ -149,7 +149,48 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  // ========== LÓGICA VACANTES (Con SweetAlert) ==========
+  rechazarEmpresa(empresa: any) {
+    Swal.fire({
+      title: '¿Rechazar solicitud?',
+      text: `Se eliminará permanentemente el registro de "${empresa.nombre_empresa}" y su usuario asociado.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, rechazar y eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const idParaBorrar = empresa.id_usuario;
+
+        this.adminService.eliminarUsuario(idParaBorrar, 'EMPRESA').subscribe({
+          next: () => {
+            this.cargarDatos();
+            this.cdr.detectChanges();
+
+            const Toast = Swal.mixin({
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true,
+            });
+            Toast.fire({
+              icon: 'success',
+              title: 'Solicitud rechazada y eliminada',
+            });
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire('Error', 'No se pudo rechazar la empresa.', 'error');
+          },
+        });
+      }
+    });
+  }
+
+  // ========== LÓGICA VACANTES ==========
+
   moderarVacante(id: number, estado: 'APROBADA' | 'RECHAZADA') {
     const accion = estado === 'APROBADA' ? 'aprobar' : 'rechazar';
     const color = estado === 'APROBADA' ? '#10b981' : '#ef4444';
@@ -174,7 +215,6 @@ export class AdminDashboardComponent implements OnInit {
             }
             this.cdr.detectChanges();
 
-            // Alerta pequeña (Toast) en la esquina
             const Toast = Swal.mixin({
               toast: true,
               position: 'top-end',
@@ -223,7 +263,8 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  // ========== LÓGICA USUARIOS (Con SweetAlert) ==========
+  // ========== LÓGICA USUARIOS ==========
+
   eliminarUsuario(usuario: any) {
     const tipo = usuario.tipo_usuario;
     const nombre = tipo === 'ESTUDIANTE' ? `${usuario.nombre} ${usuario.apellido}` : usuario.nombre;
@@ -270,9 +311,5 @@ export class AdminDashboardComponent implements OnInit {
   logout() {
     this.authService.logout();
     this.router.navigate(['/welcome']);
-  }
-
-  toggleMenu() {
-    this.menuOpen = !this.menuOpen;
   }
 }
