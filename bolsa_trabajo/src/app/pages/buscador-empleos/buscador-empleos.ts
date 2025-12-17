@@ -1,3 +1,4 @@
+// src/app/pages/buscar-empleos.ts
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +9,7 @@ import Swal from 'sweetalert2';
 import { AuthService } from '../../services/auth.services';
 import { PostulacionesService } from '../../services/postulaciones.service';
 import { FavoritosService } from '../../services/favoritos.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-buscador-empleos',
@@ -174,6 +176,8 @@ export class BuscadorEmpleosComponent implements OnInit {
   }
 
   obtenerUrlLogo(logoPath: string): string {
-    return logoPath ? `http://localhost:3000/${logoPath}` : 'assets/img/Logo_Completo.png';
+    return logoPath
+      ? `${environment.apiUrl.replace('/api', '')}/${logoPath}`
+      : 'assets/img/Logo_Completo.png';
   }
 }

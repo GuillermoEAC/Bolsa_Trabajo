@@ -1,10 +1,11 @@
+// src/app/pages/mis-favoritos
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FavoritosService } from '../../services/favoritos.service';
 import { AuthService } from '../../services/auth.services';
 import { IconComponent } from '../../cositas/icon.component'; // Iconos SVG
-
+import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-mis-favoritos',
   standalone: true,
@@ -55,6 +56,14 @@ export class MisFavoritosComponent implements OnInit {
   }
 
   obtenerUrlLogo(path: string) {
-    return path ? `http://localhost:3000/${path}` : 'assets/img/Logo_Completo.png';
+    if (!path) return 'assets/img/Logo_Completo.png';
+
+    if (path.startsWith('http')) return path;
+
+    const baseUrl = environment.apiUrl.replace('/api', '');
+
+    const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+
+    return `${baseUrl}/${cleanPath}`;
   }
 }

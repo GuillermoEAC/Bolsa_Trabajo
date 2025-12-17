@@ -2,11 +2,12 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+// import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.services';
 import Swal from 'sweetalert2';
-
+import { StudentService } from '../../services/student.service';
+import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-cv-builder',
   standalone: true,
@@ -15,7 +16,7 @@ import Swal from 'sweetalert2';
   styleUrl: './cv-builder.css',
 })
 export class CvBuilderComponent {
-  private http = inject(HttpClient);
+  private studentService = inject(StudentService);
   private authService = inject(AuthService);
   private router = inject(Router);
 
@@ -160,7 +161,7 @@ export class CvBuilderComponent {
       },
     });
 
-    this.http.post('http://localhost:3000/api/student/profile', payload).subscribe({
+    this.studentService.saveProfile(payload).subscribe({
       next: () => {
         Swal.fire({
           title: '¡Bienvenido!',

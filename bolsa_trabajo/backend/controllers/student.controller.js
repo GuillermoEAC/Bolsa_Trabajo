@@ -318,7 +318,12 @@ export const uploadProfilePhoto = async (req, res) => {
 
   // Generamos la URL accesible desde el frontend
   // Nota: req.file.filename es el nombre con el que Multer guardó el archivo
-  const photoUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+
+  const photoPath = `uploads/${req.file.filename}`;
+  const [result] = await pool.query(
+    'UPDATE Estudiante SET url_foto_perfil = ? WHERE id_usuario = ?',
+    [photoPath, id_usuario]
+  );
 
   console.log('📸 Subiendo foto para usuario:', id_usuario);
   console.log('📂 Archivo guardado en:', photoUrl);
