@@ -8,10 +8,9 @@ const calcularResumenUsuarios = (usuarios) => {
   let empresas = 0;
 
   usuarios.forEach((u) => {
-    // Aceptamos tanto ESTUDIANTE/EMPRESA en mayúscula como minúscula para robustez
-    if (u.tipo_usuario === 'ESTUDIANTE' || u.tipo_usuario === 'estudiante') {
+    if (u.tipo_usuario === 'Estudiante' || u.tipo_usuario === 'ESTUDIANTE') {
       estudiantes++;
-    } else if (u.tipo_usuario === 'EMPRESA' || u.tipo_usuario === 'empresa') {
+    } else if (u.tipo_usuario === 'Empresa' || u.tipo_usuario === 'EMPRESA') {
       empresas++;
     }
   });
@@ -28,11 +27,10 @@ const calcularResumenUsuarios = (usuarios) => {
 // ==========================================
 
 export const obtenerEmpresas = async (req, res) => {
-  const pool = req.app.locals.pool;
   try {
     const [rows] = await pool.query(
       `
-      SELECT e.id_empresa, e.nombre_empresa, e.razon_social, e.email_contacto, e.sector, e.validada, u.email as email_usuario
+      SELECT e.id_empresa, e.nombre_empresa, e.razon_social, e.email_contacto, e.sector, e.validada, u.email as email_usuario, e.id_usuario
       FROM Empresa e
       JOIN Usuario u ON e.id_usuario = u.id_usuario
       ORDER BY e.validada ASC, e.id_empresa DESC
@@ -46,19 +44,12 @@ export const obtenerEmpresas = async (req, res) => {
 };
 
 export const cambiarEstadoEmpresa = async (req, res) => {
-  const pool = req.app.locals.pool;
   const { id } = req.params;
   const { validada } = req.body; // true (1) o false (0)
 
   try {
-    // Obtener datos de la empresa
     const [empresa] = await pool.query(
-      `
-      SELECT e.nombre_empresa, u.id_usuario, u.email
-      FROM Empresa e
-      JOIN Usuario u ON e.id_usuario = u.id_usuario
-      WHERE e.id_empresa = ?
-    `,
+      `SELECT e.nombre_empresa, u.id_usuario, u.email FROM Empresa e JOIN Usuario u ON e.id_usuario = u.id_usuario WHERE e.id_empresa = ?`,
       [id]
     );
 
@@ -66,13 +57,12 @@ export const cambiarEstadoEmpresa = async (req, res) => {
       return res.status(404).json({ error: 'Empresa no encontrada' });
     }
 
-    // Actualizar estado
     await pool.query('UPDATE Empresa SET validada = ? WHERE id_empresa = ?', [
       validada ? 1 : 0,
       id,
     ]);
 
-    // 🔥 CREAR NOTIFICACIÓN para la empresa
+    // Notificación
     const mensaje = validada
       ? `¡Bienvenido! Tu cuenta de ${empresa[0].nombre_empresa} ha sido validada. Ya puedes publicar vacantes.`
       : `Tu cuenta de ${empresa[0].nombre_empresa} fue desactivada por el administrador.`;
@@ -87,7 +77,7 @@ export const cambiarEstadoEmpresa = async (req, res) => {
 
     res.json({ message: 'Estado de empresa actualizado' });
   } catch (error) {
-    console.error('Error al cambiar estado de empresa:', error);
+    console.error('Error al cambiar estado:', error);
     res.status(500).json({ error: 'Error al cambiar estado de empresa' });
   }
 };
@@ -97,7 +87,6 @@ export const cambiarEstadoEmpresa = async (req, res) => {
 // ==========================================
 
 export const obtenerVacantesAdmin = async (req, res) => {
-  const pool = req.app.locals.pool;
   try {
     const [vacantes] = await pool.query(`
       SELECT v.*, e.nombre_empresa 
@@ -105,49 +94,38 @@ export const obtenerVacantesAdmin = async (req, res) => {
       JOIN Empresa e ON v.id_empresa = e.id_empresa
       ORDER BY FIELD(v.estado_aprobacion, 'PENDIENTE', 'APROBADA', 'RECHAZADA'), v.fecha_publicacion DESC
     `);
-
-    console.log('📊 Vacantes encontradas:', vacantes.length); // 🔥 Debug
     res.json(vacantes);
   } catch (error) {
-    console.error('❌ Error al obtener vacantes (admin):', error);
+    console.error('Error vacantes admin:', error);
     res.status(500).json({ error: 'Error al obtener vacantes' });
   }
 };
 
 export const moderarVacante = async (req, res) => {
-  const pool = req.app.locals.pool;
   const { id } = req.params;
-  const { accion, motivo_rechazo } = req.body; // 'aprobar' o 'rechazar'
-  const id_administrador = req.usuario.id_usuario;
+  const { accion, motivo_rechazo } = req.body;
+  // Asegúrate de que tu middleware de auth agregue req.usuario
+  const id_administrador = req.usuario ? req.usuario.id_usuario : null;
 
   try {
     const estado = accion === 'aprobar' ? 'APROBADA' : 'RECHAZADA';
 
-    // Obtener datos de la vacante
     const [vacante] = await pool.query(
-      `
-      SELECT v.titulo_cargo, e.id_usuario, e.nombre_empresa
-      FROM Vacante v
-      JOIN Empresa e ON v.id_empresa = e.id_empresa
-      WHERE v.id_vacante = ?
-    `,
+      `SELECT v.titulo_cargo, e.id_usuario FROM Vacante v JOIN Empresa e ON v.id_empresa = e.id_empresa WHERE v.id_vacante = ?`,
       [id]
     );
 
-    if (vacante.length === 0) {
-      return res.status(404).json({ error: 'Vacante no encontrada' });
-    }
+    if (vacante.length === 0) return res.status(404).json({ error: 'Vacante no encontrada' });
 
-    // Actualizar estado
     await pool.query(
       'UPDATE Vacante SET estado_aprobacion = ?, motivo_rechazo = ?, id_administrador_aprobador = ? WHERE id_vacante = ?',
       [estado, motivo_rechazo || null, id_administrador, id]
     );
 
-    // 🔥 CREAR NOTIFICACIÓN para la empresa
+    // Notificación
     const mensaje =
       estado === 'APROBADA'
-        ? `¡Excelente! Tu vacante "${vacante[0].titulo_cargo}" ha sido aprobada y ahora está visible para los estudiantes.`
+        ? `¡Excelente! Tu vacante "${vacante[0].titulo_cargo}" ha sido aprobada.`
         : `Tu vacante "${vacante[0].titulo_cargo}" fue rechazada. Motivo: ${
             motivo_rechazo || 'No especificado'
           }`;
@@ -160,30 +138,25 @@ export const moderarVacante = async (req, res) => {
       tipo,
     ]);
 
-    res.json({ message: `Vacante ${estado.toLowerCase()} correctamente` });
+    res.json({ message: `Vacante ${estado.toLowerCase()}` });
   } catch (error) {
-    console.error('Error al moderar vacante:', error);
+    console.error('Error moderar vacante:', error);
     res.status(500).json({ error: 'Error al moderar vacante' });
   }
 };
 
 export const eliminarVacanteAdmin = async (req, res) => {
-  const pool = req.app.locals.pool;
-  const { id } = req.params; // id_vacante
+  const { id } = req.params;
   try {
-    // Si tienes ON DELETE CASCADE configurado, solo necesitas borrar la vacante
-    // Si no tienes CASCADE, debes borrar postulaciones primero:
     await pool.query('DELETE FROM Postulacion WHERE id_vacante = ?', [id]);
     const [result] = await pool.query('DELETE FROM Vacante WHERE id_vacante = ?', [id]);
 
-    if (result.affectedRows === 0) {
+    if (result.affectedRows === 0)
       return res.status(404).json({ mensaje: 'Vacante no encontrada.' });
-    }
-
-    res.json({ mensaje: `Vacante ${id} y postulaciones asociadas eliminadas.` });
+    res.json({ mensaje: 'Vacante eliminada.' });
   } catch (error) {
-    console.error('Error al eliminar vacante (admin):', error);
-    res.status(500).json({ error: 'Error interno al eliminar vacante' });
+    console.error('Error eliminar vacante:', error);
+    res.status(500).json({ error: 'Error interno' });
   }
 };
 
@@ -192,33 +165,45 @@ export const eliminarVacanteAdmin = async (req, res) => {
 // ==========================================
 
 export const obtenerUsuarios = async (req, res) => {
-  const pool = req.app.locals.pool;
   try {
-    // Obtener Estudiantes (Rol 2) y Empresas (Rol 3)
-    const [usuariosDB] = await pool.query(
-      `
-      SELECT u.id_usuario AS id, u.email, r.nombre_rol AS tipo_usuario, NULL AS nombre, NULL AS apellido, NULL AS telefono, u.fecha_registro
+    // 🔥 CONSULTA REAL CON LEFT JOIN PARA OBTENER NOMBRES REALES
+    const [usuarios] = await pool.query(`
+      SELECT 
+        u.id_usuario as id, 
+        u.email, 
+        r.nombre_rol as tipo_usuario, 
+        u.fecha_registro,
+        -- Datos de Estudiante
+        est.nombre, 
+        est.apellido, 
+        est.fecha_nacimiento,
+        est.telefono,
+        -- Datos de Empresa (si es empresa, usamos nombre_empresa como nombre)
+        emp.nombre_empresa
       FROM Usuario u
       JOIN Rol r ON u.id_rol = r.id_rol
-      WHERE r.nombre_rol IN ('Estudiante', 'Empresa') 
+      LEFT JOIN Estudiante est ON u.id_usuario = est.id_usuario
+      LEFT JOIN Empresa emp ON u.id_usuario = emp.id_usuario
+      WHERE r.nombre_rol IN ('Estudiante', 'Empresa')
       ORDER BY u.fecha_registro DESC
-    `
-    );
+    `);
 
-    // Mapear datos de perfiles específicos a la lista principal (LÓGICA SIMPLIFICADA)
-    // En una aplicación real, se usarían LEFT JOINs más complejos
-    // Aquí, simulamos el mapeo que esperas en tu frontend
-    const usuarios = usuariosDB.map((user) => ({
-      ...user,
-      // Simulando campos de perfil: En un entorno real, estos vendrían de JOINs
-      nombre: user.tipo_usuario === 'Estudiante' ? 'Estudiante Test' : 'Empresa Test',
-      apellido: user.tipo_usuario === 'Estudiante' ? 'Apellido Test' : null,
-      fecha_nacimiento: user.tipo_usuario === 'Estudiante' ? '2000-01-01' : null,
+    // Formateamos los datos para que el frontend los reciba limpios
+    const usuariosFormateados = usuarios.map((u) => ({
+      id: u.id,
+      email: u.email,
+      tipo_usuario: u.tipo_usuario.toUpperCase(), // ESTUDIANTE o EMPRESA
+      fecha_registro: u.fecha_registro,
+      // Si es empresa, usamos nombre_empresa, si es estudiante, usamos su nombre
+      nombre: u.tipo_usuario === 'Empresa' ? u.nombre_empresa : u.nombre,
+      apellido: u.apellido,
+      telefono: u.telefono,
+      fecha_nacimiento: u.fecha_nacimiento,
     }));
 
     res.json({
-      usuarios: usuarios,
-      resumen: calcularResumenUsuarios(usuarios),
+      usuarios: usuariosFormateados,
+      resumen: calcularResumenUsuarios(usuariosFormateados),
     });
   } catch (error) {
     console.error('Error al obtener usuarios:', error);
@@ -227,51 +212,28 @@ export const obtenerUsuarios = async (req, res) => {
 };
 
 export const eliminarUsuario = async (req, res) => {
-  const pool = req.app.locals.pool;
-  const { id, tipo } = req.params; // id_usuario y tipo ('ESTUDIANTE' o 'EMPRESA')
+  const { id, tipo } = req.params;
 
   try {
-    // 1. Obtener el ID del perfil específico (Estudiante o Empresa)
-    let profileTable;
-    let profileIdCol;
+    let profileTable = tipo.toUpperCase() === 'ESTUDIANTE' ? 'Estudiante' : 'Empresa';
 
-    if (tipo.toUpperCase() === 'ESTUDIANTE') {
-      profileTable = 'Estudiante';
-      profileIdCol = 'id_estudiante';
-    } else if (tipo.toUpperCase() === 'EMPRESA') {
-      profileTable = 'Empresa';
-      profileIdCol = 'id_empresa';
-    } else {
-      return res.status(400).json({ error: 'Tipo de usuario no válido.' });
-    }
-
-    const [profileResult] = await pool.query(
-      `SELECT ${profileIdCol} FROM ${profileTable} WHERE id_usuario = ?`,
-      [id]
-    );
-
-    if (profileResult.length === 0) {
-      return res.status(404).json({ mensaje: 'Perfil de usuario no encontrado.' });
-    }
-
-    // 2. Eliminar el perfil (La eliminación del Usuario, que tiene Notificaciones, Experiencia, etc. en CASCADE debe ser el último paso)
+    // 1. Eliminamos el perfil específico
     await pool.query(`DELETE FROM ${profileTable} WHERE id_usuario = ?`, [id]);
 
-    // 3. Eliminar el Usuario (Esto debería limpiar el resto de las tablas dependientes: Postulacion, Notificacion, Favorito, etc. si el CASCADE está configurado)
+    // 2. Eliminamos el Usuario base (Esto borrará notificaciones, etc. si hay Cascade)
     const [result] = await pool.query('DELETE FROM Usuario WHERE id_usuario = ?', [id]);
 
-    if (result.affectedRows === 0) {
+    if (result.affectedRows === 0)
       return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
-    }
 
-    res.json({ mensaje: `Usuario (ID: ${id}, Tipo: ${tipo}) y sus datos asociados eliminados.` });
+    res.json({ mensaje: 'Usuario eliminado correctamente.' });
   } catch (error) {
     console.error('Error al eliminar usuario:', error);
-    res.status(500).json({ error: 'Error interno al eliminar el usuario' });
+    res.status(500).json({ error: 'Error interno al eliminar usuario' });
   }
 };
 
 export const obtenerEstadisticas = async (req, res) => {
-  // Simulacro de función, ya que el dashboard no la estaba usando aún
-  res.json({ mensaje: 'Estadísticas de alto nivel listadas aquí.' });
+  // Aquí podrías hacer queries de COUNT(*) reales a la BD
+  res.json({ mensaje: 'Estadísticas placeholder' });
 };

@@ -23,7 +23,6 @@ export class MiPerfilComponent implements OnInit {
   guardando = false;
   error: string | null = null;
 
-  // Variable para la subida de foto
   subiendoFoto = false;
 
   ngOnInit() {
@@ -40,7 +39,6 @@ export class MiPerfilComponent implements OnInit {
           console.log('👤 Usuario detectado:', usuario.id_usuario);
           this.cargarPerfil(usuario.id_usuario);
         } else {
-          // Si no hay usuario aún, seguimos cargando o mostramos error si tarda mucho
           console.log('⏳ Esperando usuario...');
         }
       },
@@ -57,7 +55,6 @@ export class MiPerfilComponent implements OnInit {
       next: (data) => {
         console.log('📦 Perfil recibido:', data);
 
-        // Asignación segura de datos
         this.perfil = {
           ...data,
           estudios: data.estudios || [],
@@ -66,7 +63,7 @@ export class MiPerfilComponent implements OnInit {
         };
 
         this.loading = false;
-        // 🔥 ESTA LÍNEA ARREGLA EL PROBLEMA DE "CLIC PARA CARGAR"
+
         this.cd.detectChanges();
       },
       error: (err) => {
@@ -80,7 +77,7 @@ export class MiPerfilComponent implements OnInit {
 
   toggleEdicion() {
     this.editando = !this.editando;
-    // Si cancelamos edición, recargamos para deshacer cambios locales no guardados
+
     if (!this.editando && this.perfil?.id_usuario) {
       this.cargarPerfil(this.perfil.id_usuario);
     }
@@ -93,7 +90,7 @@ export class MiPerfilComponent implements OnInit {
     }
 
     this.guardando = true;
-    // Forzamos actualización para que se vea el spinner "Guardando..."
+
     this.cd.detectChanges();
 
     const payload = { ...this.perfil };
@@ -102,12 +99,9 @@ export class MiPerfilComponent implements OnInit {
       next: (response) => {
         console.log('✅ Guardado exitoso:', response);
 
-        // 1. Apagamos estados de carga y edición
         this.guardando = false;
         this.editando = false;
 
-        // 2. Recargamos los datos "limpios" desde el servidor
-        // Esto asegura que se vea lo que realmente se guardó
         if (this.perfil.id_usuario) {
           this.cargarPerfil(this.perfil.id_usuario);
         } else {
@@ -125,7 +119,6 @@ export class MiPerfilComponent implements OnInit {
     });
   }
 
-  // LOGICA PARA FOTO DE PERFIL
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file && this.perfil?.id_usuario) {
@@ -138,10 +131,10 @@ export class MiPerfilComponent implements OnInit {
 
       this.studentService.uploadPhoto(formData).subscribe({
         next: (res) => {
-          this.perfil.url_foto_perfil = res.url; // Actualizar URL
+          this.perfil.url_foto_perfil = res.url;
           this.subiendoFoto = false;
           alert('Foto actualizada');
-          this.cd.detectChanges(); // Forzar refresco de imagen
+          this.cd.detectChanges();
         },
         error: (err) => {
           console.error(err);
@@ -152,8 +145,6 @@ export class MiPerfilComponent implements OnInit {
       });
     }
   }
-
-  // --- Funciones auxiliares para arrays (Estudios, etc) ---
 
   agregarItem(tipo: string) {
     const nuevoItem: any = {};
@@ -167,7 +158,7 @@ export class MiPerfilComponent implements OnInit {
     } else if (tipo === 'proyectos') {
       this.perfil.proyectos.push({});
     }
-    // Forzar vista para mostrar el nuevo formulario vacío
+
     this.cd.detectChanges();
   }
 

@@ -40,17 +40,26 @@
             class="imagen-circular"
           />
 
-          <div *ngIf="editando" class="overlay-camara">
-            <button (click)="fileInput.click()" class="btn-cambiar-foto">
-              <app-icon name="Camera"></app-icon>
-            </button>
-            <input
-              #fileInput
-              type="file"
-              (change)="onFileSelected($event)"
-              accept="image/*"
-              style="display: none"
-            />
+          <div
+            *ngIf="editando"
+            class="overlay-cambiar-foto"
+            (click)="fileInput.click()"
+            title="Subir nueva foto"
+          >
+            <app-icon name="Camera" class="icono-camara"></app-icon>
+            <span>Cambiar foto</span>
+          </div>
+
+          <input
+            #fileInput
+            type="file"
+            (change)="onFileSelected($event)"
+            accept="image/*"
+            style="display: none"
+          />
+
+          <div *ngIf="subiendoFoto" class="loading-foto">
+            <div class="spinner-mini"></div>
           </div>
         </div>
 

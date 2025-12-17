@@ -4,7 +4,6 @@
 // OBTENER PERFIL COMPLETO DEL ESTUDIANTE
 // ============================================
 export const getStudentProfile = async (req, res) => {
-  // Verificación de seguridad: ¿Existe la conexión?
   const pool = req.app.locals.pool;
   if (!pool) {
     console.error('❌ ERROR GRAVE: "pool" no está definido en req.app.locals');
@@ -17,7 +16,6 @@ export const getStudentProfile = async (req, res) => {
   console.log('🔍 Buscando perfil para id_usuario:', id_usuario);
 
   try {
-    // 1. Validar que el usuario existe en tabla Usuario
     const [usuarios] = await pool.query(
       'SELECT id_usuario, email, nombre_completo FROM Usuario WHERE id_usuario = ?',
       [id_usuario]
@@ -30,7 +28,6 @@ export const getStudentProfile = async (req, res) => {
 
     const usuario = usuarios[0];
 
-    // 2. Buscar si ya tiene perfil de Estudiante
     const [estudiantes] = await pool.query('SELECT * FROM Estudiante WHERE id_usuario = ?', [
       id_usuario,
     ]);
@@ -39,7 +36,6 @@ export const getStudentProfile = async (req, res) => {
     let id_estudiante;
 
     if (estudiantes.length === 0) {
-      // ⚠️ NO EXISTE ESTUDIANTE → Crear perfil vacío automáticamente
       console.log('⚠️ Estudiante no existe, creando perfil base...');
 
       const nombreCompleto = usuario.nombre_completo || '';
@@ -110,7 +106,6 @@ export const getStudentProfile = async (req, res) => {
       ),
     ]);
 
-    // Extraer las filas de los resultados [rows, fields]
     const estudios = estudiosResults[0];
     const experiencias = experienciasResults[0];
     const proyectos = proyectosResults[0];
@@ -119,7 +114,6 @@ export const getStudentProfile = async (req, res) => {
       `📚 Datos: ${estudios.length} estudios, ${experiencias.length} experiencias, ${proyectos.length} proyectos.`
     );
 
-    // 4. Respuesta completa
     const respuesta = {
       ...perfil,
       estudios: estudios || [],
@@ -132,7 +126,7 @@ export const getStudentProfile = async (req, res) => {
     res.json(respuesta);
   } catch (error) {
     console.error('❌ Error CRÍTICO en getStudentProfile:', error);
-    // Enviamos el mensaje de error al frontend para facilitar depuración
+
     res.status(500).json({ error: 'Error al leer perfil', detalle: error.message });
   }
 };
@@ -144,11 +138,10 @@ export const saveStudentProfile = async (req, res) => {
   const pool = req.app.locals.pool;
   if (!pool) return res.status(500).json({ error: 'Database connection missing' });
 
-  // Nota: Connection se usa para transacciones
   let connection;
 
   try {
-    connection = await pool.getConnection(); // Obtener conexión para transacción
+    connection = await pool.getConnection();
 
     const {
       id_usuario,
@@ -168,13 +161,12 @@ export const saveStudentProfile = async (req, res) => {
     console.log('💾 Guardando perfil para id_usuario:', id_usuario);
 
     if (!id_usuario || !nombre || !apellido) {
-      connection.release(); // Liberar si hay error temprano
+      connection.release();
       return res.status(400).json({ error: 'Faltan campos obligatorios' });
     }
 
     await connection.beginTransaction();
 
-    // 1. Verificar/Crear Estudiante
     const [existente] = await connection.query(
       'SELECT id_estudiante FROM Estudiante WHERE id_usuario = ?',
       [id_usuario]
@@ -223,7 +215,6 @@ export const saveStudentProfile = async (req, res) => {
       );
     }
 
-    // 2. GUARDAR ESTUDIOS
     if (estudios && Array.isArray(estudios)) {
       await connection.query('DELETE FROM Estudio WHERE id_estudiante = ?', [id_estudiante]);
       for (const est of estudios) {
@@ -246,7 +237,6 @@ export const saveStudentProfile = async (req, res) => {
       }
     }
 
-    // 3. GUARDAR EXPERIENCIAS
     if (experiencias && Array.isArray(experiencias)) {
       await connection.query('DELETE FROM Experiencia_Laboral WHERE id_estudiante = ?', [
         id_estudiante,
@@ -310,39 +300,28 @@ export const saveStudentProfile = async (req, res) => {
 // ============================================
 export const uploadProfilePhoto = async (req, res) => {
   const pool = req.app.locals.pool;
-  const { id_usuario } = req.body; // Enviamos el ID junto con la foto
+  const { id_usuario } = req.body;
 
   if (!req.file) {
     return res.status(400).json({ error: 'No se subió ninguna imagen' });
   }
 
-  // Generamos la URL accesible desde el frontend
-  // Nota: req.file.filename es el nombre con el que Multer guardó el archivo
-
   const photoPath = `uploads/${req.file.filename}`;
-  const [result] = await pool.query(
-    'UPDATE Estudiante SET url_foto_perfil = ? WHERE id_usuario = ?',
-    [photoPath, id_usuario]
-  );
 
-  console.log('📸 Subiendo foto para usuario:', id_usuario);
-  console.log('📂 Archivo guardado en:', photoUrl);
+  console.log(' Subiendo foto para usuario:', id_usuario);
+  console.log(' Archivo guardado en:', photoPath);
 
   try {
-    // Actualizamos la tabla Estudiante
     const [result] = await pool.query(
       'UPDATE Estudiante SET url_foto_perfil = ? WHERE id_usuario = ?',
-      [photoUrl, id_usuario]
+      [photoPath, id_usuario]
     );
 
     if (result.affectedRows === 0) {
-      // Si no se actualizó nada, quizás el estudiante no existe aún
-      return res
-        .status(404)
-        .json({ error: 'No se encontró el perfil del estudiante para actualizar.' });
+      return res.status(404).json({ error: 'No se encontró el perfil del estudiante.' });
     }
 
-    res.json({ mensaje: 'Foto actualizada', url: photoUrl });
+    res.json({ mensaje: 'Foto actualizada', url: photoPath });
   } catch (error) {
     console.error('❌ Error al guardar foto:', error);
     res.status(500).json({ error: 'Error en base de datos' });
