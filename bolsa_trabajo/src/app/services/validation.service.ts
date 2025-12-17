@@ -24,7 +24,7 @@ export class ValidationService {
       return { valid: false, error: 'La contraseña es requerida' };
     }
 
-    if (password.length < 6) {
+    if (password.length < 3) {
       return { valid: false, error: 'La contraseña debe tener al menos 6 caracteres' };
     }
 
