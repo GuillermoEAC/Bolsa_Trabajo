@@ -1,9 +1,8 @@
-// import bcrypt from 'bcrypt';
-import bcrypt from 'bcryptjs';
-
-import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+// import bcrypt from 'bcryptjs';
 
+import { crearNotificacionInterna } from './notificaciones.controller.js';
 // ==========================================================
 // ========== 🔑 FUNCIONES DE AUTENTICACIÓN (LOGIN/REGISTER) ==========
 // ==========================================================
@@ -51,24 +50,66 @@ export const login = async (req, res) => {
   }
 };
 
+// export const registro = async (req, res) => {
+//   const pool = req.app.locals.pool;
+//   try {
+//     const { email, password, id_rol } = req.body;
+
+//     const [exists] = await pool.query('SELECT id_usuario FROM Usuario WHERE email = ?', [email]);
+//     if (exists.length > 0) return res.status(400).json({ error: 'El email ya está registrado' });
+
+//     const hash = await bcrypt.hash(password, 10);
+
+//     const [result] = await pool.query(
+//       'INSERT INTO Usuario (email, contraseña, id_rol) VALUES (?, ?, ?)',
+//       [email, hash, id_rol || 2]
+//     );
+
+//     res.status(201).json({
+//       mensaje: 'Usuario registrado',
+//       id_usuario: result.insertId,
+//       email: email,
+//     });
+//   } catch (error) {
+//     console.error('Error en el registro:', error);
+//     res.status(500).json({ error: 'Error interno del servidor durante el registro' });
+//   }
+// };
+
+// ==========================================================
+// ==========  FUNCIONES DE RECUPERACIÓN DE CONTRASEÑA ==========
+// ==========================================================
 export const registro = async (req, res) => {
   const pool = req.app.locals.pool;
   try {
-    const { email, password, id_rol } = req.body; // Verificar si el email ya existe
+    const { email, password, id_rol } = req.body;
 
     const [exists] = await pool.query('SELECT id_usuario FROM Usuario WHERE email = ?', [email]);
-    if (exists.length > 0) return res.status(400).json({ error: 'El email ya está registrado' }); // Hashear la contraseña
+    if (exists.length > 0) return res.status(400).json({ error: 'El email ya está registrado' });
 
-    const hash = await bcrypt.hash(password, 10); // Insertar nuevo usuario
+    const hash = await bcrypt.hash(password, 10);
 
     const [result] = await pool.query(
       'INSERT INTO Usuario (email, contraseña, id_rol) VALUES (?, ?, ?)',
-      [email, hash, id_rol || 2] // id_rol 2 = Estudiante por defecto
+      [email, hash, id_rol || 2]
     );
+
+    const idNuevoUsuario = result.insertId;
+
+    let mensajeBienvenida = '';
+
+    if (id_rol === 2 || !id_rol) {
+      mensajeBienvenida =
+        '¡Bienvenido a Primer Paso! 🎓 Completa tu perfil y sube tu CV para que las empresas te encuentren.';
+    }
+
+    if (mensajeBienvenida) {
+      await crearNotificacionInterna(pool, idNuevoUsuario, mensajeBienvenida, 'exito');
+    }
 
     res.status(201).json({
       mensaje: 'Usuario registrado',
-      id_usuario: result.insertId,
+      id_usuario: idNuevoUsuario,
       email: email,
     });
   } catch (error) {
@@ -76,34 +117,27 @@ export const registro = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor durante el registro' });
   }
 };
-
-// ==========================================================
-// ========== 🔐 FUNCIONES DE RECUPERACIÓN DE CONTRASEÑA ==========
-// ==========================================================
-
 export const solicitarRecuperacion = async (req, res) => {
   const pool = req.app.locals.pool;
   try {
-    const { email } = req.body; // 1. Buscar el usuario
+    const { email } = req.body;
 
     const [user] = await pool.query('SELECT id_usuario FROM Usuario WHERE email = ?', [email]);
     if (user.length === 0) {
-      // Es buena práctica no decir si el usuario existe o no por seguridad
       return res.json({ mensaje: 'Instrucciones enviadas a tu email (si existe)' });
-    } // 2. Generar token y expiración
-
+    }
     const token = crypto.randomBytes(32).toString('hex');
-    const expiracion = new Date(Date.now() + 3600000); // 1 hora // 3. Almacenar o actualizar el token en la base de datos (Asumiendo que has agregado las columnas) // Nota: Tu base de datos tiene una tabla 'Token_Recuperacion', pero la consulta // usa 'UPDATE Usuario SET token_recuperacion = ?...'. Corregiré la consulta para la tabla 'Token_Recuperacion'. // Eliminar tokens viejos si existen para este usuario
+    const expiracion = new Date(Date.now() + 3600000);
 
-    await pool.query('DELETE FROM Token_Recuperacion WHERE id_usuario = ?', [user[0].id_usuario]); // Insertar nuevo token
+    await pool.query('DELETE FROM Token_Recuperacion WHERE id_usuario = ?', [user[0].id_usuario]);
 
     await pool.query(
       'INSERT INTO Token_Recuperacion (id_usuario, token_hash, fecha_expiracion) VALUES (?, ?, ?)',
       [user[0].id_usuario, token, expiracion]
-    ); // TODO: Implementar envío de email con nodemailer aquí.
+    );
 
     res.json({
-      mensaje: 'Instrucciones enviadas a tu email', // Solo para pruebas en desarrollo
+      mensaje: 'Instrucciones enviadas a tu email',
       ...(process.env.NODE_ENV === 'development' && { token }),
     });
   } catch (error) {
@@ -115,7 +149,7 @@ export const solicitarRecuperacion = async (req, res) => {
 export const restablecerPassword = async (req, res) => {
   const pool = req.app.locals.pool;
   try {
-    const { token, newPassword } = req.body; // 1. Buscar el token y verificar que no haya expirado y no esté usado
+    const { token, newPassword } = req.body;
 
     const [tokenInfo] = await pool.query(
       'SELECT id_usuario FROM Token_Recuperacion WHERE token_hash = ? AND fecha_expiracion > NOW() AND usado = FALSE',
@@ -126,9 +160,9 @@ export const restablecerPassword = async (req, res) => {
       return res.status(400).json({ error: 'Token inválido, expirado o ya usado.' });
     }
 
-    const id_usuario = tokenInfo[0].id_usuario; // 2. Hashear la nueva contraseña
-    const hash = await bcrypt.hash(newPassword, 10); // 3. Actualizar la contraseña del usuario
-    await pool.query('UPDATE Usuario SET contraseña = ? WHERE id_usuario = ?', [hash, id_usuario]); // 4. Marcar el token como usado para evitar reuso
+    const id_usuario = tokenInfo[0].id_usuario;
+    const hash = await bcrypt.hash(newPassword, 10);
+    await pool.query('UPDATE Usuario SET contraseña = ? WHERE id_usuario = ?', [hash, id_usuario]);
     await pool.query('UPDATE Token_Recuperacion SET usado = TRUE WHERE token_hash = ?', [token]);
 
     res.json({ mensaje: 'Contraseña actualizada exitosamente' });

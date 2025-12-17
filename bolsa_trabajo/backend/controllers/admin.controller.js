@@ -27,13 +27,16 @@ const calcularResumenUsuarios = (usuarios) => {
 // ==========================================
 
 export const obtenerEmpresas = async (req, res) => {
+  const pool = req.app.locals.pool;
   try {
     const [rows] = await pool.query(
       `
       SELECT e.id_empresa, e.nombre_empresa, e.razon_social, e.email_contacto, e.sector, e.validada, u.email as email_usuario, e.id_usuario
       FROM Empresa e
       JOIN Usuario u ON e.id_usuario = u.id_usuario
-      ORDER BY e.validada ASC, e.id_empresa DESC
+      ORDER BY 
+        CASE WHEN e.validada = 0 THEN 1 ELSE 2 END, -- Pendientes primero
+        e.id_empresa DESC
     `
     );
     res.json(rows);
@@ -44,30 +47,32 @@ export const obtenerEmpresas = async (req, res) => {
 };
 
 export const cambiarEstadoEmpresa = async (req, res) => {
+  const pool = req.app.locals.pool;
   const { id } = req.params;
-  const { validada } = req.body; // true (1) o false (0)
+  const { validada } = req.body;
 
   try {
     const [empresa] = await pool.query(
-      `SELECT e.nombre_empresa, u.id_usuario, u.email FROM Empresa e JOIN Usuario u ON e.id_usuario = u.id_usuario WHERE e.id_empresa = ?`,
+      `SELECT e.nombre_empresa, u.id_usuario FROM Empresa e JOIN Usuario u ON e.id_usuario = u.id_usuario WHERE e.id_empresa = ?`,
       [id]
     );
 
-    if (empresa.length === 0) {
-      return res.status(404).json({ error: 'Empresa no encontrada' });
+    if (empresa.length === 0) return res.status(404).json({ error: 'Empresa no encontrada' });
+
+    await pool.query('UPDATE Empresa SET validada = ? WHERE id_empresa = ?', [validada, id]);
+
+    let mensaje = '';
+    let tipo = 'info';
+
+    if (validada === 1) {
+      mensaje = `¡Bienvenido! Tu cuenta de ${empresa[0].nombre_empresa} ha sido validada y activada.`;
+      tipo = 'exito';
+    } else if (validada === 2) {
+      mensaje = `Tu cuenta de ${empresa[0].nombre_empresa} ha sido desactivada temporalmente por el administrador.`;
+      tipo = 'advertencia';
+    } else {
+      mensaje = `Tu cuenta de ${empresa[0].nombre_empresa} está en revisión pendiente.`;
     }
-
-    await pool.query('UPDATE Empresa SET validada = ? WHERE id_empresa = ?', [
-      validada ? 1 : 0,
-      id,
-    ]);
-
-    // Notificación
-    const mensaje = validada
-      ? `¡Bienvenido! Tu cuenta de ${empresa[0].nombre_empresa} ha sido validada. Ya puedes publicar vacantes.`
-      : `Tu cuenta de ${empresa[0].nombre_empresa} fue desactivada por el administrador.`;
-
-    const tipo = validada ? 'EXITO' : 'ADVERTENCIA';
 
     await pool.query('INSERT INTO Notificacion (id_usuario, mensaje, tipo) VALUES (?, ?, ?)', [
       empresa[0].id_usuario,
@@ -130,7 +135,7 @@ export const moderarVacante = async (req, res) => {
             motivo_rechazo || 'No especificado'
           }`;
 
-    const tipo = estado === 'APROBADA' ? 'EXITO' : 'ADVERTENCIA';
+    const tipo = estado === 'APROBADA' ? 'exito' : 'advertencia';
 
     await pool.query('INSERT INTO Notificacion (id_usuario, mensaje, tipo) VALUES (?, ?, ?)', [
       vacante[0].id_usuario,
@@ -165,6 +170,7 @@ export const eliminarVacanteAdmin = async (req, res) => {
 // ==========================================
 
 export const obtenerUsuarios = async (req, res) => {
+  const pool = req.app.locals.pool;
   try {
     const [usuarios] = await pool.query(`
       SELECT 
@@ -172,29 +178,23 @@ export const obtenerUsuarios = async (req, res) => {
         u.email, 
         r.nombre_rol as tipo_usuario, 
         u.fecha_registro,
-        -- Datos de Estudiante
         est.nombre, 
         est.apellido, 
         est.fecha_nacimiento,
-        est.telefono,
-        -- Datos de Empresa (si es empresa, usamos nombre_empresa como nombre)
-        emp.nombre_empresa
+        est.telefono
       FROM Usuario u
       JOIN Rol r ON u.id_rol = r.id_rol
       LEFT JOIN Estudiante est ON u.id_usuario = est.id_usuario
-      LEFT JOIN Empresa emp ON u.id_usuario = emp.id_usuario
-      WHERE r.nombre_rol IN ('Estudiante', 'Empresa')
+      WHERE r.nombre_rol = 'Estudiante'  
       ORDER BY u.fecha_registro DESC
     `);
 
-    // Formateamos los datos para que el frontend los reciba limpios
     const usuariosFormateados = usuarios.map((u) => ({
       id: u.id,
       email: u.email,
-      tipo_usuario: u.tipo_usuario.toUpperCase(),
+      tipo_usuario: 'ESTUDIANTE',
       fecha_registro: u.fecha_registro,
-
-      nombre: u.tipo_usuario === 'Empresa' ? u.nombre_empresa : u.nombre,
+      nombre: u.nombre,
       apellido: u.apellido,
       telefono: u.telefono,
       fecha_nacimiento: u.fecha_nacimiento,
@@ -202,7 +202,11 @@ export const obtenerUsuarios = async (req, res) => {
 
     res.json({
       usuarios: usuariosFormateados,
-      resumen: calcularResumenUsuarios(usuariosFormateados),
+      resumen: {
+        total: usuariosFormateados.length,
+        estudiantes: usuariosFormateados.length,
+        empresas: 0, // Ya no mostramos empresas aquí
+      },
     });
   } catch (error) {
     console.error('Error al obtener usuarios:', error);

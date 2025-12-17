@@ -119,30 +119,48 @@ export class AdminDashboardComponent implements OnInit {
   // ========== LÓGICA EMPRESAS ==========
 
   toggleValidacion(empresa: any) {
-    const nuevoEstado = empresa.validada === 0 ? true : false;
-    const accionTexto = nuevoEstado ? 'Aprobar' : 'Desactivar';
-    const colorBoton = nuevoEstado ? '#10b981' : '#ef4444';
+    // Si está Pendiente (0) -> Pasa a Activa (1)
+    // Si está Activa (1)    -> Pasa a Desactivada (2)
+    // Si está Desactivada (2) -> Pasa a Activa (1) (Reactivar)
+
+    let nuevoEstado = 0;
+    let accionTexto = '';
+    let colorBoton = '';
+
+    if (empresa.validada === 0) {
+      nuevoEstado = 1;
+      accionTexto = 'Aprobar';
+      colorBoton = '#10b981'; // Verde
+    } else if (empresa.validada === 1) {
+      nuevoEstado = 2; // Desactivar
+      accionTexto = 'Desactivar';
+      colorBoton = '#ef4444'; // Rojo
+    } else {
+      nuevoEstado = 1; // Reactivar
+      accionTexto = 'Reactivar';
+      colorBoton = '#3b82f6'; // Azul
+    }
 
     Swal.fire({
       title: `¿${accionTexto} empresa?`,
-      text: `Vas a ${accionTexto.toLowerCase()} a "${empresa.nombre_empresa}"`,
+      text: `Cambiarás el estado de "${empresa.nombre_empresa}"`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: colorBoton,
       cancelButtonColor: '#64748b',
-      confirmButtonText: `Sí, ${accionTexto.toLowerCase()}`,
-      cancelButtonText: 'Cancelar',
+      confirmButtonText: `Sí, ${accionTexto}`,
     }).then((result) => {
       if (result.isConfirmed) {
+        // Enviamos el número (0, 1, 2)
         this.adminService.cambiarEstadoEmpresa(empresa.id_empresa, nuevoEstado).subscribe({
           next: () => {
             this.cargarDatos();
             this.cdr.detectChanges();
-            Swal.fire('¡Listo!', `Empresa ${nuevoEstado ? 'aprobada' : 'desactivada'}.`, 'success');
+            Swal.fire('¡Listo!', `Estado actualizado a: ${accionTexto}`, 'success');
           },
           error: (err) => {
             console.error(err);
-            Swal.fire('Error', 'No se pudo cambiar el estado.', 'error');
+            Swal.fire('Error', 'No se pudo actualizar.', 'error');
           },
         });
       }

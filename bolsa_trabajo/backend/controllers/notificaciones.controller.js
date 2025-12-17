@@ -78,20 +78,25 @@ export const marcarTodasLeidas = async (req, res) => {
   }
 };
 export const crearNotificacionInterna = async (
-  pool,
-  id_usuario_destino,
+  poolConnection,
+  idUsuario,
   mensaje,
-  tipo_notificacion = 'INFO'
+  tipo = 'info'
 ) => {
   try {
-    await pool.query(
-      'INSERT INTO Notificacion (id_usuario_destino, mensaje, tipo_notificacion, leida) VALUES (?, ?, ?, 0)',
-      [id_usuario_destino, mensaje, tipo_notificacion]
+    const db = poolConnection || pool;
+
+    const tiposValidos = ['info', 'exito', 'alerta', 'advertencia'];
+    const tipoFinal = tiposValidos.includes(tipo) ? tipo : 'info';
+
+    await db.query(
+      'INSERT INTO Notificacion (id_usuario, mensaje, tipo, leida) VALUES (?, ?, ?, 0)',
+      [idUsuario, mensaje, tipoFinal]
     );
+    console.log(`🔔 Notificación enviada al usuario ${idUsuario} [${tipoFinal}]`);
     return true;
   } catch (error) {
-    console.error('Error interno al crear notificación:', error);
-    // Puede que quieras lanzar el error o devolver false.
+    console.error('❌ Error interno al crear notificación:', error);
     return false;
   }
 };

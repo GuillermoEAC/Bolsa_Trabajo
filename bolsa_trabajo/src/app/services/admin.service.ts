@@ -1,4 +1,4 @@
-// /src/app/serices/AdminService.serve.ts
+// /src/app/serices/Admin.Service.serve.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -19,8 +19,7 @@ export class AdminService {
     return this.http.get(`${this.apiUrl}/empresas`);
   }
 
-  cambiarEstadoEmpresa(id: number, validada: boolean): Observable<any> {
-    // Envía el estado de validación (true = 1, false = 0)
+  cambiarEstadoEmpresa(id: number, validada: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/empresas/${id}/estado`, { validada });
   }
 
@@ -34,8 +33,8 @@ export class AdminService {
 
   moderarVacante(id: number, accion: 'aprobar' | 'rechazar', motivo: string = ''): Observable<any> {
     return this.http.put(`${this.apiUrl}/vacantes/${id}/moderar`, {
-      accion: accion, // 'aprobar' o 'rechazar'
-      motivo_rechazo: motivo, // Opcional, solo si se rechaza
+      accion: accion,
+      motivo_rechazo: motivo,
     });
   }
 
