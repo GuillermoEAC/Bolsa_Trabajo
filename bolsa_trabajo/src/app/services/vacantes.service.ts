@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment';
 export class VacantesService {
   private http = inject(HttpClient);
   // Usa la variable de entorno + /vacantes
-  private apiUrl = `${environment.apiUrl}/vacantes`;
+  private apiUrl = `${environment.apiUrl}/api/vacantes`;
 
   obtenerCategorias(): Observable<any> {
     return this.http.get(`${this.apiUrl}/categorias`);

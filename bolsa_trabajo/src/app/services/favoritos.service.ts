@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class FavoritosService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/favoritos`;
+  private apiUrl = `${environment.apiUrl}/api/favoritos`;
 
   toggleFavorito(idUsuario: number, idVacante: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/toggle`, {

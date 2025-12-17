@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 })
 export class PostulacionesService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/postulaciones`;
+  private apiUrl = `${environment.apiUrl}/api/postulaciones`;
 
   aplicarVacante(idUsuario: number, idVacante: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/aplicar`, {

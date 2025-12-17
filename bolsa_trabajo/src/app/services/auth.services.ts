@@ -11,9 +11,7 @@ export class AuthService {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
 
-  // Truco: Si environment.apiUrl termina en '/api', lo quitamos para acceder a '/auth'
-  // Si tu backend tiene auth dentro de api (/api/auth), quita el .replace
-  private authUrl = environment.apiUrl.replace('/api', '') + '/auth';
+  private authUrl = `${environment.apiUrl}/auth`;
 
   private usuarioSubject = new BehaviorSubject<any>(this.leerUsuarioDelStorage());
   public usuario$ = this.usuarioSubject.asObservable();

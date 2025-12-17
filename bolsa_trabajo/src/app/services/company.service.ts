@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 })
 export class CompanyService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/company`;
+  private apiUrl = `${environment.apiUrl}/api/company`;
 
   // Registrar nueva empresa (envía FormData con el logo y datos)
   registrarEmpresa(payload: FormData): Observable<any> {

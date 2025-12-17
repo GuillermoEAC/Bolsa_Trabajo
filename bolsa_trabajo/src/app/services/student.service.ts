@@ -9,8 +9,7 @@ import { environment } from '../../environments/environment';
 })
 export class StudentService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/student`;
-
+  private apiUrl = `${environment.apiUrl}/api/student`;
   getProfile(idUsuario: number): Observable<any> {
     const url = `${this.apiUrl}/${idUsuario}`;
     // console.log('🔍 [StudentService] Solicitando perfil:', url); // Descomentar para debug

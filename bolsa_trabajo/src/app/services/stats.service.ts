@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 })
 export class StatsService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/stats`;
+  private apiUrl = `${environment.apiUrl}/api/stats`;
 
   obtenerContadores() {
     return this.http.get<any>(`${this.apiUrl}/publicos`);

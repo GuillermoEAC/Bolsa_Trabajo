@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class NotificacionesService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/notificaciones`;
+  private apiUrl = `${environment.apiUrl}/api/notificaciones`;
 
   obtenerNotificaciones(idUsuario: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/usuario/${idUsuario}`);
