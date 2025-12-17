@@ -56,9 +56,6 @@ export class BuscadorEmpleosComponent implements OnInit {
 
   buscar() {
     this.cargando = true;
-
-    // 🔥 IMPORTANTE: Obtenemos el usuario para enviarlo al backend
-    // Así el backend sabe cuáles vacantes marcar en rojo al cargar
     const usuario = this.authService.obtenerUsuarioActual();
 
     const filtrosConUsuario = {
@@ -69,6 +66,7 @@ export class BuscadorEmpleosComponent implements OnInit {
     this.vacantesService.buscarVacantes(filtrosConUsuario).subscribe({
       next: (data: any) => {
         this.vacantes = data;
+        console.log('📊 Vacantes recibidas:', this.vacantes); // Debug
         this.cargando = false;
         this.cd.detectChanges();
       },
@@ -89,7 +87,6 @@ export class BuscadorEmpleosComponent implements OnInit {
   }
 
   postularse(idVacante: number) {
-    // ... (Tu código de postularse que ya estaba bien con SweetAlert) ...
     const usuario = this.authService.obtenerUsuarioActual();
     if (!usuario) {
       Swal.fire({
@@ -137,19 +134,12 @@ export class BuscadorEmpleosComponent implements OnInit {
       return;
     }
 
-    // 1. CAMBIO VISUAL INSTANTÁNEO (UI Optimista)
-    // Guardamos el estado anterior por si falla el servidor
     const estadoAnterior = vacante.es_favorito;
-
-    // Cambiamos el estado local inmediatamente para que el usuario vea el cambio
     vacante.es_favorito = !vacante.es_favorito;
 
-    // 2. LLAMADA AL BACKEND
     this.favoritosService.toggleFavorito(usuario.id_usuario, vacante.id_vacante).subscribe({
       next: (res: any) => {
-        // Notificación Toast discreta
-        const esLike = vacante.es_favorito; // Usamos el estado actual
-
+        const esLike = vacante.es_favorito;
         const icono = esLike ? '❤️' : '💔';
         const mensaje = esLike ? 'Agregado a favoritos' : 'Eliminado de favoritos';
 
@@ -167,32 +157,30 @@ export class BuscadorEmpleosComponent implements OnInit {
       },
       error: (err: any) => {
         console.error(err);
-        // Si falla, revertimos el cambio visual
         vacante.es_favorito = estadoAnterior;
         Swal.fire('Error', 'No se pudo actualizar favoritos', 'error');
       },
     });
   }
 
-  obtenerUrlLogo(logoPath: string): string {
-    return logoPath
-      ? `${environment.apiUrl.replace('/api', '')}/${logoPath}`
-      : 'assets/img/Logo_Completo.png';
-  }
+  construirUrlLogo(logoPath: string | null | undefined): string {
+    console.log('🖼️ Logo path recibido:', logoPath);
 
-  construirUrlImagen(ruta: string | null): string {
-    if (!ruta) {
+    if (!logoPath || logoPath.trim() === '') {
       return 'assets/img/Logo_Completo.png';
     }
 
-    if (ruta.startsWith('http')) {
-      return ruta;
+    if (logoPath.startsWith('http://') || logoPath.startsWith('https://')) {
+      return logoPath;
     }
 
     const baseUrl = environment.apiUrl.replace('/api', '');
 
-    const rutaLimpia = ruta.startsWith('/') ? ruta.substring(1) : ruta;
+    const rutaLimpia = logoPath.startsWith('/') ? logoPath.substring(1) : logoPath;
 
-    return `${baseUrl}/${rutaLimpia}`;
+    const urlFinal = `${baseUrl}/${rutaLimpia}`;
+    console.log('🔗 URL construida:', urlFinal);
+
+    return urlFinal;
   }
 }

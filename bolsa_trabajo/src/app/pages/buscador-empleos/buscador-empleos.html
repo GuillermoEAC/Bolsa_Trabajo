@@ -119,11 +119,11 @@
           <div class="card-header-row">
             <div class="company-logo">
               <img
-                [src]="construirUrlImagen(job.logo_path)"
-                alt="Logo empresa"
+                [src]="construirUrlLogo(job.logo_path)"
+                [alt]="'Logo ' + job.nombre_empresa"
                 class="img-fluid"
                 style="object-fit: contain; width: 100%; height: 100%"
-                onerror="this.src='assets/img/Logo_Completo.png'"
+                (error)="$any($event.target).src = 'assets/img/Logo_Completo.png'"
               />
             </div>
 
@@ -144,10 +144,6 @@
                 title="Guardar en favoritos"
                 (click)="toggleFavorito(job)"
               ></button>
-
-              <!-- <button class="btn-icon btn-more" title="Más opciones" style="font-size: 1.2rem">
-                ⚙️
-              </button> -->
             </div>
           </div>
 
