@@ -24,17 +24,9 @@ export class ValidationService {
       return { valid: false, error: 'La contraseña es requerida' };
     }
 
-    if (password.length < 2) {
+    if (password.length < 6) {
       return { valid: false, error: 'La contraseña debe tener al menos 6 caracteres' };
     }
-
-    // Validar que contenga al menos una letra y un número
-    // const hasLetter = /[a-zA-Z]/.test(password);
-    // const hasNumber = /\d/.test(password);
-
-    // if (!hasLetter || !hasNumber) {
-    //   return { valid: false, error: 'La contraseña debe contener letras y números' };
-    // }
 
     return { valid: true };
   }

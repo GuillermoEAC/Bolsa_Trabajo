@@ -1,30 +1,33 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-const API_URL = 'http://localhost:3000/api/postulaciones';
+import { environment } from '../../environments/environments';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PostulacionesService {
   private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/postulaciones`;
 
   aplicarVacante(idUsuario: number, idVacante: number): Observable<any> {
-    return this.http.post(`${API_URL}/aplicar`, { id_usuario: idUsuario, id_vacante: idVacante });
+    return this.http.post(`${this.apiUrl}/aplicar`, {
+      id_usuario: idUsuario,
+      id_vacante: idVacante,
+    });
   }
 
   obtenerHistorial(idUsuario: number): Observable<any> {
-    return this.http.get(`${API_URL}/historial/${idUsuario}`);
+    return this.http.get(`${this.apiUrl}/historial/${idUsuario}`);
   }
 
   // --- MÉTODOS PARA EMPRESA ---
 
   obtenerCandidatos(idVacante: number): Observable<any> {
-    return this.http.get(`${API_URL}/vacante/${idVacante}`);
+    return this.http.get(`${this.apiUrl}/vacante/${idVacante}`);
   }
 
   cambiarEstado(idPostulacion: number, nuevoEstado: string): Observable<any> {
-    return this.http.put(`${API_URL}/estado/${idPostulacion}`, { nuevo_estado: nuevoEstado });
+    return this.http.put(`${this.apiUrl}/estado/${idPostulacion}`, { nuevo_estado: nuevoEstado });
   }
 }
