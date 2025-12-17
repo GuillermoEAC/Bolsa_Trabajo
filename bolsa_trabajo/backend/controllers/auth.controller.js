@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-// import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 
 import { crearNotificacionInterna } from './notificaciones.controller.js';
 // ==========================================================
