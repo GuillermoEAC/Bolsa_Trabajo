@@ -11,10 +11,11 @@
       <div class="logo-wrapper">
         <img
           [src]="construirUrlImagen(perfil.logo_path)"
-          onerror="this.src='assets/img/default-company.png'"
           alt="Logo Empresa"
+          onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Empresa&background=random&size=128';"
         />
       </div>
+
       <label class="btn-upload">
         <app-icon name="Camera"></app-icon> Cambiar Logo
         <input type="file" (change)="onFileSelected($event)" accept="image/*" hidden />

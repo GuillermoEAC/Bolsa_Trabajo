@@ -10,7 +10,9 @@ export class VacantesService {
   private http = inject(HttpClient);
   // Usa la variable de entorno + /vacantes
   private apiUrl = `${environment.apiUrl}/api/vacantes`;
-
+  crearVacante(datos: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/crear`, datos);
+  }
   obtenerCategorias(): Observable<any> {
     return this.http.get(`${this.apiUrl}/categorias`);
   }

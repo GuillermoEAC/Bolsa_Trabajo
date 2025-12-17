@@ -1,6 +1,7 @@
 <div class="dashboard-container">
   <aside class="sidebar">
     <div class="logo-area">🏢 Panel Empresa</div>
+
     <nav>
       <ng-container *ngIf="empresaValidada; else menuBloqueado">
         <a
@@ -8,7 +9,7 @@
           [class.active]="vistaActual === 'resumen'"
           (click)="cambiarVista('resumen')"
         >
-          Resumen
+          <app-icon name="ChartPie" class="nav-icon"></app-icon> Resumen
         </a>
 
         <a
@@ -16,11 +17,19 @@
           [class.active]="vistaActual === 'perfil'"
           (click)="cambiarVista('perfil')"
         >
-          <app-icon name="User"></app-icon> Mi Perfil
+          <app-icon name="User" class="nav-icon"></app-icon>
+          Mi Perfil
         </a>
 
-        <a class="nav-item" routerLink="/mis-vacantes">Mis Vacantes</a>
-        <a class="nav-item">Candidatos</a>
+        <a class="nav-item" routerLink="/mis-vacantes">
+          <app-icon name="Briefcase" class="nav-icon"></app-icon>
+          Mis Vacantes
+        </a>
+
+        <!-- <a class="nav-item">
+          <app-icon name="Users" class="nav-icon"></app-icon>
+          Candidatos
+        </a> -->
       </ng-container>
 
       <ng-template #menuBloqueado>
@@ -29,7 +38,10 @@
         </div>
       </ng-template>
 
-      <a class="nav-item logout" (click)="logout()">Cerrar Sesión</a>
+      <!-- <a class="nav-item logout" (click)="logout()">
+        <app-icon name="Logout" class="nav-icon"></app-icon>
+        Cerrar Sesión
+      </a> -->
     </nav>
   </aside>
 

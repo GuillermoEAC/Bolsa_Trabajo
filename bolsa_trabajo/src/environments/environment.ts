@@ -2,5 +2,5 @@
 export const environment = {
   production: false,
 
-  apiUrl: 'https://api-bolsa-trabajo.onrender.com',
+  apiUrl: 'http://localhost:4000',
 };

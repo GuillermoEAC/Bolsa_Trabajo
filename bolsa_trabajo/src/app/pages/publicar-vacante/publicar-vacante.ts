@@ -73,46 +73,44 @@ export class PublicarVacanteComponent implements OnInit {
   }
 
   guardarVacante() {
-    if (!this.usuario) {
-      Swal.fire('Atención', 'Debes iniciar sesión como empresa para publicar.', 'warning');
+    const usuario = this.authService.obtenerUsuarioActual();
+
+    if (!usuario) {
+      Swal.fire('Error', 'No hay sesión activa', 'error');
       return;
     }
 
-    const datosParaEnviar = { ...this.vacante, id_usuario: this.usuario.id_usuario };
+    const datosEnviar = {
+      titulo: this.vacante.titulo, // ✅ Antes pusimos 'titulo_cargo', cámbialo a 'titulo'
+      descripcion: this.vacante.descripcion, // ✅ Antes 'descripcion_vacante', cámbialo a 'descripcion'
 
-    if (this.esEdicion) {
-      this.vacantesService.actualizarVacante(this.idVacante, datosParaEnviar).subscribe({
-        next: () => {
-          Swal.fire({
-            title: '¡Actualizado!',
-            text: 'La vacante se actualizó correctamente.',
-            icon: 'success',
-            confirmButtonColor: '#2563eb',
-          }).then(() => {
-            this.router.navigate(['/mis-vacantes']);
-          });
-        },
-        error: (err) => {
-          Swal.fire('Error', 'No se pudo actualizar la vacante.', 'error');
-        },
-      });
-    } else {
-      this.vacantesService.publicarVacante(datosParaEnviar).subscribe({
-        next: () => {
-          Swal.fire({
-            title: '¡Publicado!',
-            text: 'Tu vacante ha sido creada y enviada a revisión.',
-            icon: 'success',
-            confirmButtonColor: '#2563eb',
-          }).then(() => {
-            this.router.navigate(['/mis-vacantes']);
-          });
-        },
-        error: (err) => {
-          console.error(err);
-          Swal.fire('Oops...', 'Hubo un error al publicar la vacante.', 'error');
-        },
-      });
-    }
+      categoria: this.vacante.id_categoria, // Asegúrate de usar id_categoria si es un ID
+      tipo_contrato: this.vacante.tipo_contrato,
+      modalidad: this.vacante.modalidad,
+      ubicacion: this.vacante.ubicacion,
+      salario_min: Number(this.vacante.salario_min),
+      salario_max: Number(this.vacante.salario_max),
+      id_usuario: usuario.id_usuario,
+    };
+
+    console.log('📦 ENVIANDO:', datosEnviar);
+
+    this.vacantesService.crearVacante(datosEnviar).subscribe({
+      next: () => {
+        Swal.fire('Éxito', 'Vacante creada', 'success');
+        this.router.navigate(['/dashboard-empresa']);
+      },
+      error: (err: any) => {
+        console.log(' ERROR COMPLETO:', err);
+
+        const mensajeBackend = err.error?.message || err.error?.error || JSON.stringify(err.error);
+
+        Swal.fire({
+          title: 'Error 400',
+          text: 'El servidor dice: ' + mensajeBackend,
+          icon: 'error',
+        });
+      },
+    });
   }
 }
